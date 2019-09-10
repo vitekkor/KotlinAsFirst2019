@@ -145,7 +145,7 @@ fun rookOrBishopThreatens(
  * Если такой треугольник не существует, вернуть -1.
  */
 fun triangleKind(a: Double, b: Double, c: Double): Int {
-    if ((a < b+c) and (b < a+c) and (c < a+b)) if (a*a == b*b+c*c || b*b == a*a+c*c || c*c == a*a+b*b) return 1 else
+    if ((a < b+c) && (b < a+c) && (c < a+b)) if (a*a == b*b+c*c || b*b == a*a+c*c || c*c == a*a+b*b) return 1 else
         if ((a*a+b*b-c*c)/2*a*b < 0 || (a*a+c*c-b*b)/2*a*c < 0 || (c*c+b*b-a*a)/2*b*c < 0) return 2 else
             return 0 else
         return -1
@@ -159,7 +159,7 @@ fun triangleKind(a: Double, b: Double, c: Double): Int {
  * Найти длину пересечения отрезков AB и CD.
  * Если пересечения нет, вернуть -1.
  */
-fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int = if ((c >= a) and (c <= b) and (d >= b)) b-c else
-    if ((d <= b) and (d >= a) and (c <= a)) d-a else
-        if ((c >= a) and (d <= b)) d-c else
-            if ((c <= a) and (d >= b)) b-a else -1
+fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int = if ((c >= a) && (c <= b) && (d >= b)) b-c else
+    if ((d <= b) && (d >= a) && (c <= a)) d-a else
+        if ((c >= a) && (d <= b)) d-c else
+            if ((c <= a) && (d >= b)) b-a else -1
