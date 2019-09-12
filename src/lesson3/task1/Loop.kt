@@ -73,7 +73,7 @@ fun digitNumber(n: Int): Int {
     do {
         m = m/10
         count++
-    } while (m > 0)
+    } while (m !== 0)
     return count
 }
 
@@ -83,10 +83,20 @@ fun digitNumber(n: Int): Int {
  * Найти число Фибоначчи из ряда 1, 1, 2, 3, 5, 8, 13, 21, ... с номером n.
  * Ряд Фибоначчи определён следующим образом: fib(1) = 1, fib(2) = 1, fib(n+2) = fib(n) + fib(n+1)
  */
-fun fib(n: Int): Int = when (n){
-    1 -> 1
-    2 -> 1
-    else -> fib(n-1)+fib(n-2)
+fun fib(n: Int): Int {
+    var i = 0
+    var sumFib = 0
+    var fib1 = 1
+    var fib2 = 1
+    if (n == 1 || n == 2) return fib1 else {
+        while (i < n-2) {
+            sumFib = fib1+fib2
+            fib1 = fib2
+            fib2 = sumFib
+            i++
+        }
+        return fib2
+    }
 }
 
 /**
@@ -198,7 +208,7 @@ fun sin(x: Double, eps: Double): Double {
     var ii = 0
     var xx: Double
     do {
-        if (x/PI%2 == 0.0) xx = PI.pow(i.toDouble())/factorial(i) else xx = x.pow(i.toDouble())/factorial(i)
+        if (x/PI%2 == 0.0) xx = PI.pow(i)/factorial(i) else xx = x.pow(i)/factorial(i)
         if (ii%2 == 0 ) result = result+xx else
             result = result-xx
         ii++
@@ -222,7 +232,7 @@ fun cos(x: Double, eps: Double): Double {
     var ii = 1
     var xx: Double
     do {
-        if (x/PI%2 == 0.0) xx = PI.pow(i.toDouble())/factorial(i) else xx = -x.pow(i.toDouble())/factorial(i)
+        if (x/PI%2 == 0.0) xx = PI.pow(i)/factorial(i) else xx = -x.pow(i)/factorial(i)
         if (ii%2 == 0 ) result = result+xx else
             result = result-xx
         ii++
