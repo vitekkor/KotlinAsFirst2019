@@ -3,9 +3,11 @@
 package lesson2.task1
 
 import lesson1.task1.discriminant
+import lesson1.task1.sqr
 import kotlin.math.max
 import kotlin.math.sqrt
 import kotlin.math.abs
+import kotlin.math.min
 
 /**
  * Пример
@@ -86,9 +88,11 @@ fun timeForHalfWay(
     t3: Double, v3: Double
 ): Double {
     val s: Double = (t1 * v1 + t2 * v2 + t3 * v3) / 2.0
-    if (t1 * v1 >= s) return s / v1 else
-        if (t2 * v2 >= s - v1 * t1) return t1 + (s - t1 * v1) / v2 else
-            return t1 + t2 + (s - t1 * v1 - t2 * v2) / v3
+    return when {
+        t1 * v1 >= s -> s / v1
+        t2 * v2 >= s - v1 * t1 -> t1 + (s - t1 * v1) / v2
+        else -> t1 + t2 + (s - t1 * v1 - t2 * v2) / v3
+    }
 }
 
 /**
@@ -105,12 +109,14 @@ fun whichRookThreatens(
     rookX1: Int, rookY1: Int,
     rookX2: Int, rookY2: Int
 ): Int {
-    val rook1: Boolean = kingX == rookX1 || kingY == rookY1
-    val rook2: Boolean = kingX == rookX2 || kingY == rookY2
-    if (rook1 and rook2) return 3 else
-        if (rook1) return 1 else
-            if (rook2) return 2 else
-                return 0
+    val rook1 = kingX == rookX1 || kingY == rookY1
+    val rook2 = kingX == rookX2 || kingY == rookY2
+    return when {
+        rook1 and rook2 -> 3
+        rook1 -> 1
+        rook2 -> 2
+        else -> 0
+    }
 }
 
 /**
@@ -128,12 +134,14 @@ fun rookOrBishopThreatens(
     rookX: Int, rookY: Int,
     bishopX: Int, bishopY: Int
 ): Int {
-    val rook: Boolean = kingX == rookX || kingY == rookY
-    val bishop: Boolean = abs(kingX-bishopX) == abs(kingY-bishopY)
-    if (rook and bishop) return 3 else
-        if (rook) return 1 else
-            if (bishop) return 2 else
-                return 0
+    val rook = kingX == rookX || kingY == rookY
+    val bishop = abs(kingX - bishopX) == abs(kingY - bishopY)
+    return when {
+        rook and bishop -> 3
+        rook -> 1
+        bishop -> 2
+        else -> 0
+    }
 }
 
 /**
@@ -145,10 +153,18 @@ fun rookOrBishopThreatens(
  * Если такой треугольник не существует, вернуть -1.
  */
 fun triangleKind(a: Double, b: Double, c: Double): Int {
-    if ((a < b+c) && (b < a+c) && (c < a+b)) if (a*a == b*b+c*c || b*b == a*a+c*c || c*c == a*a+b*b) return 1 else
-        if ((a*a+b*b-c*c)/2*a*b < 0 || (a*a+c*c-b*b)/2*a*c < 0 || (c*c+b*b-a*a)/2*b*c < 0) return 2 else
-            return 0 else
-        return -1
+    val side1 = max(max(a, b), c)
+    val side2 = min(min(a, b), c)
+    val side3 = when {
+        (a == side1 && b == side2) || (a == side2 && b == side1) -> c
+        (a == side1 && c == side2) || (a == side2 && c == side1) -> b
+        else -> a
+    }
+    if ((a < b + c) && (b < a + c) && (c < a + b)) when {
+        (sqr(side1) == sqr(side2) + sqr(side3)) -> return 1
+        ((sqr(side2) + sqr(side3) - sqr(side1)) / 2 / side2 / side3 < 0) -> return 2
+        else -> return 0
+    } else return -1
 }
 
 /**
@@ -159,7 +175,4 @@ fun triangleKind(a: Double, b: Double, c: Double): Int {
  * Найти длину пересечения отрезков AB и CD.
  * Если пересечения нет, вернуть -1.
  */
-fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int = if ((c >= a) && (c <= b) && (d >= b)) b-c else
-    if ((d <= b) && (d >= a) && (c <= a)) d-a else
-        if ((c >= a) && (d <= b)) d-c else
-            if ((c <= a) && (d >= b)) b-a else -1
+fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int = if (min(b, d) - max(a, c) >= 0) min(b, d) - max(a, c) else -1
