@@ -89,15 +89,13 @@ fun fib(n: Int): Int {
     var sumFib: Int
     var fib1 = 1
     var fib2 = 1
-    if (n == 1 || n == 2) return fib1 else {
-        while (i < n - 2) {
-            sumFib = fib1 + fib2
-            fib1 = fib2
-            fib2 = sumFib
-            i++
-        }
-        return fib2
+    while (i < n - 2) {
+        sumFib = fib1 + fib2
+        fib1 = fib2
+        fib2 = sumFib
+        i++
     }
+    return fib2
 }
 
 /**
