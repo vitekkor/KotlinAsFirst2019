@@ -160,11 +160,11 @@ fun triangleKind(a: Double, b: Double, c: Double): Int {
         (a == side1 && c == side2) || (a == side2 && c == side1) -> b
         else -> a
     }
-    if ((a < b + c) && (b < a + c) && (c < a + b)) when {
-        (sqr(side1) == sqr(side2) + sqr(side3)) -> return 1
-        ((sqr(side2) + sqr(side3) - sqr(side1)) / 2 / side2 / side3 < 0) -> return 2
-        else -> return 0
-    } else return -1
+    return if ((a < b + c) && (b < a + c) && (c < a + b)) when {
+        (sqr(side1) == sqr(side2) + sqr(side3)) -> 1
+        ((sqr(side2) + sqr(side3) - sqr(side1)) / 2 / side2 / side3 < 0) -> 2
+        else -> 0
+    } else -1
 }
 
 /**
@@ -175,4 +175,4 @@ fun triangleKind(a: Double, b: Double, c: Double): Int {
  * Найти длину пересечения отрезков AB и CD.
  * Если пересечения нет, вернуть -1.
  */
-fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int = if (min(b, d) - max(a, c) >= 0) min(b, d) - max(a, c) else -1
+fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int = max(min(b, d) - max(a, c), -1)
