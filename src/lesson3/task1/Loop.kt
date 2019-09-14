@@ -72,7 +72,7 @@ fun digitNumber(n: Int): Int {
     var count = 0
     var m = n
     do {
-        m = m / 10
+        m /= 10
         count++
     } while (m !== 0)
     return count
@@ -132,7 +132,7 @@ fun minDivisor(n: Int): Int {
  */
 fun maxDivisor(n: Int): Int {
     var result = 1
-    for (i in 2..n - 1) {
+    for (i in 2 until n) {
         if (n % i == 0) result = i
     }
     return result
@@ -187,7 +187,7 @@ fun collatzSteps(x: Int): Int {
     var y = x
     while (y !== 1) {
         count++
-        if (y % 2 == 0) y = y / 2 else y = y * 3 + 1
+        if (y % 2 == 0) y /= 2 else y = y * 3 + 1
     }
     return count
 }
@@ -207,11 +207,11 @@ fun sin(x: Double, eps: Double): Double {
     var ii = 0
     var xx: Double
     do {
-        if (x / PI % 2 == 0.0) xx = PI.pow(i) / factorial(i) else xx = x.pow(i) / factorial(i)
-        if (ii % 2 == 0) result = result + xx else
-            result = result - xx
+        xx = if (x / PI % 2 == 0.0) PI.pow(i) / factorial(i) else x.pow(i) / factorial(i)
+        if (ii % 2 == 0) result += xx else
+            result -= xx
         ii++
-        i = i + 2
+        i += 2
     } while ((abs(xx)) >= eps)
     return result
 }
@@ -282,7 +282,7 @@ fun hasDifferentDigits(n: Int): Boolean {
     nn /= 10
     while (nn !== 0) {
         if (nn % 10 !== digit) return true
-        nn = nn / 10
+        nn /= 10
     }
     return nn != 0
 }
@@ -304,10 +304,10 @@ fun squareSequenceDigit(n: Int): Int {
     var t: Int
     while (countOfdigits < n) {
         i++
-        digit = i * i
+        digit = sqr(i)
         countOfdigitsame = 1
         t = 10
-        while (digit / t !== 0) {
+        while (digit / t > 0) {
             countOfdigitsame++
             t *= 10
         }
