@@ -4,6 +4,7 @@ package lesson4.task1
 
 import lesson1.task1.discriminant
 import lesson1.task1.sqr
+import lesson3.task1.isPrime
 import kotlin.math.*
 
 /**
@@ -204,7 +205,23 @@ fun accumulate(list: MutableList<Int>): MutableList<Int> {
  * Результат разложения вернуть в виде списка множителей, например 75 -> (3, 5, 5).
  * Множители в списке должны располагаться по возрастанию.
  */
-fun factorize(n: Int): List<Int> = TODO()
+fun factorize(n: Int): List<Int> {
+    var nn = n
+    var result = listOf<Int>()
+    if (isPrime(n)) result += n else {
+        while (nn % 2 == 0) {
+            result += 2
+            nn /= 2
+        }
+        for (i in 3..sqrt(n.toDouble()).toInt() + 1 step 2) {
+            if (isPrime(i)) while (nn % i == 0) {
+                result += i
+                nn /= i
+            }
+        }
+    }
+    return result
+}
 
 /**
  * Сложная
@@ -213,7 +230,7 @@ fun factorize(n: Int): List<Int> = TODO()
  * Результат разложения вернуть в виде строки, например 75 -> 3*5*5
  * Множители в результирующей строке должны располагаться по возрастанию.
  */
-fun factorizeToString(n: Int): String = TODO()
+fun factorizeToString(n: Int): String = factorize(n).joinToString(separator = "*")
 
 /**
  * Средняя
@@ -222,7 +239,15 @@ fun factorizeToString(n: Int): String = TODO()
  * Результат перевода вернуть в виде списка цифр в base-ичной системе от старшей к младшей,
  * например: n = 100, base = 4 -> (1, 2, 1, 0) или n = 250, base = 14 -> (1, 3, 12)
  */
-fun convert(n: Int, base: Int): List<Int> = TODO()
+fun convert(n: Int, base: Int): List<Int> {
+    var nn = n
+    val result = mutableListOf<Int>()
+    while (nn !== 0) {
+        result.add(0, nn % base)
+        nn /= base
+    }
+    return result
+}
 
 /**
  * Сложная
@@ -244,7 +269,15 @@ fun convertToString(n: Int, base: Int): String = TODO()
  * из системы счисления с основанием base в десятичную.
  * Например: digits = (1, 3, 12), base = 14 -> 250
  */
-fun decimal(digits: List<Int>, base: Int): Int = TODO()
+fun decimal(digits: List<Int>, base: Int): Int {
+    var result = 0
+    var ii = digits.size - 1
+    for (element in digits) {
+        result += element * (base.toDouble()).pow(ii).toInt()
+        ii--
+    }
+    return result
+}
 
 /**
  * Сложная
