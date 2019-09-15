@@ -213,7 +213,7 @@ fun factorize(n: Int): List<Int> {
             result += 2
             nn /= 2
         }
-        for (i in 3..sqrt(n.toDouble()).toInt() + 1 step 2) {
+        for (i in 3..n / 2 step 2) {
             if (isPrime(i)) while (nn % i == 0) {
                 result += i
                 nn /= i
@@ -242,7 +242,7 @@ fun factorizeToString(n: Int): String = factorize(n).joinToString(separator = "*
 fun convert(n: Int, base: Int): List<Int> {
     var nn = n
     val result = mutableListOf<Int>()
-    while (nn !== 0) {
+    while (nn > -1) {
         result.add(0, nn % base)
         nn /= base
     }
