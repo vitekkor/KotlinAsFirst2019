@@ -212,7 +212,7 @@ fun sin(x: Double, eps: Double): Double {
             result -= xx
         ii++
         i += 2
-    } while ((abs(xx)) >= eps)
+    } while ((abs(xx)) > eps)
     return result
 }
 
@@ -236,7 +236,7 @@ fun cos(x: Double, eps: Double): Double {
             result -= xx
         ii++
         i += 2
-    } while ((abs(xx)) >= eps)
+    } while ((abs(xx)) > eps)
     return result
 }
 
@@ -297,27 +297,19 @@ fun hasDifferentDigits(n: Int): Boolean {
  * Использовать операции со строками в этой задаче запрещается.
  */
 fun squareSequenceDigit(n: Int): Int {
-    var countOfdigits = 0
-    var countOfdigitsame: Int
-    var digit = 0
-    var i = 0
-    var t: Int
+    var i = 2
+    var number = 1
+    var countOfdigits = 1
     while (countOfdigits < n) {
+        number = i * i
+        countOfdigits += digitNumber(number)
         i++
-        digit = sqr(i)
-        countOfdigitsame = 1
-        t = 10
-        while (digit / t > 0) {
-            countOfdigitsame++
-            t *= 10
-        }
-        countOfdigits += countOfdigitsame
     }
     while (countOfdigits !== n) {
         countOfdigits--
-        digit /= 10
+        number /= 10
     }
-    return digit % 10
+    return number % 10
 }
 
 /**
@@ -330,27 +322,17 @@ fun squareSequenceDigit(n: Int): Int {
  * Использовать операции со строками в этой задаче запрещается.
  */
 fun fibSequenceDigit(n: Int): Int {
-    var countOFdigits = 0
-    var countOFdigitsame: Int
-    var digit = 0
-    var i = 0
-    var t: Int
-    while (countOFdigits < n) {
+    var i = 2
+    var number = 1
+    var countOfdigits = 1
+    while (countOfdigits < n) {
+        number = fib(i)
+        countOfdigits += digitNumber(number)
         i++
-        digit = fib(i)
-        countOFdigitsame = 1
-        t = 10
-        while (digit / t !== 0) {
-            countOFdigitsame++
-            t *= 10
-        }
-        countOFdigits += countOFdigitsame
     }
-    if (countOFdigits > n) {
-        while (countOFdigits !== n) {
-            countOFdigits--
-            digit /= 10
-        }
+    while (countOfdigits !== n) {
+        countOfdigits--
+        number /= 10
     }
-    return digit % 10
+    return number % 10
 }
