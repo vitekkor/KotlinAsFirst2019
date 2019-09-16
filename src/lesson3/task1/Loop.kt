@@ -201,19 +201,34 @@ fun collatzSteps(x: Int): Int {
  * Подумайте, как добиться более быстрой сходимости ряда при больших значениях x.
  * Использовать kotlin.math.sin и другие стандартные реализации функции синуса в этой задаче запрещается.
  */
-fun sin(x: Double, eps: Double): Double {
-    var result = 0.0
-    var i = 1
-    var ii = 0
+fun findCoSin(x: Double, eps: Double, sin_cos: Int): Double {
     var xx: Double
+    var result = 0.0
+    var arg = x
+    var i = 1
+    var sign = 1
+    if (sin_cos == 1) {
+        arg = 1.0
+        i = 0
+    }
     do {
-        xx = if (x / PI % 2 == 0.0) PI.pow(i) / factorial(i) else x.pow(i) / factorial(i)
-        if (ii % 2 == 0) result += xx else
-            result -= xx
-        ii++
+        xx = arg / factorial(i)
+        arg *= sqr(x)
+        result += sign * xx
+        sign *= -1
         i += 2
-    } while ((abs(xx)) > eps)
+    } while (abs(xx) > eps)
     return result
+}
+fun sin(x: Double, eps: Double): Double {
+    var xx = x
+    while (xx > 2 * PI) {
+        xx -= 2 * PI
+    }
+    while (xx < 2 * PI) {
+        xx += 2 * PI
+    }
+    return findCoSin(xx, eps, 0)
 }
 
 /**
@@ -226,18 +241,14 @@ fun sin(x: Double, eps: Double): Double {
  * Использовать kotlin.math.cos и другие стандартные реализации функции косинуса в этой задаче запрещается.
  */
 fun cos(x: Double, eps: Double): Double {
-    var result = 0.0
-    var i = 0
-    var ii = 1
-    var xx: Double
-    do {
-        xx = if (x / PI % 2 == 0.0) PI.pow(i) / factorial(i) else -x.pow(i) / factorial(i)
-        if (ii % 2 == 0) result += xx else
-            result -= xx
-        ii++
-        i += 2
-    } while ((abs(xx)) > eps)
-    return result
+    var xx = x
+    while (xx > 2 * PI) {
+        xx -= 2 * PI
+    }
+    while (xx < 2 * PI) {
+        xx += 2 * PI
+    }
+    return findCoSin(xx, eps, 1)
 }
 
 /**
