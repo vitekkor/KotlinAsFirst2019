@@ -230,7 +230,25 @@ fun factorize(n: Int): List<Int> {
  * Результат разложения вернуть в виде строки, например 75 -> 3*5*5
  * Множители в результирующей строке должны располагаться по возрастанию.
  */
-fun factorizeToString(n: Int): String = factorize(n).joinToString(separator = "*")
+fun factorizeToString(n: Int): String {
+    var nn = n
+    var result = ""
+    if (isPrime(n)) result += n else {
+        while (nn % 2 == 0) {
+            result += 2
+            nn /= 2
+            if (nn > 1) result += "*"
+        }
+        for (i in 3..n / 2 step 2) {
+            if (isPrime(i)) while (nn % i == 0) {
+                result += i
+                nn /= i
+                if (nn > 1) result += "*"
+            }
+        }
+    }
+    return result
+}
 
 /**
  * Средняя
@@ -242,10 +260,11 @@ fun factorizeToString(n: Int): String = factorize(n).joinToString(separator = "*
 fun convert(n: Int, base: Int): List<Int> {
     var nn = n
     val result = mutableListOf<Int>()
-    while (nn > -1) {
+    while (nn > 0) {
         result.add(0, nn % base)
         nn /= base
     }
+    if (n == 0) result.add(0, 0)
     return result
 }
 
