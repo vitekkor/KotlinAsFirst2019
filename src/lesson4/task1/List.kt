@@ -254,12 +254,13 @@ fun convert(n: Int, base: Int): List<Int> {
  * Использовать функции стандартной библиотеки, напрямую и полностью решающие данную задачу
  * (например, n.toString(base) и подобные), запрещается.
  */
-fun returnDigit(digit: Int): String {
+fun returnWord(digit: Int): String {
     val alphabet = "abcdefghijklmnopqrstuvwxyz"
     var result = ""
     if (digit > 9) result += alphabet[digit - 10] else result = "$digit"
     return result
 }
+
 fun revertString(string: String): String {
     var result = ""
     for (i in string.length - 1 downTo 0) {
@@ -274,7 +275,7 @@ fun convertToString(n: Int, base: Int): String {
     var result = ""
     while (nn > 0) {
         division = nn % base
-        result += returnDigit(division)
+        result += returnWord(division)
         nn /= base
     }
     if (n == 0) result = "0"
@@ -310,7 +311,24 @@ fun decimal(digits: List<Int>, base: Int): Int {
  * Использовать функции стандартной библиотеки, напрямую и полностью решающие данную задачу
  * (например, str.toInt(base)), запрещается.
  */
-fun decimalFromString(str: String, base: Int): Int = TODO()
+fun returnDigit(Word: Char): Int {
+    val alphabet = "abcdefghijklmnopqrstuvwxyz"
+    val digits = "0123456789"
+    var result = -1
+    result = if (Word.toInt() in 48..57) digits.indexOf(Word, 0) else
+        alphabet.indexOf(Word, 0) + 10
+    return result
+}
+
+fun decimalFromString(str: String, base: Int): Int {
+    var t = 0
+    var result = 0
+    for (i in str.length - 1 downTo 0) {
+        result += returnDigit(str[i]) * ((base.toDouble()).pow(t)).toInt()
+        t++
+    }
+    return result
+}
 
 /**
  * Сложная
