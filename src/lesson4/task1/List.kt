@@ -5,6 +5,7 @@ package lesson4.task1
 import lesson1.task1.discriminant
 import lesson1.task1.sqr
 import lesson3.task1.isPrime
+import lesson3.task1.minDivisor
 import kotlin.math.*
 
 /**
@@ -208,17 +209,9 @@ fun accumulate(list: MutableList<Int>): MutableList<Int> {
 fun factorize(n: Int): List<Int> {
     var nn = n
     var result = listOf<Int>()
-    if (isPrime(n)) result += n else {
-        while (nn % 2 == 0) {
-            result += 2
-            nn /= 2
-        }
-        for (i in 3..n / 2 step 2) {
-            if (isPrime(i)) while (nn % i == 0) {
-                result += i
-                nn /= i
-            }
-        }
+    while (nn > 1) {
+        result += minDivisor(nn)
+        nn /= minDivisor(nn)
     }
     return result
 }
@@ -230,25 +223,7 @@ fun factorize(n: Int): List<Int> {
  * Результат разложения вернуть в виде строки, например 75 -> 3*5*5
  * Множители в результирующей строке должны располагаться по возрастанию.
  */
-fun factorizeToString(n: Int): String {
-    var nn = n
-    var result = ""
-    if (isPrime(n)) result += n else {
-        while (nn % 2 == 0) {
-            result += 2
-            nn /= 2
-            if (nn > 1) result += "*"
-        }
-        for (i in 3..n / 2 step 2) {
-            if (isPrime(i)) while (nn % i == 0) {
-                result += i
-                nn /= i
-                if (nn > 1) result += "*"
-            }
-        }
-    }
-    return result
-}
+fun factorizeToString(n: Int): String = factorize(n).joinToString(separator = "*")
 
 /**
  * Средняя
@@ -279,7 +254,32 @@ fun convert(n: Int, base: Int): List<Int> {
  * Использовать функции стандартной библиотеки, напрямую и полностью решающие данную задачу
  * (например, n.toString(base) и подобные), запрещается.
  */
-fun convertToString(n: Int, base: Int): String = TODO()
+fun returnDigit(digit: Int): String {
+    val alphabet = "abcdefghijklmnopqrstuvwxyz"
+    var result = ""
+    if (digit > 9) result += alphabet[digit - 10] else result = "$digit"
+    return result
+}
+fun revertString(string: String): String {
+    var result = ""
+    for (i in string.length - 1 downTo 0) {
+        result += string[i]
+    }
+    return result
+}
+
+fun convertToString(n: Int, base: Int): String {
+    var nn = n
+    var division: Int
+    var result = ""
+    while (nn > 0) {
+        division = nn % base
+        result += returnDigit(division)
+        nn /= base
+    }
+    if (n == 0) result = "0"
+    return revertString(result)
+}
 
 /**
  * Средняя
