@@ -335,7 +335,34 @@ fun decimalFromString(str: String, base: Int): Int {
  * 90 = XC, 100 = C, 400 = CD, 500 = D, 900 = CM, 1000 = M.
  * Например: 23 = XXIII, 44 = XLIV, 100 = C
  */
-fun roman(n: Int): String = TODO()
+fun rim(number: Char, position: Int): String {
+    val about10 = listOf("I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX")
+    val about100 = listOf("X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC")
+    val about1000 = listOf("C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM")
+    val notAbout1000 = "M"
+    val digit = number.toInt() - 49
+    return if (digit > -1) when (position) {
+        1 -> about10[digit]
+        2 -> about100[digit]
+        3 -> about1000[digit]
+        else -> {
+            var preResult = ""
+            for (i in 0..digit) {
+                preResult += notAbout1000
+            }
+            preResult
+        }
+    } else "-1"
+}
+
+fun roman(n: Int): String {
+    var nn = n.toString()
+    var answer = ""
+    for (i in nn.indices) {
+        if (rim(nn[i], nn.length - i) != "-1") answer += rim(nn[i], nn.length - i) else continue
+    }
+    return answer
+}
 
 /**
  * Очень сложная
@@ -344,35 +371,109 @@ fun roman(n: Int): String = TODO()
  * Например, 375 = "триста семьдесят пять",
  * 23964 = "двадцать три тысячи девятьсот шестьдесят четыре"
  */
-fun takeDigit(num: Int, next: Int, category: Int): String {
-    val less10 = listOf("нидо", "авд", "ирт", "ерытеч", "ьтяп", "ьтсеш", "ьмес", "ьмесов", "ьтявед")
-    val less20 = listOf(
-        "ьтясед", "ьтацданнидо", "ьтацданевд", "ьтацданирт", "ьтацданрытеч", "ьтацдантяп", "ьтацдантсеш",
-        "ььтацданмес", "ьтацданмесов", "ьтацдантявед"
+fun takeDigit(num: Char, next: Int, category: Int): String {
+    val less10 = listOf("один ", "два ", "три ", "четыре ", "пять ", "шесть ", "семь ", "восемь ", "девять ")
+    val exclusion = listOf(
+        "десять ",
+        "одиннадцать ",
+        "двенадцать ",
+        "тринадцать ",
+        "цетырнадцать ",
+        "пятнадцать ",
+        "шестнадцать ",
+        "семнадцать ",
+        "восемнадцать ",
+        "девятнадцать "
     )
     val less100 =
-        listOf("ьтацдавд", "ьтацдирт", "корос", "тяседьтяп", "тяседьтсеш", "тяседьмес", "тяседьмесов", "отсонявед")
+        listOf(
+            "",
+            "двадцать ",
+            "тридцать ",
+            "сорок ",
+            "пятьдесят ",
+            "шестьдесят ",
+            "семьдесят ",
+            "восемьдесят ",
+            "девяносто "
+        )
     val less1000 =
-        listOf("отс", "итсевд", "атсирт", "атсерытеч", "тосьтяп", "тосьтсеш", "тосьмес", "тосьмесов", "тосьтявед")
-    val thousand = listOf("андо", "евд", "ирт", "ерытеч", "ьтяп", "ьтсеш", "ьмес", "ьмесов", "ьтявед")
-    when (category) {
-        1 -> return if (next != 1) if (num != 0) less10[num - 1] else less100[next - 2] else less20[num]
-        10 -> return less100[num - 2]
-        100 -> return less1000[num]
-        else -> return "0"
-    }
+        listOf(
+            "сто ",
+            "двести ",
+            "триста ",
+            "четыреста ",
+            "пятьсот ",
+            "шетьсот ",
+            "семьсот ",
+            "восемсот ",
+            "девятьсот "
+        )
+    val more1000 = listOf(
+        "одна тысяча ",
+        "две тысячи ",
+        "три тысячи ",
+        "четыре тысячи ",
+        "пять тысяч ",
+        "шеть тысяч ",
+        "семь тысяч ",
+        "восемь тысяч ",
+        "девять тысяч "
+    )
+    val digit = num.toInt() - 49
+    return if (digit > -1) when (category) {
+        1 -> less10[digit]
+        2 -> if (digit > 0) less100[digit] else exclusion[next]
+        3 -> less1000[digit]
+        else -> more1000[digit]
+    } else "-1"
 }
 
+fun nn1exist(str: String): String {
+    var result = ""
+    var wantContinue = false
+    var next: Int
+    for (i in str.indices) {
+        if (wantContinue) {
+            wantContinue = false
+            continue
+        }
+        next = if (i == str.length - 1) -1 else str[i + 1].toInt() - 48
+        if (str[i] == '1' && i + 2 == str.length) wantContinue = true
+        if (takeDigit(str[i], next, str.length - i) != "-1") result += takeDigit(
+            str[i],
+            next,
+            str.length - i
+        ) else continue
+    }
+    if (str.last().toInt() - 48 == 2) result = result.substring(0, result.length - 2) + "е "
+    result += when (str.last().toInt() - 48) {
+        1 -> "тысяча "
+        in 2..4 -> "тысячи "
+        else -> "тысяч "
+    }
+    return result
+}
 
-fun russian(n: Int): String = TODO()
-/**{
-var t = 1
-var digit: Int
-var result = ""
-var nn = n
-do {
-digit = nn % 10
-result += takeDigit(digit, nn / 10 % 10, t)
-} while (nn > 0)
-return "11"
-}*/
+fun russian(n: Int): String {
+    var nn: String
+    var nn1 = ""
+    var answer = ""
+    var next: Int
+    var wantContinue = false
+    if (n > 10000) {
+        nn1 = (n / 1000).toString()
+        nn = (n % 1000).toString()
+    } else nn = n.toString()
+    if (nn1 != "") answer += nn1exist(nn1)
+    for (i in nn.indices) {
+        if (wantContinue) {
+            wantContinue = false
+            continue
+        }
+        next = if (i == nn.length - 1) -1 else nn[i + 1].toInt() - 48
+        if (nn[i] == '1' && i + 2 == nn.length) wantContinue = true
+        if (takeDigit(nn[i], next, nn.length - i) != "-1") answer += takeDigit(nn[i], next, nn.length - i) else continue
+    }
+    return answer.substring(0, answer.length-1)
+}
