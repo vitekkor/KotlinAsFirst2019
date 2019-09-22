@@ -406,7 +406,7 @@ fun takeDigit(num: Char, next: Int, category: Int): String {
             "пятьсот ",
             "шетьсот ",
             "семьсот ",
-            "восемсот ",
+            "восемьсот ",
             "девятьсот "
         )
     val more1000 = listOf(
