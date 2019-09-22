@@ -446,7 +446,10 @@ fun nn1exist(str: String): String {
             str.length - i
         ) else continue
     }
-    if (str.last().toInt() - 48 == 2) result = result.substring(0, result.length - 2) + "е "
+    when (str.last().toInt() - 48) {
+        1 -> result = result.substring(0, result.length - 2) + "а "
+        2 -> result = result.substring(0, result.length - 2) + "е "
+    }
     result += when (str.last().toInt() - 48) {
         1 -> "тысяча "
         in 2..4 -> "тысячи "
