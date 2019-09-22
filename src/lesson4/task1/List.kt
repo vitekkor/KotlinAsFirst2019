@@ -313,7 +313,7 @@ fun decimal(digits: List<Int>, base: Int): Int {
 fun returnDigit(Word: Char): Int {
     val alphabet = "abcdefghijklmnopqrstuvwxyz"
     val digits = "0123456789"
-    var result: Int
+    val result: Int
     result = if (Word.toInt() in 48..57) digits.indexOf(Word, 0) else
         alphabet.indexOf(Word, 0) + 10
     return result
@@ -356,7 +356,7 @@ fun rim(number: Char, position: Int): String {
 }
 
 fun roman(n: Int): String {
-    var nn = n.toString()
+    val nn = n.toString()
     var answer = ""
     for (i in nn.indices) {
         if (rim(nn[i], nn.length - i) != "-1") answer += rim(nn[i], nn.length - i) else continue
@@ -456,7 +456,7 @@ fun nn1exist(str: String): String {
 }
 
 fun russian(n: Int): String {
-    var nn: String
+    val nn: String
     var nn1 = ""
     var answer = ""
     var next: Int
@@ -475,5 +475,5 @@ fun russian(n: Int): String {
         if (nn[i] == '1' && i + 2 == nn.length) wantContinue = true
         if (takeDigit(nn[i], next, nn.length - i) != "-1") answer += takeDigit(nn[i], next, nn.length - i) else continue
     }
-    return answer.substring(0, answer.length-1)
+    return answer.substring(0, answer.length - 1)
 }
