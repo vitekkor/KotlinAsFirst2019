@@ -429,7 +429,7 @@ fun takeDigit(num: Char, next: Int, category: Int): String {
     } else "-1"
 }
 
-fun nn1exist(str: String): String {
+fun nn1exist(str: String, Notnn: Int): String {
     var result = ""
     var wantContinue = false
     var next: Int
@@ -446,14 +446,16 @@ fun nn1exist(str: String): String {
             str.length - i
         ) else continue
     }
-    when (str.last().toInt() - 48) {
-        1 -> result = result.substring(0, result.length - 3) + "на "
-        2 -> result = result.substring(0, result.length - 2) + "е "
-    }
-    result += when (str.last().toInt() - 48) {
-        1 -> "тысяча "
-        in 2..4 -> "тысячи "
-        else -> "тысяч "
+    if (Notnn == 1) {
+        when (str.last().toInt() - 48) {
+            1 -> result = result.substring(0, result.length - 3) + "на "
+            2 -> result = result.substring(0, result.length - 2) + "е "
+        }
+        result += when (str.last().toInt() - 48) {
+            1 -> "тысяча "
+            in 2..4 -> "тысячи "
+            else -> "тысяч "
+        }
     }
     return result
 }
@@ -462,21 +464,11 @@ fun russian(n: Int): String {
     val nn: String
     var nn1 = ""
     var answer = ""
-    var next: Int
-    var wantContinue = false
     if (n > 10000) {
         nn1 = (n / 1000).toString()
         nn = (n % 1000).toString()
     } else nn = n.toString()
-    if (nn1 != "") answer += nn1exist(nn1)
-    for (i in nn.indices) {
-        if (wantContinue) {
-            wantContinue = false
-            continue
-        }
-        next = if (i == nn.length - 1) -1 else nn[i + 1].toInt() - 48
-        if (nn[i] == '1' && i + 2 == nn.length) wantContinue = true
-        if (takeDigit(nn[i], next, nn.length - i) != "-1") answer += takeDigit(nn[i], next, nn.length - i) else continue
-    }
+    if (nn1 != "") answer += nn1exist(nn1, 1)
+    answer += nn1exist(nn, 0)
     return answer.substring(0, answer.length - 1)
 }
