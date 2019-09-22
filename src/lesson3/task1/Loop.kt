@@ -74,7 +74,7 @@ fun digitNumber(n: Int): Int {
     do {
         m /= 10
         count++
-    } while (m !== 0)
+    } while (m != 0)
     return count
 }
 
@@ -107,8 +107,8 @@ fun fib(n: Int): Int {
 fun lcm(m: Int, n: Int): Int {
     var x = m
     var y = n
-    while (x !== 0 && y !== 0) {
-        if (x > y) x = x % y else y = y % x
+    while (x != 0 && y != 0) {
+        if (x > y) x %= y else y %= x
     }
     return m * n / (x + y)
 }
@@ -185,7 +185,7 @@ fun squareBetweenExists(m: Int, n: Int): Boolean {
 fun collatzSteps(x: Int): Int {
     var count = 0
     var y = x
-    while (y !== 1) {
+    while (y != 1) {
         count++
         if (y % 2 == 0) y /= 2 else y = y * 3 + 1
     }
@@ -220,6 +220,7 @@ fun findCoSin(x: Double, eps: Double, sin_cos: Int): Double {
     } while (abs(xx) > eps)
     return result
 }
+
 fun sin(x: Double, eps: Double): Double {
     var xx = x
     while (xx > 2 * PI) {
@@ -291,8 +292,8 @@ fun hasDifferentDigits(n: Int): Boolean {
     val digit = n % 10
     var nn = n
     nn /= 10
-    while (nn !== 0) {
-        if (nn % 10 !== digit) return true
+    while (nn != 0) {
+        if (nn % 10 != digit) return true
         nn /= 10
     }
     return nn != 0
@@ -316,7 +317,7 @@ fun squareSequenceDigit(n: Int): Int {
         countOfdigits += digitNumber(number)
         i++
     }
-    while (countOfdigits !== n) {
+    while (countOfdigits != n) {
         countOfdigits--
         number /= 10
     }
@@ -341,7 +342,7 @@ fun fibSequenceDigit(n: Int): Int {
         countOfdigits += digitNumber(number)
         i++
     }
-    while (countOfdigits !== n) {
+    while (countOfdigits != n) {
         countOfdigits--
         number /= 10
     }

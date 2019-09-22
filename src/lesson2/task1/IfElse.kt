@@ -160,9 +160,10 @@ fun triangleKind(a: Double, b: Double, c: Double): Int {
         (a == side1 && c == side2) || (a == side2 && c == side1) -> b
         else -> a
     }
-    return if ((a < b + c) && (b < a + c) && (c < a + b)) when {
-        (sqr(side1) == sqr(side2) + sqr(side3)) -> 1
-        ((sqr(side2) + sqr(side3) - sqr(side1)) / 2 / side2 / side3 < 0) -> 2
+    val squad = (sqr(side2) + sqr(side3) - sqr(side1)) / 2 / side2 / side3
+    return if ((a < b + c) && (b < a + c) && (c < a + b)) when (squad) {
+        0.0 -> 1
+        in (-1.0 * Double.MAX_VALUE)..0.0 -> 2
         else -> 0
     } else -1
 }

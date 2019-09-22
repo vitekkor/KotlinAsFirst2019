@@ -4,7 +4,6 @@ package lesson4.task1
 
 import lesson1.task1.discriminant
 import lesson1.task1.sqr
-import lesson3.task1.isPrime
 import lesson3.task1.minDivisor
 import kotlin.math.*
 
@@ -314,18 +313,16 @@ fun decimal(digits: List<Int>, base: Int): Int {
 fun returnDigit(Word: Char): Int {
     val alphabet = "abcdefghijklmnopqrstuvwxyz"
     val digits = "0123456789"
-    var result = -1
+    var result: Int
     result = if (Word.toInt() in 48..57) digits.indexOf(Word, 0) else
         alphabet.indexOf(Word, 0) + 10
     return result
 }
 
 fun decimalFromString(str: String, base: Int): Int {
-    var t = 0
     var result = 0
-    for (i in str.length - 1 downTo 0) {
+    for ((t, i) in (str.length - 1 downTo 0).withIndex()) {
         result += returnDigit(str[i]) * ((base.toDouble()).pow(t)).toInt()
-        t++
     }
     return result
 }
@@ -347,4 +344,35 @@ fun roman(n: Int): String = TODO()
  * Например, 375 = "триста семьдесят пять",
  * 23964 = "двадцать три тысячи девятьсот шестьдесят четыре"
  */
+fun takeDigit(num: Int, next: Int, category: Int): String {
+    val less10 = listOf("нидо", "авд", "ирт", "ерытеч", "ьтяп", "ьтсеш", "ьмес", "ьмесов", "ьтявед")
+    val less20 = listOf(
+        "ьтясед", "ьтацданнидо", "ьтацданевд", "ьтацданирт", "ьтацданрытеч", "ьтацдантяп", "ьтацдантсеш",
+        "ььтацданмес", "ьтацданмесов", "ьтацдантявед"
+    )
+    val less100 =
+        listOf("ьтацдавд", "ьтацдирт", "корос", "тяседьтяп", "тяседьтсеш", "тяседьмес", "тяседьмесов", "отсонявед")
+    val less1000 =
+        listOf("отс", "итсевд", "атсирт", "атсерытеч", "тосьтяп", "тосьтсеш", "тосьмес", "тосьмесов", "тосьтявед")
+    val thousand = listOf("андо", "евд", "ирт", "ерытеч", "ьтяп", "ьтсеш", "ьмес", "ьмесов", "ьтявед")
+    when (category) {
+        1 -> return if (next != 1) if (num != 0) less10[num - 1] else less100[next - 2] else less20[num]
+        10 -> return less100[num - 2]
+        100 -> return less1000[num]
+        else -> return "0"
+    }
+}
+
+
 fun russian(n: Int): String = TODO()
+/**{
+var t = 1
+var digit: Int
+var result = ""
+var nn = n
+do {
+digit = nn % 10
+result += takeDigit(digit, nn / 10 % 10, t)
+} while (nn > 0)
+return "11"
+}*/
