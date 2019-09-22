@@ -447,7 +447,7 @@ fun nn1exist(str: String): String {
         ) else continue
     }
     when (str.last().toInt() - 48) {
-        1 -> result = result.substring(0, result.length - 2) + "а "
+        1 -> result = result.substring(0, result.length - 3) + "на "
         2 -> result = result.substring(0, result.length - 2) + "е "
     }
     result += when (str.last().toInt() - 48) {
