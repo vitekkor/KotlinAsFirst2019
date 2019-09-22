@@ -447,15 +447,17 @@ fun nn1exist(str: String, Notnn: Int): String {
         ) else continue
     }
     if (Notnn == 1) {
-        when (str.last().toInt() - 48) {
-            1 -> result = result.substring(0, result.length - 3) + "на "
-            2 -> result = result.substring(0, result.length - 2) + "е "
-        }
-        result += when (str.last().toInt() - 48) {
-            1 -> "тысяча "
-            in 2..4 -> "тысячи "
-            else -> "тысяч "
-        }
+        if (str.length > 1) if (str[(str.length - 2)].toInt() != 49) {
+            when (str.last().toInt() - 48) {
+                1 -> result = result.substring(0, result.length - 3) + "на "
+                2 -> result = result.substring(0, result.length - 2) + "е "
+            }
+            result += when (str.last().toInt() - 48) {
+                1 -> "тысяча "
+                in 2..4 -> "тысячи "
+                else -> "тысяч "
+            }
+        } else result += "тысяч "
     }
     return result
 }
