@@ -130,13 +130,7 @@ fun minDivisor(n: Int): Int {
  *
  * Для заданного числа n > 1 найти максимальный делитель, меньший n
  */
-fun maxDivisor(n: Int): Int {
-    var result = 1
-    for (i in 2 until n) {
-        if (n % i == 0) result = i
-    }
-    return result
-}
+fun maxDivisor(n: Int): Int = if (isPrime(n)) 1 else n / minDivisor(n)
 
 /**
  * Простая
