@@ -66,13 +66,12 @@ fun minBiRoot(a: Double, b: Double, c: Double): Double {
  * Мой возраст. Для заданного 0 < n < 200, рассматриваемого как возраст человека,
  * вернуть строку вида: «21 год», «32 года», «12 лет».
  */
-fun ageDescription(age: Int): String = if (age in 10..20 || age in 110..120) "$age лет" else
-    when {
-        age % 10 in 2..4 -> "$age года"
-        age % 10 in 5..9 -> "$age лет"
-        age % 10 == 1 -> "$age год"
-        else -> "$age лет"
-    }
+fun ageDescription(age: Int): String = when {
+    age in 10..20 || age in 110..120 || age % 10 in 5..9 -> "$age лет"
+    age % 10 in 2..4 -> "$age года"
+    age % 10 == 1 -> "$age год"
+    else -> "$age лет"
+}
 
 
 /**
@@ -112,7 +111,7 @@ fun whichRookThreatens(
     val rook1 = kingX == rookX1 || kingY == rookY1
     val rook2 = kingX == rookX2 || kingY == rookY2
     return when {
-        rook1 and rook2 -> 3
+        rook1 && rook2 -> 3
         rook1 -> 1
         rook2 -> 2
         else -> 0
@@ -137,7 +136,7 @@ fun rookOrBishopThreatens(
     val rook = kingX == rookX || kingY == rookY
     val bishop = abs(kingX - bishopX) == abs(kingY - bishopY)
     return when {
-        rook and bishop -> 3
+        rook && bishop -> 3
         rook -> 1
         bishop -> 2
         else -> 0
@@ -157,11 +156,14 @@ fun triangleKind(a: Double, b: Double, c: Double): Int {
     val side2 = minOf(a, b, c)
     val side3 = a + b + c - side1 - side2
     val squad = (sqr(side2) + sqr(side3) - sqr(side1)) / 2 / side2 / side3
-    return if ((a < b + c) && (b < a + c) && (c < a + b)) when (squad) {
-        0.0 -> 1
-        in (-1.0 * Double.MAX_VALUE)..0.0 -> 2
+    if ((a >= b + c) || (b >= a + c) || (c >= a + b)) {
+        return -1
+    }
+    return when {
+        squad == 0.0 -> 1
+        squad < 0.0 -> 2
         else -> 0
-    } else -1
+    }
 }
 
 /**
