@@ -139,7 +139,7 @@ fun maxDivisor(n: Int): Int = if (isPrime(n)) 1 else n / minDivisor(n)
  * Взаимно простые числа не имеют общих делителей, кроме 1.
  * Например, 25 и 49 взаимно простые, а 6 и 8 -- нет.
  */
-fun isCoPrime(m: Int, n: Int): Boolean = max(m, n) % minDivisor(min(m, n)) != 0
+fun isCoPrime(m: Int, n: Int): Boolean = (isPrime(m) and isPrime(n)) or (max(m, n) % minDivisor(min(m, n)) != 0)
 
 /**
  * Простая
@@ -210,16 +210,14 @@ fun findCoSin(x: Double, eps: Double, sin_cos: Int): Double {
     return result
 }
 
-fun sin(x: Double, eps: Double): Double {
-    var xx = x
-    while (xx > 2 * PI) {
-        xx -= 2 * PI
-    }
-    while (xx < 2 * PI) {
-        xx += 2 * PI
-    }
-    return findCoSin(xx, eps, 0)
+fun toPi(arg: Double): Double {
+    var xx = arg
+    if (xx > 2 * PI) xx -= 2 * PI * round(xx / (2 * PI))
+    if (xx < -2 * PI) xx += 2 * PI * round(abs(xx) / (2 * PI))
+    return xx
 }
+
+fun sin(x: Double, eps: Double): Double = findCoSin(toPi(x), eps, 0)
 
 /**
  * Средняя
@@ -230,16 +228,7 @@ fun sin(x: Double, eps: Double): Double {
  * Подумайте, как добиться более быстрой сходимости ряда при больших значениях x.
  * Использовать kotlin.math.cos и другие стандартные реализации функции косинуса в этой задаче запрещается.
  */
-fun cos(x: Double, eps: Double): Double {
-    var xx = x
-    while (xx > 2 * PI) {
-        xx -= 2 * PI
-    }
-    while (xx < 2 * PI) {
-        xx += 2 * PI
-    }
-    return findCoSin(xx, eps, 1)
-}
+fun cos(x: Double, eps: Double): Double = findCoSin(toPi(x), eps, 1)
 
 /**
  * Средняя
@@ -297,16 +286,18 @@ fun hasDifferentDigits(n: Int): Boolean {
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun squareSequenceDigit(n: Int): Int {
+fun squareSequenceDigit(n: Int): Int = SequenceDigit(n, 0)
+
+fun SequenceDigit(num: Int, sqfib: Int): Int {
     var i = 2
     var number = 1
     var countOfdigits = 1
-    while (countOfdigits < n) {
-        number = i * i
+    while (countOfdigits < num) {
+        number = if (sqfib == 0) i * i else fib(i)
         countOfdigits += digitNumber(number)
         i++
     }
-    while (countOfdigits != n) {
+    while (countOfdigits != num) {
         countOfdigits--
         number /= 10
     }
@@ -322,18 +313,4 @@ fun squareSequenceDigit(n: Int): Int {
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun fibSequenceDigit(n: Int): Int {
-    var i = 2
-    var number = 1
-    var countOfdigits = 1
-    while (countOfdigits < n) {
-        number = fib(i)
-        countOfdigits += digitNumber(number)
-        i++
-    }
-    while (countOfdigits != n) {
-        countOfdigits--
-        number /= 10
-    }
-    return number % 10
-}
+fun fibSequenceDigit(n: Int): Int = SequenceDigit(n, 1)
