@@ -85,15 +85,13 @@ fun digitNumber(n: Int): Int {
  * Ряд Фибоначчи определён следующим образом: fib(1) = 1, fib(2) = 1, fib(n+2) = fib(n) + fib(n+1)
  */
 fun fib(n: Int): Int {
-    var i = 0
     var sumFib: Int
-    var fib1 = 1
+    var fib1 = 0
     var fib2 = 1
-    while (i < n - 2) {
+    for (i in 0..n - 2) {
         sumFib = fib1 + fib2
         fib1 = fib2
         fib2 = sumFib
-        i++
     }
     return fib2
 }
@@ -148,12 +146,7 @@ fun isCoPrime(m: Int, n: Int): Boolean = m * n / lcm(m, n) == 1
  * то есть, существует ли такое целое k, что m <= k*k <= n.
  * Например, для интервала 21..28 21 <= 5*5 <= 28, а для интервала 51..61 квадрата не существует.
  */
-fun squareBetweenExists(m: Int, n: Int): Boolean {
-    for (i in m..n) {
-        if (round(sqrt(i.toDouble())) == sqrt(i.toDouble())) return true
-    }
-    return false
-}
+fun squareBetweenExists(m: Int, n: Int): Boolean = ceil(sqrt(m.toDouble())) == floor(sqrt(n.toDouble()))
 
 /**
  * Средняя
@@ -190,13 +183,13 @@ fun collatzSteps(x: Int): Int {
  * Подумайте, как добиться более быстрой сходимости ряда при больших значениях x.
  * Использовать kotlin.math.sin и другие стандартные реализации функции синуса в этой задаче запрещается.
  */
-fun findCoSin(x: Double, eps: Double, sin_cos: Int): Double {
+fun findCoSin(x: Double, eps: Double, sinOrCos: Boolean): Double {
     var xx: Double
     var result = 0.0
     var arg = x
     var i = 1
     var sign = 1
-    if (sin_cos == 1) {
+    if (sinOrCos) {
         arg = 1.0
         i = 0
     }
@@ -210,14 +203,7 @@ fun findCoSin(x: Double, eps: Double, sin_cos: Int): Double {
     return result
 }
 
-fun toPi(arg: Double): Double {
-    var xx = arg
-    if (xx > 2 * PI) xx -= 2 * PI * round(xx / (2 * PI))
-    if (xx < -2 * PI) xx += 2 * PI * round(abs(xx) / (2 * PI))
-    return xx
-}
-
-fun sin(x: Double, eps: Double): Double = findCoSin(toPi(x), eps, 0)
+fun sin(x: Double, eps: Double): Double = findCoSin(x % (2 * PI), eps, false)
 
 /**
  * Средняя
@@ -228,7 +214,7 @@ fun sin(x: Double, eps: Double): Double = findCoSin(toPi(x), eps, 0)
  * Подумайте, как добиться более быстрой сходимости ряда при больших значениях x.
  * Использовать kotlin.math.cos и другие стандартные реализации функции косинуса в этой задаче запрещается.
  */
-fun cos(x: Double, eps: Double): Double = findCoSin(toPi(x), eps, 1)
+fun cos(x: Double, eps: Double): Double = findCoSin(x % (2 * PI), eps, true)
 
 /**
  * Средняя
@@ -286,14 +272,14 @@ fun hasDifferentDigits(n: Int): Boolean {
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun squareSequenceDigit(n: Int): Int = SequenceDigit(n, 0)
+fun squareSequenceDigit(n: Int): Int = returnDigit(n, true)
 
-fun SequenceDigit(num: Int, sqfib: Int): Int {
+fun returnDigit(num: Int, sqOrFib: Boolean): Int {
     var i = 2
     var number = 1
     var countOfdigits = 1
     while (countOfdigits < num) {
-        number = if (sqfib == 0) i * i else fib(i)
+        number = if (sqOrFib) i * i else fib(i)
         countOfdigits += digitNumber(number)
         i++
     }
@@ -313,4 +299,4 @@ fun SequenceDigit(num: Int, sqfib: Int): Int {
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun fibSequenceDigit(n: Int): Int = SequenceDigit(n, 1)
+fun fibSequenceDigit(n: Int): Int = returnDigit(n, false)
