@@ -207,9 +207,9 @@ fun accumulate(list: MutableList<Int>): MutableList<Int> {
  */
 fun factorize(n: Int): List<Int> {
     var nn = n
-    var result = listOf<Int>()
+    val result = mutableListOf<Int>()
     while (nn > 1) {
-        result += minDivisor(nn)
+        result.add(minDivisor(nn))
         nn /= minDivisor(nn)
     }
     return result
@@ -233,12 +233,18 @@ fun factorizeToString(n: Int): String = factorize(n).joinToString(separator = "*
  */
 fun convert(n: Int, base: Int): List<Int> {
     var nn = n
+    var tmp: Int
     val result = mutableListOf<Int>()
     while (nn > 0) {
-        result.add(0, nn % base)
+        result.add(nn % base)
         nn /= base
     }
-    if (n == 0) result.add(0, 0)
+    if (n == 0) result.add(0) else
+        for (i in 0..(result.size - 1) / 2) {
+            tmp = result[i]
+            result[i] = result[result.size - 1 - i]
+            result[result.size - 1 - i] = tmp
+        }
     return result
 }
 
@@ -254,9 +260,8 @@ fun convert(n: Int, base: Int): List<Int> {
  * (например, n.toString(base) и подобные), запрещается.
  */
 fun returnWord(digit: Int): String {
-    val alphabet = "abcdefghijklmnopqrstuvwxyz"
     var result = ""
-    if (digit > 9) result += alphabet[digit - 10] else result = "$digit"
+    if (digit > 9) result += (digit + 87).toChar() else result = "$digit"
     return result
 }
 
@@ -311,12 +316,8 @@ fun decimal(digits: List<Int>, base: Int): Int {
  * (например, str.toInt(base)), запрещается.
  */
 fun returnDigit(Word: Char): Int {
-    val alphabet = "abcdefghijklmnopqrstuvwxyz"
-    val digits = "0123456789"
-    val result: Int
-    result = if (Word.toInt() in 48..57) digits.indexOf(Word, 0) else
-        alphabet.indexOf(Word, 0) + 10
-    return result
+    return if (Word.toInt() in 48..57) Word.toInt() - 48 else
+        Word.toInt() - 87
 }
 
 fun decimalFromString(str: String, base: Int): Int {
