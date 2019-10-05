@@ -255,7 +255,7 @@ fun convert(n: Int, base: Int): List<Int> {
 fun returnWord(digit: Int): String {
     var result = ""
     val alphabet = 'a' - 10
-    if (digit > 9) result += (digit + alphabet.toInt()).toChar() else result = "$digit"
+    if (digit > 9) result += alphabet + digit else result = "$digit"
     return result
 }
 
