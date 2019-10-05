@@ -190,10 +190,8 @@ fun polynom(p: List<Int>, x: Int): Int {
  * Обратите внимание, что данная функция должна изменять содержание списка list, а не его копии.
  */
 fun accumulate(list: MutableList<Int>): MutableList<Int> {
-    var sum = 0
-    for (i in 0 until list.size) {
-        sum += list[i]
-        list[i] = sum
+    for (i in 1 until list.size) {
+        list[i] += list[i - 1]
     }
     return list
 }
@@ -233,18 +231,13 @@ fun factorizeToString(n: Int): String = factorize(n).joinToString(separator = "*
  */
 fun convert(n: Int, base: Int): List<Int> {
     var nn = n
-    var tmp: Int
     val result = mutableListOf<Int>()
     while (nn > 0) {
         result.add(nn % base)
         nn /= base
     }
     if (n == 0) result.add(0) else
-        for (i in 0..(result.size - 1) / 2) {
-            tmp = result[i]
-            result[i] = result[result.size - 1 - i]
-            result[result.size - 1 - i] = tmp
-        }
+        result.reverse()
     return result
 }
 
@@ -261,15 +254,8 @@ fun convert(n: Int, base: Int): List<Int> {
  */
 fun returnWord(digit: Int): String {
     var result = ""
-    if (digit > 9) result += (digit + 87).toChar() else result = "$digit"
-    return result
-}
-
-fun revertString(string: String): String {
-    var result = ""
-    for (i in string.length - 1 downTo 0) {
-        result += string[i]
-    }
+    val alphabet = 'a'.toInt() - 10
+    if (digit > 9) result += (digit + alphabet).toChar() else result = "$digit"
     return result
 }
 
@@ -283,7 +269,7 @@ fun convertToString(n: Int, base: Int): String {
         nn /= base
     }
     if (n == 0) result = "0"
-    return revertString(result)
+    return result.reversed()
 }
 
 /**
@@ -316,8 +302,8 @@ fun decimal(digits: List<Int>, base: Int): Int {
  * (например, str.toInt(base)), запрещается.
  */
 fun returnDigit(Word: Char): Int {
-    return if (Word.toInt() in 48..57) Word.toInt() - 48 else
-        Word.toInt() - 87
+    return if (Word.isDigit()) Word.toInt() - '0'.toInt() else
+        Word.toInt() - 'a'.toInt() + 10
 }
 
 fun decimalFromString(str: String, base: Int): Int {
