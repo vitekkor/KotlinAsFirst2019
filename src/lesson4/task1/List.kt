@@ -230,14 +230,14 @@ fun factorizeToString(n: Int): String = factorize(n).joinToString(separator = "*
  * например: n = 100, base = 4 -> (1, 2, 1, 0) или n = 250, base = 14 -> (1, 3, 12)
  */
 fun convert(n: Int, base: Int): List<Int> {
+    if (n == 0) return listOf(0)
     var nn = n
     val result = mutableListOf<Int>()
     while (nn > 0) {
         result.add(nn % base)
         nn /= base
     }
-    if (n == 0) result.add(0) else
-        result.reverse()
+    result.reverse()
     return result
 }
 
@@ -254,8 +254,8 @@ fun convert(n: Int, base: Int): List<Int> {
  */
 fun returnWord(digit: Int): String {
     var result = ""
-    val alphabet = 'a'.toInt() - 10
-    if (digit > 9) result += (digit + alphabet).toChar() else result = "$digit"
+    val alphabet = 'a' - 10
+    if (digit > 9) result += (digit + alphabet.toInt()).toChar() else result = "$digit"
     return result
 }
 
@@ -301,9 +301,9 @@ fun decimal(digits: List<Int>, base: Int): Int {
  * Использовать функции стандартной библиотеки, напрямую и полностью решающие данную задачу
  * (например, str.toInt(base)), запрещается.
  */
-fun returnDigit(Word: Char): Int {
-    return if (Word.isDigit()) Word.toInt() - '0'.toInt() else
-        Word.toInt() - 'a'.toInt() + 10
+fun returnDigit(word: Char): Int {
+    return if (word.isDigit()) word - '0' else
+        word - 'a' + 10
 }
 
 fun decimalFromString(str: String, base: Int): Int {
