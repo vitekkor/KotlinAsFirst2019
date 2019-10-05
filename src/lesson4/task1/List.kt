@@ -327,7 +327,7 @@ fun rim(number: Char, position: Int): String {
     val about100 = listOf("X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC")
     val about1000 = listOf("C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM")
     val notAbout1000 = "M"
-    val digit = number.toInt() - 49
+    val digit = number - '1'
     return if (digit > -1) when (position) {
         1 -> about10[digit]
         2 -> about100[digit]
@@ -416,7 +416,7 @@ fun takeDigit(num: Char, next: Int, category: Int): String {
     } else "-1"
 }
 
-fun nn1exist(str: String, Notnn: Int): String {
+fun nn1Exist(str: String, notNN: Int): String {
     var result = ""
     var wantContinue = false
     var next: Int
@@ -425,7 +425,7 @@ fun nn1exist(str: String, Notnn: Int): String {
             wantContinue = false
             continue
         }
-        next = if (i == str.length - 1) -1 else str[i + 1].toInt() - 48
+        next = if (i == str.length - 1) -1 else str[i + 1] - '0'
         if (str[i] == '1' && i + 2 == str.length) wantContinue = true
         if (takeDigit(str[i], next, str.length - i) != "-1") result += takeDigit(
             str[i],
@@ -433,13 +433,13 @@ fun nn1exist(str: String, Notnn: Int): String {
             str.length - i
         ) else continue
     }
-    if (Notnn == 1) {
-        if (str.length > 1) if (str[(str.length - 2)].toInt() != 49) {
+    if (notNN == 1) {
+        if (str.length > 1) if (str[(str.length - 2)] != '1') {
             when (str.last().toInt() - 48) {
                 1 -> result = result.substring(0, result.length - 3) + "на "
                 2 -> result = result.substring(0, result.length - 2) + "е "
             }
-            result += when (str.last().toInt() - 48) {
+            result += when (str.last() - '0') {
                 1 -> "тысяча "
                 in 2..4 -> "тысячи "
                 else -> "тысяч "
@@ -457,7 +457,7 @@ fun russian(n: Int): String {
         nn1 = (n / 1000).toString()
         nn = (n % 1000).toString()
     } else nn = n.toString()
-    if (nn1 != "") answer += nn1exist(nn1, 1)
-    answer += nn1exist(nn, 0)
+    if (nn1 != "") answer += nn1Exist(nn1, 1)
+    answer += nn1Exist(nn, 0)
     return answer.substring(0, answer.length - 1)
 }
