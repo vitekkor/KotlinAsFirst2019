@@ -187,8 +187,13 @@ fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<S
  */
 fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Double> {
     val result = mutableMapOf<String, Double>()
+    val costs = mutableMapOf<String, Double>()
     for ((act, cost) in stockPrices) {
-        if (result[act] == null) result.put(act, cost) else result.put(act, (result[act]!! + cost) / 2.0)
+        result.put(act, (result[act] ?: 0.0) + cost)
+        costs.put(act, (costs[act] ?: 0.0) + 1.0)
+    }
+    for ((act, cost) in result) {
+        result.put(act, cost / costs[act]!!)
     }
     return result
 }
@@ -209,10 +214,10 @@ fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Doub
  *   ) -> "Мария"
  */
 fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): String? {
-    var cheaperThenAll = -1.0
+    var cheaperThenAll = Double.MAX_VALUE
     var result: String? = null
     for ((name, thing) in stuff) {
-        if ((thing.first == kind) && (thing.second < cheaperThenAll || cheaperThenAll == -1.0)) {
+        if (thing.first == kind && thing.second < cheaperThenAll) {
             cheaperThenAll = thing.second
             result = name
         }
@@ -251,7 +256,7 @@ fun canBuildFrom(chars: List<Char>, word: String): Boolean {
 fun extractRepeats(list: List<String>): Map<String, Int> {
     val result = mutableMapOf<String, Int>()
     for (element in list) {
-        if (result[element] == null) result.put(element, 1) else result.put(element, result[element]!! + 1)
+        result.put(element, (result[element] ?: 0) + 1)
     }
     return result.filter { (_, i) -> i >= 2 }
 }
@@ -266,14 +271,14 @@ fun extractRepeats(list: List<String>): Map<String, Int> {
  *   hasAnagrams(listOf("тор", "свет", "рот")) -> true
  */
 fun hasAnagrams(words: List<String>): Boolean {
-    var answer = false
+    var answer: Boolean
     for (element in words) {
         words.forEach {
             answer =
                 it != element &&
-                        (element.contains(it) || element.contains(it.reversed()))
+                        (element.contains(it) || element.contains(it.reversed()));
+            if (answer) return true
         }
-        if (answer) return true
     }
     return false
 }
@@ -307,11 +312,15 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
     for ((friend, hands) in friends) {
         result.getOrPut(friend, { mutableSetOf() }).addAll(hands)
         hands.forEach {
-            result.getOrPut(it, { mutableSetOf() }); if (it in friends) result.put(
-            it,
-            result[it]!!.union(friends[it]!!) as MutableSet<String>
-        )
+            if ((friends[it] != null) and (friend != it)) friends[it]!!.forEach { element ->
+                if (!hands.contains(element) && element != friend) result.getOrPut(
+                    friend,
+                    { mutableSetOf() }).add(element)
+            }
         }
+    }
+    for ((_, hands) in friends) {
+        hands.forEach { if (friends[it] == null) result.getOrPut(it, { mutableSetOf() }) }
     }
     return result
 }

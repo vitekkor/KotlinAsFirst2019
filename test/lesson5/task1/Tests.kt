@@ -268,6 +268,7 @@ class Tests {
         assertFalse(hasAnagrams(listOf("рот", "свет", "код", "дверь")))
         assertTrue(hasAnagrams(listOf("ротобрашь", "свет", "тор")))
         assertTrue(hasAnagrams(listOf("ротор", "свет", "тор")))
+        assertTrue(hasAnagrams(listOf("светлана", "свет", "тор")))
     }
 
     @Test
@@ -289,7 +290,7 @@ class Tests {
         assertEquals(
             mapOf(
                 "Marat" to setOf("Mikhail", "Sveta", "John", "Ignat", "Vasiliy"),
-                "Sveta" to setOf("Mikhail"),
+                "Sveta" to setOf("Mikhail", "John", "Ignat", "Vasiliy"),
                 "Mikhail" to setOf(),
                 "John" to setOf(),
                 "Ignat" to setOf(),
@@ -305,8 +306,8 @@ class Tests {
         assertEquals(
             mapOf(
                 "Marat" to setOf("Mikhail", "Sveta"),
-                "Sveta" to setOf("Marat"),
-                "Mikhail" to setOf("Sveta")
+                "Sveta" to setOf("Marat", "Mikhail"),
+                "Mikhail" to setOf("Sveta", "Marat")
             ),
             propagateHandshakes(
                 mapOf(
