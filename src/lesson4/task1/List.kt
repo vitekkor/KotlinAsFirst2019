@@ -117,13 +117,7 @@ fun buildSumExample(list: List<Int>) = list.joinToString(separator = " + ", post
  * по формуле abs = sqrt(a1^2 + a2^2 + ... + aN^2).
  * Модуль пустого вектора считать равным 0.0.
  */
-fun abs(v: List<Double>): Double {
-    var result = 0.0
-    for (element in v) {
-        result += sqr(element)
-    }
-    return sqrt(result)
-}
+fun abs(v: List<Double>): Double = sqrt(v.sumByDouble { sqr(it) })
 
 /**
  * Простая
@@ -171,13 +165,7 @@ fun times(a: List<Int>, b: List<Int>): Int {
  * Коэффициенты многочлена заданы списком p: (p0, p1, p2, p3, ..., pN).
  * Значение пустого многочлена равно 0 при любом x.
  */
-fun polynom(p: List<Int>, x: Int): Int {
-    var result = 0
-    for (i in p.indices) {
-        result += p[i] * x.toDouble().pow(i.toDouble()).toInt()
-    }
-    return result
-}
+fun polynom(p: List<Int>, x: Int): Int = p.sumBy { it * x.toDouble().pow(p.indexOf(it)).toInt() }
 
 /**
  * Средняя
@@ -407,7 +395,7 @@ fun takeDigit(num: Char, next: Int, category: Int): String {
         "восемь тысяч ",
         "девять тысяч "
     )
-    val digit = num.toInt() - 49
+    val digit = num - '1'
     return if (digit > -1) when (category) {
         1 -> less10[digit]
         2 -> if (digit > 0) less100[digit] else exclusion[next]
@@ -435,7 +423,7 @@ fun nn1Exist(str: String, notNN: Int): String {
     }
     if (notNN == 1) {
         if (str.length > 1) if (str[(str.length - 2)] != '1') {
-            when (str.last().toInt() - 48) {
+            when (str.last() - '0') {
                 1 -> result = result.substring(0, result.length - 3) + "на "
                 2 -> result = result.substring(0, result.length - 2) + "е "
             }
