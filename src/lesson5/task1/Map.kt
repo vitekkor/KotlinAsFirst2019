@@ -274,9 +274,7 @@ fun hasAnagrams(words: List<String>): Boolean {
     var answer: Boolean
     for (element in words) {
         words.forEach {
-            answer =
-                it != element &&
-                        (element.contains(it) || element.contains(it.reversed()));
+            answer = it != element && (element.contains(it) || element.contains(it.reversed()))
             if (answer) return true
         }
     }
