@@ -195,7 +195,7 @@ fun factorize(n: Int): List<Int> {
     var nn = n
     val result = mutableListOf<Int>()
     while (nn > 1) {
-        result.add(minDivisor(nn))
+        result += minDivisor(nn)
         nn /= minDivisor(nn)
     }
     return result
@@ -240,24 +240,24 @@ fun convert(n: Int, base: Int): List<Int> {
  * Использовать функции стандартной библиотеки, напрямую и полностью решающие данную задачу
  * (например, n.toString(base) и подобные), запрещается.
  */
-fun returnWord(digit: Int): String {
-    var result = ""
-    val alphabet = 'a' - 10
-    if (digit > 9) result += alphabet + digit else result = "$digit"
-    return result
-}
-
 fun convertToString(n: Int, base: Int): String {
     var nn = n
     var division: Int
     var result = ""
     while (nn > 0) {
         division = nn % base
-        result += returnWord(division)
+        result += symbolFromNumSystem(division)
         nn /= base
     }
     if (n == 0) result = "0"
     return result.reversed()
+}
+
+fun symbolFromNumSystem(digit: Int): String {
+    var result = ""
+    val alphabet = 'a' - 10
+    if (digit > 9) result += alphabet + digit else result = "$digit"
+    return result
 }
 
 /**
@@ -289,17 +289,18 @@ fun decimal(digits: List<Int>, base: Int): Int {
  * Использовать функции стандартной библиотеки, напрямую и полностью решающие данную задачу
  * (например, str.toInt(base)), запрещается.
  */
-fun returnDigit(word: Char): Int {
-    return if (word.isDigit()) word - '0' else
-        word - 'a' + 10
-}
-
 fun decimalFromString(str: String, base: Int): Int {
     var result = 0
-    for ((t, i) in (str.length - 1 downTo 0).withIndex()) {
-        result += returnDigit(str[i]) * ((base.toDouble()).pow(t)).toInt()
+    for (i in str.indices) {
+        val t = str.length - 1 - i
+        result += numberOfChar(str[i]) * ((base.toDouble()).pow(t)).toInt()
     }
     return result
+}
+
+fun numberOfChar(char: Char): Int {
+    return if (char.isDigit()) char - '0' else
+        char - 'a' + 10
 }
 
 /**
@@ -310,6 +311,15 @@ fun decimalFromString(str: String, base: Int): Int {
  * 90 = XC, 100 = C, 400 = CD, 500 = D, 900 = CM, 1000 = M.
  * Например: 23 = XXIII, 44 = XLIV, 100 = C
  */
+fun roman(n: Int): String {
+    val nn = n.toString()
+    var answer = ""
+    for (i in nn.indices) {
+        if (rim(nn[i], nn.length - i) != "-1") answer += rim(nn[i], nn.length - i) else continue
+    }
+    return answer
+}
+
 fun rim(number: Char, position: Int): String {
     val about10 = listOf("I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX")
     val about100 = listOf("X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC")
@@ -330,15 +340,6 @@ fun rim(number: Char, position: Int): String {
     } else "-1"
 }
 
-fun roman(n: Int): String {
-    val nn = n.toString()
-    var answer = ""
-    for (i in nn.indices) {
-        if (rim(nn[i], nn.length - i) != "-1") answer += rim(nn[i], nn.length - i) else continue
-    }
-    return answer
-}
-
 /**
  * Очень сложная
  *
@@ -346,6 +347,19 @@ fun roman(n: Int): String {
  * Например, 375 = "триста семьдесят пять",
  * 23964 = "двадцать три тысячи девятьсот шестьдесят четыре"
  */
+fun russian(n: Int): String {
+    val nn: String
+    var nn1 = ""
+    var answer = ""
+    if (n > 10000) {
+        nn1 = (n / 1000).toString()
+        nn = (n % 1000).toString()
+    } else nn = n.toString()
+    if (nn1 != "") answer += nn1Exist(nn1, 1)
+    answer += nn1Exist(nn, 0)
+    return answer.substring(0, answer.length - 1)
+}
+
 fun takeDigit(num: Char, next: Int, category: Int): String {
     val less10 = listOf("один ", "два ", "три ", "четыре ", "пять ", "шесть ", "семь ", "восемь ", "девять ")
     val exclusion = listOf(
@@ -435,17 +449,4 @@ fun nn1Exist(str: String, notNN: Int): String {
         } else result += "тысяч "
     }
     return result
-}
-
-fun russian(n: Int): String {
-    val nn: String
-    var nn1 = ""
-    var answer = ""
-    if (n > 10000) {
-        nn1 = (n / 1000).toString()
-        nn = (n % 1000).toString()
-    } else nn = n.toString()
-    if (nn1 != "") answer += nn1Exist(nn1, 1)
-    answer += nn1Exist(nn, 0)
-    return answer.substring(0, answer.length - 1)
 }

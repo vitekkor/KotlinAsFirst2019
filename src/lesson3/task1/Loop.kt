@@ -273,9 +273,9 @@ fun hasDifferentDigits(n: Int): Boolean {
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun squareSequenceDigit(n: Int): Int = returnDigit(n, true)
+fun squareSequenceDigit(n: Int): Int = digitFromSequence(n, true)
 
-fun returnDigit(num: Int, sqOrFib: Boolean): Int {
+fun digitFromSequence(num: Int, sqOrFib: Boolean): Int {
     var i = 2
     var number = 1
     var countOfdigits = 1
@@ -300,4 +300,4 @@ fun returnDigit(num: Int, sqOrFib: Boolean): Int {
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun fibSequenceDigit(n: Int): Int = returnDigit(n, false)
+fun fibSequenceDigit(n: Int): Int = digitFromSequence(n, false)
