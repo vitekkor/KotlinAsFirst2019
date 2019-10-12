@@ -166,7 +166,7 @@ fun times(a: List<Int>, b: List<Int>): Int {
  * Значение пустого многочлена равно 0 при любом x.
  */
 fun polynom(p: List<Int>, x: Int): Int = p.indices.fold(0) { sum, it -> sum + p[it] * x.toDouble().pow(it).toInt() }
-//indices передаёт в it индексы элементов p
+//indices передаёт в it индексы элементов p, вместо значений, как это было без indices
 
 /**
  * Средняя
