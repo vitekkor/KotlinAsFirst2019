@@ -241,6 +241,7 @@ class Tests {
         assertFalse(canBuildFrom(emptyList(), "foo"))
         assertTrue(canBuildFrom(listOf('a', 'b', 'o'), "baobab"))
         assertFalse(canBuildFrom(listOf('a', 'm', 'r'), "Marat"))
+        assertTrue(canBuildFrom(listOf('O'), "O"))
     }
 
     @Test
@@ -269,6 +270,7 @@ class Tests {
         assertTrue(hasAnagrams(listOf("ротобрашь", "свет", "тор")))
         assertTrue(hasAnagrams(listOf("ротор", "свет", "тор")))
         assertTrue(hasAnagrams(listOf("светлана", "свет", "тор")))
+        assertTrue(hasAnagrams(listOf("", "")))
     }
 
     @Test
@@ -317,6 +319,21 @@ class Tests {
                 )
             )
         )
+        assertEquals(
+            mapOf(
+                "2" to setOf("0", "9a"),
+                "0" to setOf("9a"),
+                "3" to setOf("2", "0", "9a"),
+                "9a" to setOf()
+            ),
+            propagateHandshakes(
+                mapOf(
+                    "2" to setOf("0"),
+                    "0" to setOf("9a"),
+                    "3" to setOf("2")
+                )
+            )
+        )
     }
 
     @Test
@@ -341,6 +358,10 @@ class Tests {
         assertEquals(
             Pair(3, 4),
             findSumOfTwo(listOf(255, 622, 357, 0, 3, 3), 3)
+        )
+        assertEquals(
+            Pair(0, 1),
+            findSumOfTwo(listOf(0, 0), 0)
         )
     }
 

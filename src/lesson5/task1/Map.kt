@@ -236,7 +236,7 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
  */
 fun canBuildFrom(chars: List<Char>, word: String): Boolean {
     for (i in word.indices) {
-        if (word.toLowerCase()[i] !in chars) return false
+        if (word[i] !in chars) return false
     }
     return true
 }
@@ -272,9 +272,9 @@ fun extractRepeats(list: List<String>): Map<String, Int> {
  */
 fun hasAnagrams(words: List<String>): Boolean {
     var answer: Boolean
-    for (element in words) {
-        words.forEach {
-            answer = it != element && (element.contains(it) || element.contains(it.reversed()))
+    for (i in words.indices) {
+        words.indices.forEach {
+            answer = it != i && (words[i].contains(words[it]) || words[i].contains(words[it].reversed()))
             if (answer) return true
         }
     }
@@ -304,6 +304,11 @@ fun hasAnagrams(words: List<String>): Boolean {
  *          "Sveta" to setOf("Marat", "Mikhail"),
  *          "Mikhail" to setOf("Sveta", "Marat")
  *        )
+ *         mapOf(
+"2" to setOf("0"),
+"0" to setOf("9a"),
+"3" to setOf("2")
+)
  */
 fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> {
     val result = mutableMapOf<String, MutableSet<String>>()
@@ -314,6 +319,11 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
                 if (!hands.contains(element) && element != friend) result.getOrPut(
                     friend,
                     { mutableSetOf() }).add(element)
+            }
+            if (result[it] != null) result[it]!!.forEach { elmnt ->
+                if (!hands.contains(elmnt) && elmnt != friend) result.getOrPut(
+                    friend,
+                    { mutableSetOf() }).add(elmnt)
             }
         }
     }
@@ -342,10 +352,14 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
  */
 fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
     val result = Pair(-1, -1)
-    list.forEach {
-        if (list.indexOf(number - it) != -1 && list.indexOf(number - it) != list.indexOf(it)) {
-            val first = minOf(list.indexOf(number - it), list.indexOf(it))
-            val second = maxOf(list.indexOf(number - it), list.indexOf(it))
+    var kkey = 0
+    list.indices.forEach {
+        if (list.indices.any { key ->
+                kkey = key
+                number - list[it] == list[key] && it != key
+            }) {
+            val first = minOf(it, kkey)
+            val second = maxOf(it, kkey)
             return Pair(first, second)
         }
     }
