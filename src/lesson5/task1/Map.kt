@@ -217,7 +217,7 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
     var cheaperThenAll = Double.MAX_VALUE
     var result: String? = null
     for ((name, thing) in stuff) {
-        if (thing.first == kind && thing.second < cheaperThenAll) {
+        if (thing.first == kind && thing.second <= cheaperThenAll) {
             cheaperThenAll = thing.second
             result = name
         }
@@ -256,7 +256,7 @@ fun canBuildFrom(chars: List<Char>, word: String): Boolean {
 fun extractRepeats(list: List<String>): Map<String, Int> {
     val result = mutableMapOf<String, Int>()
     for (element in list) {
-        result.put(element, (result[element] ?: 0) + 1)
+        result[element] = (result[element] ?: 0) + 1
     }
     return result.filter { (_, i) -> i >= 2 }
 }
@@ -274,7 +274,11 @@ fun hasAnagrams(words: List<String>): Boolean {
     var answer: Boolean
     for (i in words.indices) {
         words.indices.forEach {
-            answer = it != i && (words[i].contains(words[it]) || words[i].contains(words[it].reversed()))
+            answer =
+                it != i &&
+                        ((words[it] != words[i] &&
+                                (words[i].contains(words[it]) || words[i].contains(words[it].reversed()))) ||
+                                (words[it] == words[i]))
             if (answer) return true
         }
     }
@@ -304,28 +308,31 @@ fun hasAnagrams(words: List<String>): Boolean {
  *          "Sveta" to setOf("Marat", "Mikhail"),
  *          "Mikhail" to setOf("Sveta", "Marat")
  *        )
- *         mapOf(
-"2" to setOf("0"),
-"0" to setOf("9a"),
-"3" to setOf("2")
+ *        mapOf(
+"0" to setOf("2"),
+"2" to setOf(),
+"3" to setOf("1"),
+"4" to setOf(),
+"1" to setOf("0")
 )
  */
 fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> {
     val result = mutableMapOf<String, MutableSet<String>>()
+    var lastSize: Int
     for ((friend, hands) in friends) {
         result.getOrPut(friend, { mutableSetOf() }).addAll(hands)
-        hands.forEach {
-            if ((friends[it] != null) and (friend != it)) friends[it]!!.forEach { element ->
-                if (!hands.contains(element) && element != friend) result.getOrPut(
-                    friend,
-                    { mutableSetOf() }).add(element)
-            }
-            if (result[it] != null) result[it]!!.forEach { elmnt ->
-                if (!hands.contains(elmnt) && elmnt != friend) result.getOrPut(
-                    friend,
-                    { mutableSetOf() }).add(elmnt)
-            }
-        }
+        do {
+            lastSize = result[friend]?.size ?: 0
+            if (result[friend] != null)
+                result[friend]!!.forEach {
+                    if (friends[it] != null) friends[it]!!.forEach { element ->
+                        if (element != friend) result.getOrPut(
+                            friend,
+                            { mutableSetOf() }).add(element)
+                    }
+                }
+        } while (lastSize < result[friend]?.size ?: 0)
+
     }
     for ((_, hands) in friends) {
         hands.forEach { if (friends[it] == null) result.getOrPut(it, { mutableSetOf() }) }

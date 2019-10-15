@@ -233,6 +233,13 @@ class Tests {
                 "печенье"
             )
         )
+        assertEquals(
+            "",
+            findCheapestStuff(
+                mapOf("" to ("" to 1.7976931348623157e+308)),
+                ""
+            )
+        )
     }
 
     @Test
@@ -321,16 +328,19 @@ class Tests {
         )
         assertEquals(
             mapOf(
-                "2" to setOf("0", "9a"),
-                "0" to setOf("9a"),
-                "3" to setOf("2", "0", "9a"),
-                "9a" to setOf()
+                "0" to setOf("2"),
+                "2" to setOf(),
+                "3" to setOf("1", "0", "2"),
+                "4" to setOf(),
+                "1" to setOf("0", "2")
             ),
             propagateHandshakes(
                 mapOf(
-                    "2" to setOf("0"),
-                    "0" to setOf("9a"),
-                    "3" to setOf("2")
+                    "0" to setOf("2"),
+                    "2" to setOf(),
+                    "3" to setOf("1"),
+                    "4" to setOf(),
+                    "1" to setOf("0")
                 )
             )
         )
@@ -383,6 +393,4 @@ class Tests {
             )
         )
     }
-
-    // TODO: map task tests
 }
