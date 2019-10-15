@@ -269,13 +269,8 @@ fun symbolFromNumSystem(digit: Int): String {
  * Например: digits = (1, 3, 12), base = 14 -> 250
  */
 fun decimal(digits: List<Int>, base: Int): Int {
-    var result = 0
-    var ii = digits.size - 1
-    for (element in digits) {
-        result += element * (base.toDouble()).pow(ii).toInt()
-        ii--
-    }
-    return result
+    return digits.indices.fold(0)
+    { res, index -> res + digits[digits.size - index - 1] * (base.toDouble()).pow(index).toInt() }
 }
 
 /**
@@ -291,12 +286,11 @@ fun decimal(digits: List<Int>, base: Int): Int {
  * (например, str.toInt(base)), запрещается.
  */
 fun decimalFromString(str: String, base: Int): Int {
-    var result = 0
+    val result = mutableListOf<Int>()
     for (i in str.indices) {
-        val t = str.length - 1 - i
-        result += numberOfChar(str[i]) * ((base.toDouble()).pow(t)).toInt()
+        result.add(numberOfChar(str[i]))
     }
-    return result
+    return decimal(result, base)
 }
 
 fun numberOfChar(char: Char): Int {
