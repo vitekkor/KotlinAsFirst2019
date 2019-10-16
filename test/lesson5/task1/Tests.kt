@@ -249,6 +249,7 @@ class Tests {
         assertTrue(canBuildFrom(listOf('a', 'b', 'o'), "baobab"))
         assertFalse(canBuildFrom(listOf('a', 'm', 'r'), "Marat"))
         assertTrue(canBuildFrom(listOf('O'), "O"))
+        assertTrue(canBuildFrom(listOf('n'), "N"))
     }
 
     @Test
@@ -328,19 +329,15 @@ class Tests {
         )
         assertEquals(
             mapOf(
-                "0" to setOf("2"),
-                "2" to setOf(),
-                "3" to setOf("1", "0", "2"),
-                "4" to setOf(),
-                "1" to setOf("0", "2")
+                "0" to setOf("136"),
+                "135" to setOf("0", "2cc", "136"),
+                "136" to setOf(),
+                "2cc" to setOf()
             ),
             propagateHandshakes(
                 mapOf(
-                    "0" to setOf("2"),
-                    "2" to setOf(),
-                    "3" to setOf("1"),
-                    "4" to setOf(),
-                    "1" to setOf("0")
+                    "0" to setOf("136"),
+                    "135" to setOf("0", "2cc")
                 )
             )
         )

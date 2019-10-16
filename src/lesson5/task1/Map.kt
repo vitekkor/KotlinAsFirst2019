@@ -235,10 +235,10 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
  *   canBuildFrom(listOf('a', 'b', 'o'), "baobab") -> true
  */
 fun canBuildFrom(chars: List<Char>, word: String): Boolean {
-    for (i in word.indices) {
-        if (word[i] !in chars) return false
+    val result = word.indices.any {
+        word[it].toUpperCase() !in chars && word[it].toLowerCase() !in chars
     }
-    return true
+    return !result
 }
 
 /**
@@ -308,31 +308,29 @@ fun hasAnagrams(words: List<String>): Boolean {
  *          "Sveta" to setOf("Marat", "Mikhail"),
  *          "Mikhail" to setOf("Sveta", "Marat")
  *        )
- *        mapOf(
-"0" to setOf("2"),
-"2" to setOf(),
-"3" to setOf("1"),
-"4" to setOf(),
-"1" to setOf("0")
+ *         mapOf(
+"Marat" to setOf("Mikhail", "Sveta"),
+"Sveta" to setOf("Marat"),
+"Mikhail" to setOf("Sveta")
 )
+ *
  */
 fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> {
     val result = mutableMapOf<String, MutableSet<String>>()
-    var lastSize: Int
     for ((friend, hands) in friends) {
         result.getOrPut(friend, { mutableSetOf() }).addAll(hands)
-        do {
-            lastSize = result[friend]?.size ?: 0
-            if (result[friend] != null)
+        if (result[friend] != null) {
+            do {
+                val toAdd = mutableSetOf<String>()
+                val lastsize = result[friend]!!.size
                 result[friend]!!.forEach {
                     if (friends[it] != null) friends[it]!!.forEach { element ->
-                        if (element != friend) result.getOrPut(
-                            friend,
-                            { mutableSetOf() }).add(element)
+                        if (element != friend) toAdd.add(element)
                     }
                 }
-        } while (lastSize < result[friend]?.size ?: 0)
-
+                result[friend]!!.addAll(toAdd)
+            } while (lastsize < result[friend]!!.size)
+        }
     }
     for ((_, hands) in friends) {
         hands.forEach { if (friends[it] == null) result.getOrPut(it, { mutableSetOf() }) }
