@@ -386,7 +386,7 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
  *     450
  *   ) -> emptySet()
  */
-fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> { //Set<String>
+fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> {
     val answer = mutableMapOf<Int, MutableMap<Int, Int>>()
     val result = mutableMapOf<Int, MutableMap<Int, MutableSet<String>>>()
     for (i in 0..capacity) {   // заполняем 1 строку и 1 столбец матрицы 0
@@ -419,8 +419,7 @@ fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<Strin
             // и когда сокровище не входит (рассамтриваем последовательность от 1 до j-1)
         }
     }
-    //return answer[treasures.size]!![capacity]!!
-    return result[treasures.size]!![capacity]!!
+    return result[treasures.size]!![capacity] ?: mutableSetOf()
 }
 
 fun analogString(map: Map<String, Pair<Int, Int>>, number: Int): String {
