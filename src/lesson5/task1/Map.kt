@@ -409,8 +409,11 @@ fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<Strin
             // то рассматриваем уже последовательность не от 1 до j, а от 1 до j-1
             else {
                 answer[j]!![i] = maxOf(answer[j - 1]!![i] ?: 0, pj + (answer[j - 1]!![i - mj] ?: 0))
-                if (answer[j]!![i] == answer[j - 1]!![i]) result[j]!![i] = result[j - 1]!![i] ?: mutableSetOf()
-                else result[j]!!.getOrPut(i, { mutableSetOf() }).add(analogString(treasures, j))
+                if (answer[j]!![i] == (answer[j - 1]!![i] ?: 0)) result[j]!![i] = result[j - 1]!![i] ?: mutableSetOf()
+                else {
+                    result[j]!![i] = result[j - 1]!![i - mj] ?: mutableSetOf()
+                    result[j]!![i]!!.add(analogString(treasures, j))
+                }
             }
             // Если сокровище можно положить
             // то ищем макс стоимость между тем вариантом, когда соровище входит
