@@ -391,8 +391,10 @@ fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<Strin
     val result = mutableMapOf<Int, MutableMap<Int, MutableSet<String>>>()
     for (i in 0..capacity) {   // заполняем 1 строку и 1 столбец матрицы 0
         answer[0] = mutableMapOf(i to 0) // т.к если 0 элементов, то макс стоимость рюкзака 0
-        answer[i] = mutableMapOf(0 to 0) // и если максимальная вместимость 0, то макс стоимость тоже рюкзака 0
         result[0] = mutableMapOf(i to mutableSetOf()) // аналогичная матрица, но для названий сокровищ
+    }
+    for (i in 0..treasures.size) {
+        answer[i] = mutableMapOf(0 to 0) // и если максимальная вместимость 0, то макс стоимость тоже рюкзака 0
         result[i] = mutableMapOf(0 to mutableSetOf())
     }
     for (j in 1..treasures.size) { // проходимся по всем элементам от 1-го до N-го
