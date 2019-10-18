@@ -308,12 +308,6 @@ fun hasAnagrams(words: List<String>): Boolean {
  *          "Sveta" to setOf("Marat", "Mikhail"),
  *          "Mikhail" to setOf("Sveta", "Marat")
  *        )
- *         mapOf(
-"Marat" to setOf("Mikhail", "Sveta"),
-"Sveta" to setOf("Marat"),
-"Mikhail" to setOf("Sveta")
-)
- *
  */
 fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> {
     val result = mutableMapOf<String, MutableSet<String>>()
@@ -322,14 +316,14 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
         if (result[friend] != null) {
             do {
                 val toAdd = mutableSetOf<String>()
-                val lastsize = result[friend]!!.size
+                val lastSize = result[friend]!!.size
                 result[friend]!!.forEach {
                     if (friends[it] != null) friends[it]!!.forEach { element ->
                         if (element != friend) toAdd.add(element)
                     }
                 }
                 result[friend]!!.addAll(toAdd)
-            } while (lastsize < result[friend]!!.size)
+            } while (lastSize < result[friend]!!.size)
         }
     }
     for ((_, hands) in friends) {
@@ -392,4 +386,47 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
  *     450
  *   ) -> emptySet()
  */
-fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> = TODO()
+fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> { //Set<String>
+    val answer = mutableMapOf<Int, MutableMap<Int, Int>>()
+    val result = mutableMapOf<Int, MutableMap<Int, MutableSet<String>>>()
+    for (i in 0..capacity) {   // заполняем 1 строку и 1 столбец матрицы 0
+        answer[0] = mutableMapOf(i to 0) // т.к если 0 элементов, то макс стоимость рюкзака 0
+        answer[i] = mutableMapOf(0 to 0) // и если максимальная вместимость 0, то макс стоимость тоже рюкзака 0
+        result[0] = mutableMapOf(i to mutableSetOf()) // аналогичная матрица, но для названий сокровищ
+        result[i] = mutableMapOf(0 to mutableSetOf())
+    }
+    for (j in 1..treasures.size) { // проходимся по всем элементам от 1-го до N-го
+        for (i in 0..capacity) {
+            val mj = treasures[analogString(treasures, j)]!!.first // масса j-го сокровища
+            val pj = treasures[analogString(treasures, j)]!!.second // стоимость j-го сокровища
+            if (mj > i) {
+                answer[j]!![i] = answer[j - 1]!![i] ?: 0
+                result[j]!![i] = result[j - 1]!![i] ?: mutableSetOf()
+            }
+            // если это сокровище не получается положить в рюкзак
+            // то рассматриваем уже последовательность не от 1 до j, а от 1 до j-1
+            else {
+                answer[j]!![i] = maxOf(answer[j - 1]!![i] ?: 0, pj + (answer[j - 1]!![i - mj] ?: 0))
+                if (answer[j]!![i] == answer[j - 1]!![i]) result[j]!![i] = result[j - 1]!![i] ?: mutableSetOf()
+                else result[j]!!.getOrPut(i, { mutableSetOf() }).add(analogString(treasures, j))
+            }
+            // Если сокровище можно положить
+            // то ищем макс стоимость между тем вариантом, когда соровище входит
+            // (при этом вместимость уменьшаем на массу сокровища, прибавляем его стоимость и
+            // рассамтриваем последовательность от 1 до j-1)
+            // и когда сокровище не входит (рассамтриваем последовательность от 1 до j-1)
+        }
+    }
+    //return answer[treasures.size]!![capacity]!!
+    return result[treasures.size]!![capacity]!!
+}
+
+fun analogString(map: Map<String, Pair<Int, Int>>, number: Int): String {
+    //возвращает скоровище по порядковому номеру (от 1 до N)
+    var i = 0
+    for ((element, _) in map) {
+        i++
+        if (i == number) return element
+    }
+    return ""
+}

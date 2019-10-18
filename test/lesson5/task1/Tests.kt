@@ -389,5 +389,12 @@ class Tests {
                 450
             )
         )
+        assertEquals(
+            setOf("Колокол"),
+            bagPacking(
+                mapOf("Кубок" to (350 to 2000), "Слиток" to (500 to 5000), "Колокол" to (850 to 8000)),
+                850
+            )
+        )
     }
 }
