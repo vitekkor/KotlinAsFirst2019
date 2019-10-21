@@ -318,15 +318,8 @@ fun roman(n: Int): String {
  */
 fun russian(n: Int): String {
     val result = mutableListOf<String>()
-    var nLessThan1000: Int
-    var nMoreThan1000: Int
-    if (n > 1000) {
-        nLessThan1000 = n % 1000
-        nMoreThan1000 = n / 1000
-    } else {
-        nLessThan1000 = n
-        nMoreThan1000 = 0
-    }
+    var nLessThan1000 = n % 1000
+    var nMoreThan1000 = if (n > 1000) n / 1000 else 0
     val ones = listOf("один", "два", "три", "четыре", "пять", "шесть", "семь", "восемь", "девять")
     val exclusion = listOf(
         "десять", "одиннадцать", "двенадцать", "тринадцать", "четырнадцать", "пятнадцать",
