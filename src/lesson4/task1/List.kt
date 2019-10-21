@@ -226,8 +226,7 @@ fun convert(n: Int, base: Int): List<Int> {
         result.add(nn % base)
         nn /= base
     }
-    result.reverse()
-    return result
+    return result.reversed()
 }
 
 /**
@@ -241,25 +240,9 @@ fun convert(n: Int, base: Int): List<Int> {
  * Использовать функции стандартной библиотеки, напрямую и полностью решающие данную задачу
  * (например, n.toString(base) и подобные), запрещается.
  */
-fun convertToString(n: Int, base: Int): String {
-    var nn = n
-    var division: Int
-    var result = ""
-    while (nn > 0) {
-        division = nn % base
-        result += symbolFromNumSystem(division)
-        nn /= base
-    }
-    if (n == 0) result = "0"
-    return result.reversed()
-}
+fun convertToString(n: Int, base: Int): String = convert(n, base).joinToString("") { symbolFromNumSystem(it) }
 
-fun symbolFromNumSystem(digit: Int): String {
-    var result = ""
-    val alphabet = 'a' - 10
-    if (digit > 9) result += alphabet + digit else result = "$digit"
-    return result
-}
+fun symbolFromNumSystem(digit: Int): String = if (digit > 9) ('a' - 10 + digit).toString() else "$digit"
 
 /**
  * Средняя
@@ -268,10 +251,8 @@ fun symbolFromNumSystem(digit: Int): String {
  * из системы счисления с основанием base в десятичную.
  * Например: digits = (1, 3, 12), base = 14 -> 250
  */
-fun decimal(digits: List<Int>, base: Int): Int {
-    return digits.indices.fold(0)
-    { res, index -> res + digits[digits.size - index - 1] * (base.toDouble()).pow(index).toInt() }
-}
+fun decimal(digits: List<Int>, base: Int): Int =
+    digits.indices.fold(0) { res, index -> res + digits[digits.size - index - 1] * (base.toDouble()).pow(index).toInt() }
 
 /**
  * Сложная
@@ -285,18 +266,9 @@ fun decimal(digits: List<Int>, base: Int): Int {
  * Использовать функции стандартной библиотеки, напрямую и полностью решающие данную задачу
  * (например, str.toInt(base)), запрещается.
  */
-fun decimalFromString(str: String, base: Int): Int {
-    val result = mutableListOf<Int>()
-    for (i in str.indices) {
-        result.add(numberOfChar(str[i]))
-    }
-    return decimal(result, base)
-}
+fun decimalFromString(str: String, base: Int): Int = decimal(str.map { numberOfChar(it) }, base)
 
-fun numberOfChar(char: Char): Int {
-    return if (char.isDigit()) char - '0' else
-        char - 'a' + 10
-}
+fun numberOfChar(char: Char): Int = if (char.isDigit()) char - '0' else char - 'a' + 10
 
 /**
  * Сложная
@@ -307,32 +279,34 @@ fun numberOfChar(char: Char): Int {
  * Например: 23 = XXIII, 44 = XLIV, 100 = C
  */
 fun roman(n: Int): String {
-    val nn = n.toString()
-    var answer = ""
-    for (i in nn.indices) {
-        if (rim(nn[i], nn.length - i) != "-1") answer += rim(nn[i], nn.length - i) else continue
-    }
-    return answer
-}
-
-fun rim(number: Char, position: Int): String {
-    val about10 = listOf("I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX")
-    val about100 = listOf("X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC")
-    val about1000 = listOf("C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM")
-    val notAbout1000 = "M"
-    val digit = number - '1'
-    return if (digit > -1) when (position) {
-        1 -> about10[digit]
-        2 -> about100[digit]
-        3 -> about1000[digit]
-        else -> {
-            var preResult = ""
-            for (i in 0..digit) {
-                preResult += notAbout1000
+    var nn = n
+    val answer = mutableListOf<String>()
+    val ones = listOf("I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX")
+    val tens = listOf("X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC")
+    val hundreds = listOf("C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM")
+    val ms = "M"
+    while (nn > 0) {
+        when (nn) {
+            in 1..9 -> {
+                answer.add(ones[nn - 1]); nn -= 10
             }
-            preResult
+            in 10..99 -> {
+                answer.add(tens[nn / 10 - 1]); nn %= 10
+            }
+            in 100..999 -> {
+                answer.add(hundreds[nn / 100 - 1]); nn %= 100
+            }
+            else -> {
+                var preResult = ""
+                for (i in 1..nn / 1000) {
+                    preResult += ms
+                }
+                answer.add(preResult)
+                nn %= 1000
+            }
         }
-    } else "-1"
+    }
+    return answer.joinToString("")
 }
 
 /**
@@ -343,105 +317,70 @@ fun rim(number: Char, position: Int): String {
  * 23964 = "двадцать три тысячи девятьсот шестьдесят четыре"
  */
 fun russian(n: Int): String {
-    val nn: String
-    var nn1 = ""
-    var answer = ""
-    if (n > 10000) {
-        nn1 = (n / 1000).toString()
-        nn = (n % 1000).toString()
-    } else nn = n.toString()
-    if (nn1 != "") answer += nn1Exist(nn1, 1)
-    answer += nn1Exist(nn, 0)
-    return answer.substring(0, answer.length - 1)
-}
-
-fun takeDigit(num: Char, next: Int, category: Int): String {
-    val less10 = listOf("один ", "два ", "три ", "четыре ", "пять ", "шесть ", "семь ", "восемь ", "девять ")
+    val result = mutableListOf<String>()
+    var nLessThan1000: Int
+    var nMoreThan1000: Int
+    if (n > 1000) {
+        nLessThan1000 = n % 1000
+        nMoreThan1000 = n / 1000
+    } else {
+        nLessThan1000 = n
+        nMoreThan1000 = 0
+    }
+    val ones = listOf("один", "два", "три", "четыре", "пять", "шесть", "семь", "восемь", "девять")
     val exclusion = listOf(
-        "десять ",
-        "одиннадцать ",
-        "двенадцать ",
-        "тринадцать ",
-        "четырнадцать ",
-        "пятнадцать ",
-        "шестнадцать ",
-        "семнадцать ",
-        "восемнадцать ",
-        "девятнадцать "
+        "десять", "одиннадцать", "двенадцать", "тринадцать", "четырнадцать", "пятнадцать",
+        "шестнадцать", "семнадцать", "восемнадцать", "девятнадцать"
     )
-    val less100 =
-        listOf(
-            "",
-            "двадцать ",
-            "тридцать ",
-            "сорок ",
-            "пятьдесят ",
-            "шестьдесят ",
-            "семьдесят ",
-            "восемьдесят ",
-            "девяносто "
-        )
-    val less1000 =
-        listOf(
-            "сто ",
-            "двести ",
-            "триста ",
-            "четыреста ",
-            "пятьсот ",
-            "шестьсот ",
-            "семьсот ",
-            "восемьсот ",
-            "девятьсот "
-        )
-    val more1000 = listOf(
-        "одна тысяча ",
-        "две тысячи ",
-        "три тысячи ",
-        "четыре тысячи ",
-        "пять тысяч ",
-        "шеть тысяч ",
-        "семь тысяч ",
-        "восемь тысяч ",
-        "девять тысяч "
-    )
-    val digit = num - '1'
-    return if (digit > -1) when (category) {
-        1 -> less10[digit]
-        2 -> if (digit > 0) less100[digit] else exclusion[next]
-        3 -> less1000[digit]
-        else -> more1000[digit]
-    } else "-1"
+    val tens =
+        listOf("", "двадцать", "тридцать", "сорок", "пятьдесят", "шестьдесят", "семьдесят", "восемьдесят", "девяносто")
+    val hundreds =
+        listOf("сто", "двести", "триста", "четыреста", "пятьсот", "шестьсот", "семьсот", "восемьсот", "девятьсот")
+    while (nMoreThan1000 > 0) {
+        when (nMoreThan1000) {
+            1 -> {
+                result.add("одна"); result.add(thousands(1)); nMoreThan1000 -= 10
+            }
+            2 -> {
+                result.add("две"); result.add(thousands(2)); nMoreThan1000 -= 10
+            }
+            in 3..9 -> {
+                result.add(ones[nMoreThan1000 - 1]); result.add(thousands(nMoreThan1000)); nMoreThan1000 -= 10
+            }
+            in 20..99 -> {
+                result.add(tens[nMoreThan1000 / 10 - 1]); nMoreThan1000 %= 10
+                if (nMoreThan1000 <= 0) result.add("тысяч")
+            }
+            in 100..999 -> {
+                result.add(hundreds[nMoreThan1000 / 100 - 1]); nMoreThan1000 %= 100
+                if (nMoreThan1000 <= 0) result.add("тысяч")
+            }
+            else -> {
+                result.add(exclusion[nMoreThan1000 - 10]); result.add("тысяч"); nMoreThan1000 = 0
+            }
+        }
+    }
+    while (nLessThan1000 > 0) {
+        when (nLessThan1000) {
+            in 1..9 -> {
+                result.add(ones[nLessThan1000 - 1]); nLessThan1000 -= 10
+            }
+            in 20..99 -> {
+                result.add(tens[nLessThan1000 / 10 - 1]); nLessThan1000 %= 10
+            }
+            in 100..999 -> {
+                result.add(hundreds[nLessThan1000 / 100 - 1]); nLessThan1000 %= 100
+            }
+            else -> {
+                result.add(exclusion[nLessThan1000 - 10]); nLessThan1000 = 0
+            }
+        }
+    }
+    return result.joinToString(separator = " ")
 }
 
-fun nn1Exist(str: String, notNN: Int): String {
-    var result = ""
-    var wantContinue = false
-    var next: Int
-    for (i in str.indices) {
-        if (wantContinue) {
-            wantContinue = false
-            continue
-        }
-        next = if (i == str.length - 1) -1 else str[i + 1] - '0'
-        if (str[i] == '1' && i + 2 == str.length) wantContinue = true
-        if (takeDigit(str[i], next, str.length - i) != "-1") result += takeDigit(
-            str[i],
-            next,
-            str.length - i
-        ) else continue
-    }
-    if (notNN == 1) {
-        if (str.length > 1) if (str[(str.length - 2)] != '1') {
-            when (str.last() - '0') {
-                1 -> result = result.substring(0, result.length - 3) + "на "
-                2 -> result = result.substring(0, result.length - 2) + "е "
-            }
-            result += when (str.last() - '0') {
-                1 -> "тысяча "
-                in 2..4 -> "тысячи "
-                else -> "тысяч "
-            }
-        } else result += "тысяч "
-    }
-    return result
+fun thousands(thous: Int): String = when (thous) {
+    1 -> "тысяча"
+    in 2..4 -> "тысячи"
+    else -> "тысяч"
 }
