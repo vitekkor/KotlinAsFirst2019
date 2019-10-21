@@ -110,8 +110,8 @@ fun buildGrades(grades: Map<String, Int>): Map<Int, List<String>> {
  *   containsIn(mapOf("a" to "z"), mapOf("a" to "zee", "b" to "sweet")) -> false
  */
 fun containsIn(a: Map<String, String>, b: Map<String, String>): Boolean {
-    for ((str, _) in a) {
-        if (a[str] != b[str]) return false
+    for ((str, value) in a) {
+        if (value != b[str]) return false
     }
     return true
 }
@@ -130,9 +130,9 @@ fun containsIn(a: Map<String, String>, b: Map<String, String>): Boolean {
  *   subtractOf(a = mutableMapOf("a" to "z"), mapOf("a" to "z"))
  *     -> a changes to mutableMapOf() aka becomes empty
  */
-fun subtractOf(a: MutableMap<String, String>, b: Map<String, String>): Unit {
-    for ((str, _) in b) {
-        if (a[str] == b[str]) a.remove(str)
+fun subtractOf(a: MutableMap<String, String>, b: Map<String, String>) {
+    for ((str, value) in b) {
+        if (a[str] == value) a.remove(str)
     }
 }
 
@@ -163,17 +163,16 @@ fun whoAreInBoth(a: List<String>, b: List<String>): List<String> = a.toSet().int
  *   ) -> mapOf("Emergency" to "112, 911", "Police" to "02")
  */
 fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<String, String> {
-    val result = mutableMapOf<String, String>()
-    for ((service, phone) in mapA) {
-        result.put(service, phone)
-    }
+    val result = mapA.toMutableMap()
     for ((service, phone) in mapB) {
-        if (result[service] != null) {
-            if (result[service] != phone) result.put(service, result[service] + ", " + phone)
-        } else result.put(service, phone)
+        result[service] =
+            if (result[service] != null && result[service] != phone) result.getOrDefault(service, "") + ", " + phone
+            else
+                result.getOrDefault(service, phone)
     }
     return result
 }
+
 
 /**
  * Средняя
@@ -186,15 +185,12 @@ fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<S
  *     -> mapOf("MSFT" to 150.0, "NFLX" to 40.0)
  */
 fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Double> {
+    val preResult = mutableMapOf<String, Pair<Double, Int>>()
     val result = mutableMapOf<String, Double>()
-    val costs = mutableMapOf<String, Double>()
     for ((act, cost) in stockPrices) {
-        result.put(act, (result[act] ?: 0.0) + cost)
-        costs.put(act, (costs[act] ?: 0.0) + 1.0)
+        preResult[act] = Pair((preResult[act]?.first ?: 0.0) + cost, (preResult[act]?.second ?: 0) + 1)
     }
-    for ((act, cost) in result) {
-        result.put(act, cost / costs[act]!!)
-    }
+    preResult.keys.forEach { result[it] = preResult[it]!!.first / preResult[it]!!.second }
     return result
 }
 
@@ -234,12 +230,8 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
  * Например:
  *   canBuildFrom(listOf('a', 'b', 'o'), "baobab") -> true
  */
-fun canBuildFrom(chars: List<Char>, word: String): Boolean {
-    val result = word.indices.any {
-        word[it].toUpperCase() !in chars && word[it].toLowerCase() !in chars
-    }
-    return !result
-}
+fun canBuildFrom(chars: List<Char>, word: String): Boolean =
+    word.toLowerCase().all { it in chars.map { element -> element.toLowerCase() } }
 
 /**
  * Средняя
@@ -389,6 +381,8 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
 fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> {
     val answer = mutableMapOf<Int, MutableMap<Int, Int>>()
     val result = mutableMapOf<Int, MutableMap<Int, MutableSet<String>>>()
+    val w = treasures[analogString(treasures, 1)]?.second ?: 0
+    val flag = treasures.values.all { it.second == w }
     for (i in 0..capacity) {   // заполняем 1 строку и 1 столбец матрицы 0
         answer[0] = mutableMapOf(i to 0) // т.к если 0 элементов, то макс стоимость рюкзака 0
         result[0] = mutableMapOf(i to mutableSetOf()) // аналогичная матрица, но для названий сокровищ
@@ -409,12 +403,17 @@ fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<Strin
             // то рассматриваем уже последовательность не от 1 до j, а от 1 до j-1
             else {
                 answer[j]!![i] = maxOf(answer[j - 1]!![i] ?: 0, pj + (answer[j - 1]!![i - mj] ?: 0))
-                if (answer[j]!![i] == (answer[j - 1]!![i] ?: 0)) result[j]!![i] = result[j - 1]!![i] ?: mutableSetOf()
+
+                if (answer[j]!![i] == (answer[j - 1]!![i] ?: 0)) result[j]!![i] =
+                    result[j - 1]!![i] ?: mutableSetOf()
                 else {
-                    result[j]!![i] = result[j - 1]!![i - mj] ?: mutableSetOf()
-                    result[j]!![i]!!.add(analogString(treasures, j))
+                    if (flag) {
+                        result[j]!![i] = result[j - 1]!![i - mj] ?: mutableSetOf()
+                        result[j]!![i]!!.add(analogString(treasures, j))
+                    } else result[j]!!.getOrPut(i, { mutableSetOf() }).add(analogString(treasures, j))
                 }
             }
+
             // Если сокровище можно положить
             // то ищем макс стоимость между тем вариантом, когда соровище входит
             // (при этом вместимость уменьшаем на массу сокровища, прибавляем его стоимость и
