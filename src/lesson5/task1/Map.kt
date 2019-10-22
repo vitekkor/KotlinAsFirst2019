@@ -375,8 +375,7 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
 fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> {
     val answer = mutableMapOf<Int, MutableMap<Int, Int>>()
     val result = mutableMapOf<Int, MutableMap<Int, MutableSet<String>>>()
-    val w = treasures[analogString(treasures, 1)]?.first ?: 0
-    val flag = treasures.values.all { it.first == w }
+    val flag = inAscendingOrder(treasures)
     for (i in 0..capacity) {   // заполняем 1 строку и 1 столбец матрицы 0
         answer[0] = mutableMapOf(i to 0) // т.к если 0 элементов, то макс стоимость рюкзака 0
         result[0] = mutableMapOf(i to mutableSetOf()) // аналогичная матрица, но для названий сокровищ
@@ -397,13 +396,15 @@ fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<Strin
             // то рассматриваем уже последовательность не от 1 до j, а от 1 до j-1
             else {
                 answer[j]!![i] = maxOf(answer[j - 1]!![i] ?: 0, pj + (answer[j - 1]!![i - mj] ?: 0))
-                if (answer[j]!![i] == (answer[j - 1]!![i] ?: 0)) result[j]!![i] =
-                    result[j - 1]!![i] ?: mutableSetOf()
-                else {
+                if (answer[j]!![i] == (answer[j - 1]!![i] ?: 0)) {
+                    result[j]!![i] = result[j - 1]!![i] ?: mutableSetOf()
+                } else {
                     if (!flag) {
                         result[j]!![i] = result[j - 1]!![i - mj] ?: mutableSetOf()
                         result[j]!![i]!!.add(analogString(treasures, j))
-                    } else result[j]!!.getOrPut(i, { mutableSetOf() }).add(analogString(treasures, j))
+                    } else {
+                        result[j]!!.getOrPut(i, { mutableSetOf() }).add(analogString(treasures, j))
+                    }
                 }
             }
 
@@ -425,4 +426,11 @@ fun analogString(map: Map<String, Pair<Int, Int>>, number: Int): String {
         if (i == number) return element
     }
     return ""
+}
+
+fun inAscendingOrder(map: Map<String, Pair<Int, Int>>): Boolean {
+    for (a in 1 until map.size) {
+        if (map[analogString(map, a)]?.first ?: 0 >= map[analogString(map, a + 1)]?.first ?: 0) return false
+    }
+    return true
 }

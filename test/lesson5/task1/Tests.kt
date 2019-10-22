@@ -388,14 +388,14 @@ class Tests {
             )
         )
         assertEquals(
-            setOf("Kotel"),
-            bagPacking(mapOf("Kotel" to (500 to 2500), "Kot;" to (200 to 2000), "hh" to (300 to 400)), 600)
+            setOf("hh"),
+            bagPacking(mapOf("Kotel" to (1 to 2500), "Kot;" to (2 to 2000), "hh" to (3 to 40000)), 3)
         )
         assertEquals(
             setOf("0", "1"),
             bagPacking(
-                mapOf("0" to (1 to 1), "1" to (2 to 1)),
-                3
+                mapOf("0" to (1 to 1), "1" to (1 to 1)),
+                2
             )
         )
     }
