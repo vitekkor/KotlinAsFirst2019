@@ -263,15 +263,9 @@ fun extractRepeats(list: List<String>): Map<String, Int> {
  *   hasAnagrams(listOf("тор", "свет", "рот")) -> true
  */
 fun hasAnagrams(words: List<String>): Boolean {
-    var answer: Boolean
     for (i in words.indices) {
-        words.indices.forEach {
-            answer =
-                it != i &&
-                        ((words[it] != words[i] &&
-                                (words[i].contains(words[it]) || words[i].contains(words[it].reversed()))) ||
-                                (words[it] == words[i]))
-            if (answer) return true
+        for (j in i + 1 until words.size) {
+            if (words[i].toLowerCase().toSet() == words[j].toLowerCase().toSet()) return true
         }
     }
     return false
@@ -381,8 +375,8 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
 fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> {
     val answer = mutableMapOf<Int, MutableMap<Int, Int>>()
     val result = mutableMapOf<Int, MutableMap<Int, MutableSet<String>>>()
-    val w = treasures[analogString(treasures, 1)]?.second ?: 0
-    val flag = treasures.values.all { it.second == w }
+    val w = treasures[analogString(treasures, 1)]?.first ?: 0
+    val flag = treasures.values.all { it.first == w }
     for (i in 0..capacity) {   // заполняем 1 строку и 1 столбец матрицы 0
         answer[0] = mutableMapOf(i to 0) // т.к если 0 элементов, то макс стоимость рюкзака 0
         result[0] = mutableMapOf(i to mutableSetOf()) // аналогичная матрица, но для названий сокровищ

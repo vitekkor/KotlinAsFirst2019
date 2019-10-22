@@ -275,9 +275,7 @@ class Tests {
         assertFalse(hasAnagrams(emptyList()))
         assertTrue(hasAnagrams(listOf("рот", "свет", "тор")))
         assertFalse(hasAnagrams(listOf("рот", "свет", "код", "дверь")))
-        assertTrue(hasAnagrams(listOf("ротобрашь", "свет", "тор")))
-        assertTrue(hasAnagrams(listOf("ротор", "свет", "тор")))
-        assertTrue(hasAnagrams(listOf("светлана", "свет", "тор")))
+        assertFalse(hasAnagrams(listOf("ротобрашь", "свет", "тор")))
         assertTrue(hasAnagrams(listOf("", "")))
     }
 
@@ -384,7 +382,7 @@ class Tests {
             )
         )
         assertEquals(
-            setOf("1", "0"),
+            setOf("0", "1"),
             bagPacking(
                 mapOf("0" to (1 to 1), "1" to (1 to 1)),
                 2
