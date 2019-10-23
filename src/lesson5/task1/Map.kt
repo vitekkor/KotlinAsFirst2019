@@ -173,6 +173,9 @@ fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<S
     return result
 }
 
+fun main() {
+
+}
 
 /**
  * Средняя
@@ -250,7 +253,7 @@ fun extractRepeats(list: List<String>): Map<String, Int> {
     for (element in list) {
         result[element] = (result[element] ?: 0) + 1
     }
-    return result.filter { (_, i) -> i >= 2 }
+    return result.filter { (_, i) -> i > 1 }
 }
 
 /**
@@ -297,23 +300,21 @@ fun hasAnagrams(words: List<String>): Boolean {
  */
 fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> {
     val result = mutableMapOf<String, MutableSet<String>>()
-    for ((friend, hands) in friends) {
-        result.getOrPut(friend, { mutableSetOf() }).addAll(hands)
+    for ((friend, eachOther) in friends) {
+        result[friend] = eachOther.toMutableSet()
         if (result[friend] != null) {
             do {
                 val toAdd = mutableSetOf<String>()
                 val lastSize = result[friend]!!.size
-                result[friend]!!.forEach {
-                    if (friends[it] != null) friends[it]!!.forEach { element ->
+                for (it in result[friend]!!) {
+                    if (friends[it] != null) friends.getValue(it).forEach { element ->
                         if (element != friend) toAdd.add(element)
                     }
+                    if (friends[it] == null) result[it] = mutableSetOf()
                 }
                 result[friend]!!.addAll(toAdd)
             } while (lastSize < result[friend]!!.size)
         }
-    }
-    for ((_, hands) in friends) {
-        hands.forEach { if (friends[it] == null) result.getOrPut(it, { mutableSetOf() }) }
     }
     return result
 }
@@ -337,15 +338,9 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
  */
 fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
     val result = Pair(-1, -1)
-    var kkey = 0
-    list.indices.forEach {
-        if (list.indices.any { key ->
-                kkey = key
-                number - list[it] == list[key] && it != key
-            }) {
-            val first = minOf(it, kkey)
-            val second = maxOf(it, kkey)
-            return Pair(first, second)
+    for (i in 0..list.size - 2) {
+        for (j in i + 1 until list.size) {
+            if (list[i] + list[j] == number) return Pair(i, j)
         }
     }
     return result
@@ -373,38 +368,29 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
  *   ) -> emptySet()
  */
 fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> {
-    val answer = mutableMapOf<Int, MutableMap<Int, Int>>()
-    val result = mutableMapOf<Int, MutableMap<Int, MutableSet<String>>>()
-    val flag = inAscendingOrder(treasures)
-    for (i in 0..capacity) {   // заполняем 1 строку и 1 столбец матрицы 0
-        answer[0] = mutableMapOf(i to 0) // т.к если 0 элементов, то макс стоимость рюкзака 0
-        result[0] = mutableMapOf(i to mutableSetOf()) // аналогичная матрица, но для названий сокровищ
-    }
-    for (i in 0..treasures.size) {
-        answer[i] = mutableMapOf(0 to 0) // и если максимальная вместимость 0, то макс стоимость тоже рюкзака 0
-        result[i] = mutableMapOf(0 to mutableSetOf())
-    }
+    val answer = MutableList(treasures.size + 1) { MutableList(capacity + 1) { 0 } }
+    val result = MutableList(treasures.size + 1) { MutableList(capacity + 1) { mutableSetOf<String>() } }
     for (j in 1..treasures.size) { // проходимся по всем элементам от 1-го до N-го
         for (i in 0..capacity) {
-            val mj = treasures[analogString(treasures, j)]!!.first // масса j-го сокровища
-            val pj = treasures[analogString(treasures, j)]!!.second // стоимость j-го сокровища
+            val mj = treasures.getValue(analogString(treasures, j)).first // масса j-го сокровища
+            val pj = treasures.getValue(analogString(treasures, j)).second // стоимость j-го сокровища
             if (mj > i) {
-                answer[j]!![i] = answer[j - 1]!![i] ?: 0
-                result[j]!![i] = result[j - 1]!![i] ?: mutableSetOf()
+                answer[j][i] = answer[j - 1][i]
+                result[j][i] = result[j - 1][i]
             }
             // если это сокровище не получается положить в рюкзак
             // то рассматриваем уже последовательность не от 1 до j, а от 1 до j-1
             else {
-                answer[j]!![i] = maxOf(answer[j - 1]!![i] ?: 0, pj + (answer[j - 1]!![i - mj] ?: 0))
-                if (answer[j]!![i] == (answer[j - 1]!![i] ?: 0)) {
-                    result[j]!![i] = result[j - 1]!![i] ?: mutableSetOf()
+                answer[j][i] = maxOf(answer[j - 1][i], pj + (answer[j - 1][i - mj]))
+                if (answer[j][i] == answer[j - 1][i]) {
+                    result[j][i] = result[j - 1][i]
                 } else {
-                    if (!flag) {
-                        result[j]!![i] = result[j - 1]!![i - mj] ?: mutableSetOf()
-                        result[j]!![i]!!.add(analogString(treasures, j))
-                    } else {
-                        result[j]!!.getOrPut(i, { mutableSetOf() }).add(analogString(treasures, j))
-                    }
+                    // if (!flag) {
+                    result[j][i] = result[j - 1][i - mj]
+                    result[j][i].add(analogString(treasures, j))
+                    //  } else {
+                    //     result[j]!!.getOrPut(i, { mutableSetOf() }).add(analogString(treasures, j))
+                    //  }
                 }
             }
 
@@ -415,7 +401,7 @@ fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<Strin
             // и когда сокровище не входит (рассамтриваем последовательность от 1 до j-1)
         }
     }
-    return result[treasures.size]!![capacity] ?: mutableSetOf()
+    return result[treasures.size][capacity]
 }
 
 fun analogString(map: Map<String, Pair<Int, Int>>, number: Int): String {
@@ -428,9 +414,9 @@ fun analogString(map: Map<String, Pair<Int, Int>>, number: Int): String {
     return ""
 }
 
-fun inAscendingOrder(map: Map<String, Pair<Int, Int>>): Boolean {
-    for (a in 1 until map.size) {
-        if (map[analogString(map, a)]?.first ?: 0 >= map[analogString(map, a + 1)]?.first ?: 0) return false
-    }
-    return true
+/**fun inAscendingOrder(map: Map<String, Pair<Int, Int>>): Boolean {
+for (a in 1 until map.size) {
+if (map[analogString(map, a)]?.first ?: 0 >= map[analogString(map, a + 1)]?.first ?: 0) return false
 }
+return true
+}*/
