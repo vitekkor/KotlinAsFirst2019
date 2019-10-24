@@ -382,11 +382,9 @@ fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<Strin
             // то рассматриваем уже последовательность не от 1 до j, а от 1 до j-1
             else {
                 answer[j][i] = maxOf(answer[j - 1][i], pj + (answer[j - 1][i - mj]))
-                if (answer[j][i] == answer[j - 1][i]) {
-                    result[j][i] = result[j - 1][i]
-                } else {
+                if (answer[j - 1][i] >= answer[j - 1][i - mj] + pj) result[j][i] = result[j - 1][i] else {
                     // if (!flag) {
-                    result[j][i] = result[j - 1][i - mj]
+                    result[j][i].addAll(result[j - 1][i - mj])
                     result[j][i].add(analogString(treasures, j))
                     //  } else {
                     //     result[j]!!.getOrPut(i, { mutableSetOf() }).add(analogString(treasures, j))
