@@ -188,14 +188,17 @@ fun main() {
  *     -> mapOf("MSFT" to 150.0, "NFLX" to 40.0)
  */
 fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Double> {
-    val preResult = mutableMapOf<String, Pair<Double, Int>>()
+    val preResult = mutableMapOf<String, MutableList<Double>>()
     val result = mutableMapOf<String, Double>()
     for ((act, cost) in stockPrices) {
-        preResult[act] = Pair((preResult[act]?.first ?: 0.0) + cost, (preResult[act]?.second ?: 0) + 1)
+        preResult.getOrPut(act, { mutableListOf() }).add(cost)
     }
-    preResult.keys.forEach { result[it] = preResult[it]!!.first / preResult[it]!!.second }
+    preResult.keys.forEach {
+        result[it] = (preResult[it]?.sumByDouble { element -> element } ?: 0.0) / preResult[it]?.size!!
+    }
     return result
 }
+
 
 /**
  * Средняя
@@ -234,7 +237,7 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
  *   canBuildFrom(listOf('a', 'b', 'o'), "baobab") -> true
  */
 fun canBuildFrom(chars: List<Char>, word: String): Boolean =
-    word.toLowerCase().all { it in chars.map { element -> element.toLowerCase() } }
+    word.toUpperCase().all { it in chars.map { element -> element.toUpperCase() } }
 
 /**
  * Средняя
@@ -383,15 +386,10 @@ fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<Strin
             else {
                 answer[j][i] = maxOf(answer[j - 1][i], pj + (answer[j - 1][i - mj]))
                 if (answer[j - 1][i] >= answer[j - 1][i - mj] + pj) result[j][i] = result[j - 1][i] else {
-                    // if (!flag) {
                     result[j][i].addAll(result[j - 1][i - mj])
                     result[j][i].add(analogString(treasures, j))
-                    //  } else {
-                    //     result[j]!!.getOrPut(i, { mutableSetOf() }).add(analogString(treasures, j))
-                    //  }
                 }
             }
-
             // Если сокровище можно положить
             // то ищем макс стоимость между тем вариантом, когда соровище входит
             // (при этом вместимость уменьшаем на массу сокровища, прибавляем его стоимость и
@@ -411,10 +409,3 @@ fun analogString(map: Map<String, Pair<Int, Int>>, number: Int): String {
     }
     return ""
 }
-
-/**fun inAscendingOrder(map: Map<String, Pair<Int, Int>>): Boolean {
-for (a in 1 until map.size) {
-if (map[analogString(map, a)]?.first ?: 0 >= map[analogString(map, a + 1)]?.first ?: 0) return false
-}
-return true
-}*/
