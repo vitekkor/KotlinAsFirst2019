@@ -2,6 +2,9 @@
 
 package lesson6.task1
 
+import lesson2.task2.daysInMonth
+import java.util.*
+
 /**
  * Пример
  *
@@ -69,7 +72,24 @@ fun main() {
  * Обратите внимание: некорректная с точки зрения календаря дата (например, 30.02.2009) считается неверными
  * входными данными.
  */
-fun dateStrToDigit(str: String): String = TODO()
+fun dateStrToDigit(str: String): String {
+    val months = listOf(
+        "января", "февраля", "марта", "апреля", "мая", "июня", "июля",
+        "августа", "сентября", "октября", "ноября", "декабря"
+    )
+    val partsOfDate = str.split(" ")
+    return try {
+        val day = partsOfDate[0].toInt()
+        val month = months.indexOf(partsOfDate[1]) + 1
+        val year = partsOfDate[2].toInt()
+        if (day <= daysInMonth(month, year) && month != 0) String.format("%02d.%02d.%d", day, month, year)
+        else ""
+    } catch (e: IndexOutOfBoundsException) {
+        ""
+    } catch (e: NumberFormatException) {
+        ""
+    }
+}
 
 /**
  * Средняя
@@ -81,7 +101,23 @@ fun dateStrToDigit(str: String): String = TODO()
  * Обратите внимание: некорректная с точки зрения календаря дата (например, 30 февраля 2009) считается неверными
  * входными данными.
  */
-fun dateDigitToStr(digital: String): String = TODO()
+fun dateDigitToStr(digital: String): String {
+    val months = listOf(
+        "января", "февраля", "марта", "апреля", "мая", "июня", "июля",
+        "августа", "сентября", "октября", "ноября", "декабря"
+    )
+    val partsOfDate = digital.split(".")
+    return if (partsOfDate.size == 3 && partsOfDate.all { it.all { c -> c.isDigit() } }) {
+        val day = oneDigitStr(partsOfDate[0].toInt())
+        val month = oneDigitStr(partsOfDate[1].toInt())
+        val year = partsOfDate[2].toInt()
+        if (month in 1..12 && day <= daysInMonth(month, year)) String.format(
+            "%d %s %d", day, months[month - 1], year
+        ) else ""
+    } else ""
+}
+
+fun oneDigitStr(n: Int): Int = if (n / 10 == 0) n % 10 else n
 
 /**
  * Средняя
