@@ -1,4 +1,4 @@
-@file:Suppress("UNUSED_PARAMETER", "ConvertCallChainIntoSequence")
+@file:Suppress("UNUSED_PARAMETER", "ConvertCallChainIntoSequence", "SENSELESS_COMPARISON")
 
 package lesson6.task1
 
@@ -220,7 +220,8 @@ fun plusMinus(expression: String): Int {
     var previous = ""
     var sign = 1
     val e = IllegalArgumentException()
-    if (expression[0] == '+' || expression[0] == '-') throw e
+    if (expression == null) throw e
+    else if (expressionToCalculate[0].any { it.toString() in signs }) throw e
     for (numbersOrSigns in expressionToCalculate) {
         try {
             result.add(numbersOrSigns.toInt() * sign)
