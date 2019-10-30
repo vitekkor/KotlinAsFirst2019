@@ -165,16 +165,16 @@ fun flattenPhoneNumber(phone: String): String {
  */
 fun bestLongJump(jumps: String): Int {
     val validCharacters = listOf('%', '-')
-    var result = Int.MIN_VALUE
+    var result = -1
     val attempts = jumps.split(" ")
-    for (i in attempts) {
+    for (attempt in attempts) {
         try {
-            result = maxOf(result, i.toInt())
+            result = maxOf(result, attempt.toInt())
         } catch (e: NumberFormatException) {
-            if (i.any { it !in validCharacters }) return -1
+            if (attempt.any { it !in validCharacters }) return -1
         }
     }
-    return maxOf(result, -1)
+    return result
 }
 
 /**
@@ -188,7 +188,21 @@ fun bestLongJump(jumps: String): Int {
  * При нарушении формата входной строки, а также в случае отсутствия удачных попыток,
  * вернуть -1.
  */
-fun bestHighJump(jumps: String): Int = TODO()
+fun bestHighJump(jumps: String): Int {
+    val validTypesOfAttempt = listOf('+', '%', '-')
+    val attempts = jumps.split(" ")
+    var result = -1
+    var high = -1
+    for (attempt in attempts) {
+        try {
+            high = attempt.toInt()
+        } catch (e: NumberFormatException) {
+            if (attempt == "+") result = maxOf(result, high)
+            if (attempt.any { it !in validTypesOfAttempt }) return -1
+        }
+    }
+    return result
+}
 
 /**
  * Сложная
@@ -199,7 +213,30 @@ fun bestHighJump(jumps: String): Int = TODO()
  * Вернуть значение выражения (6 для примера).
  * Про нарушении формата входной строки бросить исключение IllegalArgumentException
  */
-fun plusMinus(expression: String): Int = TODO()
+fun plusMinus(expression: String): Int {
+    val signs = listOf("+", "-")
+    val expressionToCalculate = expression.split(" ")
+    val result = mutableListOf<Int>()
+    var previous = ""
+    var sign = 1
+    val e = IllegalArgumentException()
+    if (expression[0] == '+' || expression[0] == '-') throw e
+    for (numbersOrSigns in expressionToCalculate) {
+        try {
+            result.add(numbersOrSigns.toInt() * sign)
+            if (previous !in signs && previous != "" || numbersOrSigns[0].toString() in signs) throw e
+        } catch (e: NumberFormatException) {
+            sign = when (numbersOrSigns) {
+                "+" -> 1
+                "-" -> -1
+                else -> throw e
+            }
+            if (previous in signs) throw e
+        }
+        previous = numbersOrSigns
+    }
+    return result.sum()
+}
 
 /**
  * Сложная
