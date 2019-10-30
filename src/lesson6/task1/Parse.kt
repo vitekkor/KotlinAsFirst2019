@@ -3,7 +3,6 @@
 package lesson6.task1
 
 import lesson2.task2.daysInMonth
-import java.util.*
 
 /**
  * Пример
@@ -133,7 +132,25 @@ fun oneDigitStr(n: Int): Int = if (n / 10 == 0) n % 10 else n
  *
  * PS: Дополнительные примеры работы функции можно посмотреть в соответствующих тестах.
  */
-fun flattenPhoneNumber(phone: String): String = TODO()
+fun flattenPhoneNumber(phone: String): String {
+    val validCharacters = listOf('+', '-', '(', ')', ' ')
+    val result = mutableListOf<Char>()
+    var openedBracket = 0
+    var previousChar = ' '
+    for (i in phone) {
+        if (i !in validCharacters && !i.isDigit()) return ""
+        when {
+            i.isDigit() || i == '+' -> result.add(i)
+            i == '(' -> openedBracket++
+            i == ')' -> {
+                openedBracket--
+                if (previousChar == '(') return ""
+            }
+        }
+        previousChar = i
+    }
+    return result.joinToString("")
+}
 
 /**
  * Средняя
