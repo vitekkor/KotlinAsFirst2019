@@ -107,16 +107,14 @@ fun dateDigitToStr(digital: String): String {
     )
     val partsOfDate = digital.split(".")
     return if (partsOfDate.size == 3 && partsOfDate.all { it.all { c -> c.isDigit() } }) {
-        val day = oneDigitStr(partsOfDate[0].toInt())
-        val month = oneDigitStr(partsOfDate[1].toInt())
+        val day = partsOfDate[0].toInt()
+        val month = partsOfDate[1].toInt()
         val year = partsOfDate[2].toInt()
         if (month in 1..12 && day <= daysInMonth(month, year)) String.format(
             "%d %s %d", day, months[month - 1], year
         ) else ""
     } else ""
 }
-
-fun oneDigitStr(n: Int): Int = if (n / 10 == 0) n % 10 else n
 
 /**
  * Средняя
