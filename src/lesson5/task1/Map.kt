@@ -314,7 +314,7 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
                 val toAdd = mutableSetOf<String>()
                 val lastSize = result[friend]!!.size
                 for (anotherFriend in result[friend]!!) {
-                    if (friends[anotherFriend] != null) friends.getValue(anotherFriend).forEach { element ->
+                    if (friends[anotherFriend] != null) for (element in friends.getValue(anotherFriend)) {
                         if (element != friend) toAdd.add(element)
                     }
                     if (friends[anotherFriend] == null) result[anotherFriend] = mutableSetOf()
