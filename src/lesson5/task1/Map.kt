@@ -236,8 +236,11 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
  * Например:
  *   canBuildFrom(listOf('a', 'b', 'o'), "baobab") -> true
  */
-fun canBuildFrom(chars: List<Char>, word: String): Boolean =
-    word.toUpperCase().all { it in chars.map { element -> element.toUpperCase() } }
+fun canBuildFrom(chars: List<Char>, word: String): Boolean {
+    val setOfWord = word.toUpperCase().toSet()
+    val setOfChars = chars.map { it.toUpperCase() }.toSet()
+    return setOfWord.intersect(setOfChars) == setOfWord
+}
 
 /**
  * Средняя
@@ -269,9 +272,10 @@ fun extractRepeats(list: List<String>): Map<String, Int> {
  *   hasAnagrams(listOf("тор", "свет", "рот")) -> true
  */
 fun hasAnagrams(words: List<String>): Boolean {
-    for (i in words.indices) {
-        for (j in i + 1 until words.size) {
-            if (words[i].toLowerCase().toSet() == words[j].toLowerCase().toSet()) return true
+    val list = words.map { it.toUpperCase().toSet() }
+    for (i in list.indices) {
+        for (j in i + 1 until list.size) {
+            if (list[i] == list[j]) return true
         }
     }
     return false
@@ -309,11 +313,11 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
             do {
                 val toAdd = mutableSetOf<String>()
                 val lastSize = result[friend]!!.size
-                for (it in result[friend]!!) {
-                    if (friends[it] != null) friends.getValue(it).forEach { element ->
+                for (anotherFriend in result[friend]!!) {
+                    if (friends[anotherFriend] != null) friends.getValue(anotherFriend).forEach { element ->
                         if (element != friend) toAdd.add(element)
                     }
-                    if (friends[it] == null) result[it] = mutableSetOf()
+                    if (friends[anotherFriend] == null) result[anotherFriend] = mutableSetOf()
                 }
                 result[friend]!!.addAll(toAdd)
             } while (lastSize < result[friend]!!.size)
