@@ -72,22 +72,18 @@ fun main() {
  * входными данными.
  */
 fun dateStrToDigit(str: String): String {
+    if (!str.matches(Regex("""\d{1,2} [а-я]+ \d+"""))) return ""
     val months = listOf(
         "января", "февраля", "марта", "апреля", "мая", "июня", "июля",
         "августа", "сентября", "октября", "ноября", "декабря"
     )
     val partsOfDate = str.split(" ")
-    return try {
-        val day = partsOfDate[0].toInt()
-        val month = months.indexOf(partsOfDate[1]) + 1
-        val year = partsOfDate[2].toInt()
-        if (day <= daysInMonth(month, year) && month != 0) String.format("%02d.%02d.%d", day, month, year)
-        else ""
-    } catch (e: IndexOutOfBoundsException) {
-        ""
-    } catch (e: NumberFormatException) {
-        ""
-    }
+    val day = partsOfDate[0].toInt()
+    val month = months.indexOf(partsOfDate[1]) + 1
+    val year = partsOfDate[2].toInt()
+    return if (day <= daysInMonth(month, year) && month != 0) String.format("%02d.%02d.%d", day, month, year)
+    else ""
+
 }
 
 /**
@@ -101,19 +97,18 @@ fun dateStrToDigit(str: String): String {
  * входными данными.
  */
 fun dateDigitToStr(digital: String): String {
+    if (!digital.matches(Regex("""(\d{2}\.){2}\d+"""))) return ""
     val months = listOf(
         "января", "февраля", "марта", "апреля", "мая", "июня", "июля",
         "августа", "сентября", "октября", "ноября", "декабря"
     )
     val partsOfDate = digital.split(".")
-    return if (partsOfDate.size == 3 && partsOfDate.all { it.all { c -> c.isDigit() } }) {
-        val day = partsOfDate[0].toInt()
-        val month = partsOfDate[1].toInt()
-        val year = partsOfDate[2].toInt()
-        if (month in 1..12 && day <= daysInMonth(month, year)) String.format(
-            "%d %s %d", day, months[month - 1], year
-        ) else ""
-    } else ""
+    val day = partsOfDate[0].toInt()
+    val month = partsOfDate[1].toInt()
+    val year = partsOfDate[2].toInt()
+    return if (month in 1..12 && day <= daysInMonth(month, year)) String.format(
+        "%d %s %d", day, months[month - 1], year
+    ) else ""
 }
 
 /**
@@ -131,22 +126,10 @@ fun dateDigitToStr(digital: String): String {
  * PS: Дополнительные примеры работы функции можно посмотреть в соответствующих тестах.
  */
 fun flattenPhoneNumber(phone: String): String {
-    val validCharacters = listOf('+', '-', '(', ')', ' ')
+    if (!phone.matches(Regex("""\+?([\d -]+|(\(+[\d -]+\)+))*"""))) return ""
     val result = mutableListOf<Char>()
-    var openedBracket = 0
-    var previousChar = ' '
-    if (phone.length == 1 && !phone[0].isDigit()) return ""
     for (i in phone) {
-        if (i !in validCharacters && !i.isDigit()) return ""
-        when {
-            i.isDigit() || i == '+' -> result.add(i)
-            i == '(' -> openedBracket++
-            i == ')' -> {
-                openedBracket--
-                if (previousChar == '(') return ""
-            }
-        }
-        previousChar = i
+        if (i.isDigit() || i == '+') result.add(i)
     }
     return result.joinToString("")
 }
