@@ -186,26 +186,11 @@ fun bestHighJump(jumps: String): Int {
  */
 fun plusMinus(expression: String): Int {
     require(expression.matches(Regex("""(\d+ [+-] )*\d+""")))
-    val signs = listOf("+", "-")
     val expressionToCalculate = expression.split(" ")
-    val result = mutableListOf<Int>()
-    var previous = ""
-    var sign = 1
-    val e = IllegalArgumentException()
-    if (expressionToCalculate[0].any { it.toString() in signs }) throw e
-    for (numbersOrSigns in expressionToCalculate) {
-        try {
-            result.add(numbersOrSigns.toInt() * sign)
-            if (previous !in signs && previous != "" || numbersOrSigns[0].toString() in signs) throw e
-        } catch (e: NumberFormatException) {
-            sign = when (numbersOrSigns) {
-                "+" -> 1
-                "-" -> -1
-                else -> throw e
-            }
-            if (previous in signs) throw e
-        }
-        previous = numbersOrSigns
+    val result = mutableListOf(expressionToCalculate[0].toInt())
+    for (i in 2 until expressionToCalculate.size step 2) {
+        result.add(expressionToCalculate[i].toInt())
+        if (expressionToCalculate[i - 1] == "-") result[result.lastIndex] *= -1
     }
     return result.sum()
 }
