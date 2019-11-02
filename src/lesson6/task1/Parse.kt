@@ -162,15 +162,11 @@ fun flattenPhoneNumber(phone: String): String {
  * При нарушении формата входной строки или при отсутствии в ней чисел, вернуть -1.
  */
 fun bestLongJump(jumps: String): Int {
-    val validCharacters = listOf('%', '-')
+    if (!jumps.matches(Regex("""(\d*|[-%]* [-%]*)+ \d+"""))) return -1
     var result = -1
     val attempts = jumps.split(" ")
     for (attempt in attempts) {
-        try {
-            result = maxOf(result, attempt.toInt())
-        } catch (e: NumberFormatException) {
-            if (attempt.any { it !in validCharacters }) return -1
-        }
+        if (attempt.toIntOrNull() != null) result = maxOf(attempt.toInt(), result)
     }
     return result
 }
@@ -187,17 +183,11 @@ fun bestLongJump(jumps: String): Int {
  * вернуть -1.
  */
 fun bestHighJump(jumps: String): Int {
-    val validTypesOfAttempt = listOf('+', '%', '-')
+    if (!jumps.matches(Regex("""(\d+ [%+-]+ ?)+"""))) return -1
     val attempts = jumps.split(" ")
     var result = -1
-    var high = -1
-    for (attempt in attempts) {
-        try {
-            high = attempt.toInt()
-        } catch (e: NumberFormatException) {
-            if (attempt == "+") result = maxOf(result, high)
-            if (attempt.any { it !in validTypesOfAttempt }) return -1
-        }
+    for (attempt in 1 until attempts.size step 2) {
+        if (attempts[attempt].any { it == '+' }) result = maxOf(result, attempts[attempt - 1].toInt())
     }
     return result
 }
@@ -212,14 +202,14 @@ fun bestHighJump(jumps: String): Int {
  * Про нарушении формата входной строки бросить исключение IllegalArgumentException
  */
 fun plusMinus(expression: String): Int {
+    require(expression.matches(Regex("""(\d+ [+-] )*\d+""")))
     val signs = listOf("+", "-")
     val expressionToCalculate = expression.split(" ")
     val result = mutableListOf<Int>()
     var previous = ""
     var sign = 1
     val e = IllegalArgumentException()
-    if (expression == null) throw e
-    else if (expressionToCalculate[0].any { it.toString() in signs }) throw e
+    if (expressionToCalculate[0].any { it.toString() in signs }) throw e
     for (numbersOrSigns in expressionToCalculate) {
         try {
             result.add(numbersOrSigns.toInt() * sign)
