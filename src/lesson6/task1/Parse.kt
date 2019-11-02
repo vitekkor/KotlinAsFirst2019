@@ -204,7 +204,16 @@ fun plusMinus(expression: String): Int {
  * Вернуть индекс начала первого повторяющегося слова, или -1, если повторов нет.
  * Пример: "Он пошёл в в школу" => результат 9 (индекс первого 'в')
  */
-fun firstDuplicateIndex(str: String): Int = TODO()
+fun firstDuplicateIndex(str: String): Int {
+    if (!str.matches(Regex("""([А-Яа-яA-Za-zёЁ]+ +)+[А-Яа-яA-Za-zёЁ]+"""))) return -1
+    val partsOfString = str.split(" ")
+    var sumOfLength = partsOfString[0].length
+    for (i in 1 until partsOfString.size) {
+        if (partsOfString[i].toLowerCase() == partsOfString[i - 1].toLowerCase()) return sumOfLength - partsOfString[i].length
+        sumOfLength += partsOfString[i].length + 1
+    }
+    return -1
+}
 
 /**
  * Сложная
@@ -217,7 +226,19 @@ fun firstDuplicateIndex(str: String): Int = TODO()
  * или пустую строку при нарушении формата строки.
  * Все цены должны быть больше либо равны нуля.
  */
-fun mostExpensive(description: String): String = TODO()
+fun mostExpensive(description: String): String {
+    if (!description.matches(Regex("""([А-Яа-яёЁA-Za-z]+ \d+\.\d(; [А-Яа-яёЁA-Za-z]+ \d+\.\d)*)+"""))) return ""
+    val products = description.split("; ")
+    var result = ""
+    var mostExpensive = -1.0
+    for (product in products) {
+        if (product.split(" ")[1].toDouble() > mostExpensive) {
+            mostExpensive = product.split(" ")[1].toDouble()
+            result = product.split(" ")[0]
+        }
+    }
+    return result
+}
 
 /**
  * Сложная
