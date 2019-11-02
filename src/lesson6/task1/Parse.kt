@@ -127,11 +127,11 @@ fun dateDigitToStr(digital: String): String {
  */
 fun flattenPhoneNumber(phone: String): String {
     if (!phone.matches(Regex("""\+?([\d -]+|(\(+[\d -]+\)+))*"""))) return ""
-    val result = mutableListOf<Char>()
+    var result = ""
     for (i in phone) {
-        if (i.isDigit() || i == '+') result.add(i)
+        if (i.isDigit() || i == '+') result += i
     }
-    return result.joinToString("")
+    return result
 }
 
 /**
@@ -205,7 +205,7 @@ fun plusMinus(expression: String): Int {
  * Пример: "Он пошёл в в школу" => результат 9 (индекс первого 'в')
  */
 fun firstDuplicateIndex(str: String): Int {
-    if (!str.matches(Regex("""([А-Яа-яA-Za-zёЁ\d]+ +)+[А-Яа-яA-Za-zёЁ\d]+"""))) return -1
+    if (!str.matches(Regex("""(.+ +)+.+"""))) return -1
     val partsOfString = str.split(" ")
     var sumOfLength = partsOfString[0].length
     for (i in 1 until partsOfString.size) {
