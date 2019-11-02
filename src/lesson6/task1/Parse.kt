@@ -205,7 +205,7 @@ fun plusMinus(expression: String): Int {
  * Пример: "Он пошёл в в школу" => результат 9 (индекс первого 'в')
  */
 fun firstDuplicateIndex(str: String): Int {
-    if (!str.matches(Regex("""([А-Яа-яA-Za-zёЁ]+ +)+[А-Яа-яA-Za-zёЁ]+"""))) return -1
+    if (!str.matches(Regex("""([А-Яа-яA-Za-zёЁ\d]+ +)+[А-Яа-яA-Za-zёЁ\d]+"""))) return -1
     val partsOfString = str.split(" ")
     var sumOfLength = partsOfString[0].length
     for (i in 1 until partsOfString.size) {
@@ -227,7 +227,7 @@ fun firstDuplicateIndex(str: String): Int {
  * Все цены должны быть больше либо равны нуля.
  */
 fun mostExpensive(description: String): String {
-    if (!description.matches(Regex("""([А-Яа-яёЁA-Za-z]+ \d+\.\d(; [А-Яа-яёЁA-Za-z]+ \d+\.\d)*)+"""))) return ""
+    if (!description.matches(Regex("""([А-Яа-яёЁA-Za-z]+ \d+(\.\d)*(; [А-Яа-яёЁA-Za-z]+ \d+(\.\d)*)*)+"""))) return ""
     val products = description.split("; ")
     var result = ""
     var mostExpensive = -1.0
