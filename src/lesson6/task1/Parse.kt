@@ -128,7 +128,8 @@ fun dateDigitToStr(digital: String): String {
 fun flattenPhoneNumber(phone: String): String {
     if (!phone.matches(Regex("""\+?([\d -]+|(\(+[\d -]+\)+))*"""))) return ""
     var result = ""
-    for (i in phone) {
+    val phoneDuplicate = phone.replace("\\s+", "")
+    for (i in phoneDuplicate) {
         if (i.isDigit() || i == '+') result += i
     }
     return result
@@ -227,7 +228,7 @@ fun firstDuplicateIndex(str: String): Int {
  * Все цены должны быть больше либо равны нуля.
  */
 fun mostExpensive(description: String): String {
-    if (!description.matches(Regex("""([А-Яа-яёЁA-Za-z]+ \d+(\.\d)*(; [А-Яа-яёЁA-Za-z]+ \d+(\.\d)*)*)+"""))) return ""
+    if (!description.matches(Regex("""([А-Яа-яёЁA-Za-z]+ \d+(\.\d+)*(; [А-Яа-яёЁA-Za-z]+ \d+(\.\d+)*)*)+"""))) return ""
     val products = description.split("; ")
     var result = ""
     var mostExpensive = -1.0
@@ -251,7 +252,38 @@ fun mostExpensive(description: String): String {
  *
  * Вернуть -1, если roman не является корректным римским числом
  */
-fun fromRoman(roman: String): Int = TODO()
+fun fromRoman(roman: String): Int {
+    if (!roman.matches(Regex("""[IVXLCDM]+"""))) return -1
+    val valid = listOf(4, 9, 40, 90, 400, 900)
+    var digit = 0
+    var result = 0
+    while (digit < roman.length - 1) {
+        result += romanToArabic(roman[digit], roman[digit + 1])
+        if (romanToArabic(roman[digit], roman[digit + 1]) in valid) digit++
+        digit++
+    }
+    if (digit != roman.length) result += romanToArabic(roman[roman.length - 1], 'I')
+    if (lesson4.task1.roman(result) != roman) result = -1
+    return result
+}
+
+fun numbersOfTwoCharacters(secondChar: Char): Int = when (secondChar) {
+    'V', 'L', 'D' -> 4
+    'X', 'C', 'M' -> 9
+    else -> 1
+}
+
+fun romanToArabic(chr: Char, nextChr: Char): Int = when (chr) {
+    'I' -> numbersOfTwoCharacters(nextChr)
+    'X' -> if (nextChr == 'L' || nextChr == 'C') numbersOfTwoCharacters(nextChr) * 10 else numbersOfTwoCharacters('I') * 10
+    'C' -> if (nextChr == 'D' || nextChr == 'M') numbersOfTwoCharacters(nextChr) * 100 else numbersOfTwoCharacters('I') * 100
+    'V' -> 5
+    'L' -> 50
+    'D' -> 500
+    'M' -> 1000
+    else -> -1
+}
+
 
 /**
  * Очень сложная
