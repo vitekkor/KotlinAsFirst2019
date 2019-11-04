@@ -308,7 +308,7 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
                     if (friends[anotherFriend] != null) toAdd.addAll(friends.getValue(anotherFriend).filter { it != friend })
                     else result[anotherFriend] = mutableSetOf()
                 }
-                result[friend]!!.addAll(toAdd)
+                result.getValue(friend).addAll(toAdd)
             } while (lastSize < result[friend]!!.size)
         }
     }
