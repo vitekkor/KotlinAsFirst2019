@@ -2,6 +2,9 @@
 
 package lesson5.task1
 
+import ru.spbstu.wheels.sorted
+import ru.spbstu.wheels.sortedWith
+
 /**
  * Пример
  *
@@ -333,10 +336,13 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
  *   findSumOfTwo(listOf(1, 2, 3), 6) -> Pair(-1, -1)
  */
 fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
-    for (i in 0..list.size - 2) {
-        for (j in i + 1 until list.size) {
-            if (list[i] + list[j] == number) return Pair(i, j)
-        }
+    val map = mutableMapOf<Int, Int>()
+    for (i in list.indices) {
+        if (map[number - list[i]] != null) return Pair(map.getValue(number - list[i]), i).sorted()
+        else map[list[i]] = i
+        //Если в map содержится элемент number - list[i], то возвращаем Pair(map.getValue(number - list[i]), i).sorted()
+        //где map.getValue(number - list[i]) это индекст соответсвующего элемента
+        //иначе записываем элемент list[i] и его индекс в map
     }
     return Pair(-1, -1)
 }

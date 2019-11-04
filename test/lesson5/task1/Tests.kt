@@ -362,11 +362,19 @@ class Tests {
         )
         assertEquals(
             Pair(3, 4),
-            findSumOfTwo(listOf(255, 622, 357, 0, 3, 3), 3)
+            findSumOfTwo(listOf(255, 622, 357, 0, 3, 3, 7), 3)
         )
         assertEquals(
             Pair(0, 1),
             findSumOfTwo(listOf(0, 0), 0)
+        )
+        assertEquals(
+            Pair(0, 1),
+            findSumOfTwo(listOf(0, 0), 0)
+        )
+        assertEquals(
+            Pair(0, 1),
+            findSumOfTwo(listOf(3, 3, 0), 6)
         )
     }
 
