@@ -3,7 +3,6 @@
 package lesson5.task1
 
 import ru.spbstu.wheels.sorted
-import ru.spbstu.wheels.sortedWith
 
 /**
  * Пример
@@ -169,8 +168,7 @@ fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<S
     val result = mapA.toMutableMap()
     for ((service, phone) in mapB) {
         result[service] =
-            if (result[service] != null && result[service] != phone) result[service] + ", " + phone
-            else phone
+            if (result[service] != null && result[service] != phone) result[service] + ", " + phone else phone
     }
     return result
 }
@@ -192,7 +190,6 @@ fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Doub
     }
     return result.mapValues { it.value.sum() / it.value.size }
 }
-
 
 /**
  * Средняя
@@ -269,8 +266,8 @@ fun hasAnagrams(words: List<String>): Boolean {
     val list = words.map { it.toUpperCase().toSet() }
     val previous = mutableListOf<Set<Char>>()
     for (i in list) {
-        if (previous.contains(i)) return true
-        previous.add(i)
+        if (previous.contains(i)) return true //Если в previous содержится элемент i, то возвращаем true
+        previous.add(i) //добавляем элемент i previous
     }
     return false
 }
@@ -338,8 +335,7 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
 fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
     val map = mutableMapOf<Int, Int>()
     for (i in list.indices) {
-        if (map[number - list[i]] != null) return Pair(map.getValue(number - list[i]), i).sorted()
-        else map[list[i]] = i
+        if (map[number - list[i]] != null) return Pair(map.getValue(number - list[i]), i).sorted() else map[list[i]] = i
         //Если в map содержится элемент number - list[i], то возвращаем Pair(map.getValue(number - list[i]), i).sorted()
         //где map.getValue(number - list[i]) это индекст соответсвующего элемента
         //иначе записываем элемент list[i] и его индекс в map
