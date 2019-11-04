@@ -262,7 +262,7 @@ fun extractRepeats(list: List<String>): Map<String, Int> {
  * Например:
  *   hasAnagrams(listOf("тор", "свет", "рот")) -> true
  */
-fun hasAnagrams(words: List<String>): Boolean{
+fun hasAnagrams(words: List<String>): Boolean {
     val list = words.map { it.toUpperCase().toSet() }
     val previous = mutableListOf<Set<Char>>()
     for (i in list) {
@@ -304,11 +304,9 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
             do {
                 val toAdd = mutableSetOf<String>()
                 val lastSize = result[friend]!!.size
-                for (anotherFriend in result[friend]!!) {
-                    if (friends[anotherFriend] != null) for (element in friends.getValue(anotherFriend)) {
-                        if (element != friend) toAdd.add(element)
-                    }
-                    if (friends[anotherFriend] == null) result[anotherFriend] = mutableSetOf()
+                for (anotherFriend in result.getValue(friend)) {
+                    if (friends[anotherFriend] != null) toAdd.addAll(friends.getValue(anotherFriend).filter { it != friend })
+                    else result[anotherFriend] = mutableSetOf()
                 }
                 result[friend]!!.addAll(toAdd)
             } while (lastSize < result[friend]!!.size)
