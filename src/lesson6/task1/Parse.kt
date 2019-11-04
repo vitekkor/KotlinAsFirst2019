@@ -141,7 +141,7 @@ fun flattenPhoneNumber(phone: String): String {
  * При нарушении формата входной строки или при отсутствии в ней чисел, вернуть -1.
  */
 fun bestLongJump(jumps: String): Int {
-    if (!jumps.matches(Regex("""(\d*|[-%]* [-%]*)+ \d+"""))) return -1
+    if (!jumps.matches(Regex("""(\d+[\- %]*)+"""))) return -1
     var result = -1
     val attempts = jumps.split(" ")
     for (attempt in attempts) {
@@ -183,12 +183,12 @@ fun bestHighJump(jumps: String): Int {
 fun plusMinus(expression: String): Int {
     require(expression.matches(Regex("""(\d+ [+-] )*\d+""")))
     val expressionToCalculate = expression.split(" ")
-    val result = mutableListOf(expressionToCalculate[0].toInt())
+    var result = expressionToCalculate[0].toInt()
     for (i in 2 until expressionToCalculate.size step 2) {
-        result.add(expressionToCalculate[i].toInt())
-        if (expressionToCalculate[i - 1] == "-") result[result.lastIndex] *= -1
+        val digit = expressionToCalculate[i].toInt()
+        result += if (expressionToCalculate[i - 1] == "-") -1 * digit else digit
     }
-    return result.sum()
+    return result
 }
 
 /**

@@ -196,8 +196,9 @@ fun factorize(n: Int): List<Int> {
     var nn = n
     val result = mutableListOf<Int>()
     while (nn > 1) {
-        result += minDivisor(nn)
-        nn /= minDivisor(nn)
+        val minDivisor = minDivisor(nn)
+        result += minDivisor
+        nn /= minDivisor
     }
     return result
 }

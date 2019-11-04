@@ -173,10 +173,6 @@ fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<S
     return result
 }
 
-fun main() {
-
-}
-
 /**
  * Средняя
  *
@@ -188,15 +184,11 @@ fun main() {
  *     -> mapOf("MSFT" to 150.0, "NFLX" to 40.0)
  */
 fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Double> {
-    val preResult = mutableMapOf<String, MutableList<Double>>()
-    val result = mutableMapOf<String, Double>()
+    val result = mutableMapOf<String, MutableList<Double>>()
     for ((act, cost) in stockPrices) {
-        preResult.getOrPut(act, { mutableListOf() }).add(cost)
+        result.getOrPut(act, { mutableListOf() }).add(cost)
     }
-    preResult.keys.forEach {
-        result[it] = (preResult[it]?.sumByDouble { element -> element } ?: 0.0) / preResult[it]?.size!!
-    }
-    return result
+    return result.mapValues { it.value.sum() / it.value.size }
 }
 
 
@@ -239,7 +231,7 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
 fun canBuildFrom(chars: List<Char>, word: String): Boolean {
     val setOfWord = word.toUpperCase().toSet()
     val setOfChars = chars.map { it.toUpperCase() }.toSet()
-    return setOfWord.intersect(setOfChars) == setOfWord
+    return setOfChars.containsAll(setOfWord)
 }
 
 /**
