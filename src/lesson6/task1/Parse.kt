@@ -316,4 +316,19 @@ fun romanToArabic(chr: Char, nextChr: Char): Int = when (chr) {
  * IllegalArgumentException должен бросаться даже если ошибочная команда не была достигнута в ходе выполнения.
  *
  */
-fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> = TODO()
+fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
+    var sensor = cells / 2
+    val result = MutableList(cells) { 0 }
+    var current = 0
+    while (current <= limit && current < commands.length && sensor in 0 until result.size) {
+        when (commands[current]) {
+            '+' -> result[sensor]++
+            '-' -> result[sensor]--
+            '>' -> sensor++
+            '<' -> sensor--
+        }
+        current++
+    }
+    check(sensor in 0 until result.size)
+    return result
+}

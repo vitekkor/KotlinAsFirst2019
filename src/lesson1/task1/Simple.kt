@@ -2,6 +2,7 @@
 
 package lesson1.task1
 
+import lesson7.task1.centerFile
 import kotlin.math.*
 
 /**
@@ -51,6 +52,7 @@ fun quadraticRootProduct(a: Double, b: Double, c: Double): Double {
 fun main() {
     val x1x2 = quadraticRootProduct(1.0, 13.0, 42.0)
     println("Root product: $x1x2")
+    centerFile("input/center_in2.txt", "temp1.txt")
 }
 
 /**
