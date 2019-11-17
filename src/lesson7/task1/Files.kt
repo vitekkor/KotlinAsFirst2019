@@ -248,7 +248,7 @@ fun top20Words(inputName: String): Map<String, Int> {
 /**= countSubstrings(
 inputName,
 File(inputName).readText().toLowerCase().split(Regex("""[ \d.?,;:!\-()"]+"""))
-).toList().sortedBy { (_, value) -> value }.toMap()*/
+).toList().sortedBy { (_, value) -> value }.toMap() */
 /**
  * Средняя
  *
