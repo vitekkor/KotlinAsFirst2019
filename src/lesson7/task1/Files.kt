@@ -131,11 +131,12 @@ fun centerFile(inputName: String, outputName: String) {
     val inputStream = theLongestLine(File(inputName).readLines())
     val outputStream = File(outputName).bufferedWriter()
     val largestLength = inputStream.last().toInt()
-    for (line in inputStream) {
-        if (line.toIntOrNull() != null) continue
-        outputStream.write(line.padStart(line.length + (largestLength - line.length) / 2, ' '))
-        outputStream.newLine()
-    }
+    if (inputStream.size == 2) outputStream.write(File(inputName).readText()) else
+        for (line in inputStream) {
+            if (line.toIntOrNull() != null) continue
+            outputStream.write(line.padStart(line.length + (largestLength - line.length) / 2, ' '))
+            outputStream.newLine()
+        }
     outputStream.close()
 }
 
@@ -231,8 +232,23 @@ fun alignFileByWidth(inputName: String, outputName: String) {
  * Ключи в ассоциативном массиве должны быть в нижнем регистре.
  *
  */
-fun top20Words(inputName: String): Map<String, Int> = TODO()
-
+fun top20Words(inputName: String): Map<String, Int> {
+    val result = mutableMapOf<String, Int>()
+    val inputStream = File(inputName).readText().toLowerCase()
+    val strings = inputStream.split(Regex("""[^a-zа-яё]"""))
+    val wordsNoRepeats = strings.toSet()
+    for (word in wordsNoRepeats) {
+        if (word == "") continue
+        result[word] = strings.count { it == word }
+    }
+    if (result.size > 20)
+        return result.toList().sortedBy { (_, value) -> value }.reversed().dropLast(result.size - 20).toMap()
+    return result
+}
+/**= countSubstrings(
+inputName,
+File(inputName).readText().toLowerCase().split(Regex("""[ \d.?,;:!\-()"]+"""))
+).toList().sortedBy { (_, value) -> value }.toMap()*/
 /**
  * Средняя
  *
