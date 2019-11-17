@@ -241,9 +241,9 @@ fun convert(n: Int, base: Int): List<Int> {
  * Использовать функции стандартной библиотеки, напрямую и полностью решающие данную задачу
  * (например, n.toString(base) и подобные), запрещается.
  */
-fun convertToString(n: Int, base: Int): String = convert(n, base).joinToString("") { symbolFromNumSystem(it) }
+fun convertToString(n: Int, base: Int): String = convert(n, base).joinToString("") { symbolFromNumSystem(it).toString() }
 
-fun symbolFromNumSystem(digit: Int): String = if (digit > 9) ('a' - 10 + digit).toString() else "$digit"
+fun symbolFromNumSystem(digit: Int): Char = if (digit > 9) ('a' - 10 + digit) else '0' + digit
 
 /**
  * Средняя

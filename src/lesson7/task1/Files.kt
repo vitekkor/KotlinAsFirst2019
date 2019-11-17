@@ -234,8 +234,7 @@ fun alignFileByWidth(inputName: String, outputName: String) {
  */
 fun top20Words(inputName: String): Map<String, Int> {
     val result = mutableMapOf<String, Int>()
-    val inputStream = File(inputName).readText().toLowerCase()
-    val strings = inputStream.split(Regex("""[^a-zа-яё]"""))
+    val strings = File(inputName).readText().toLowerCase().split(Regex("""[^a-zа-яё]"""))
     val wordsNoRepeats = strings.toSet()
     for (word in wordsNoRepeats) {
         if (word == "") continue
