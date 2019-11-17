@@ -44,20 +44,20 @@ fun timeSecondsToStr(seconds: Int): String {
 /**
  * Пример: консольный ввод
  */
-fun main() {
-    println("Введите время в формате ЧЧ:ММ:СС")
-    val line = readLine()
-    if (line != null) {
-        val seconds = timeStrToSeconds(line)
-        if (seconds == -1) {
-            println("Введённая строка $line не соответствует формату ЧЧ:ММ:СС")
-        } else {
-            println("Прошло секунд с начала суток: $seconds")
-        }
-    } else {
-        println("Достигнут <конец файла> в процессе чтения строки. Программа прервана")
-    }
+/**fun main() {
+println("Введите время в формате ЧЧ:ММ:СС")
+val line = readLine()
+if (line != null) {
+val seconds = timeStrToSeconds(line)
+if (seconds == -1) {
+println("Введённая строка $line не соответствует формату ЧЧ:ММ:СС")
+} else {
+println("Прошло секунд с начала суток: $seconds")
 }
+} else {
+println("Достигнут <конец файла> в процессе чтения строки. Программа прервана")
+}
+}*/
 
 
 /**
@@ -317,18 +317,59 @@ fun romanToArabic(chr: Char, nextChr: Char): Int = when (chr) {
  *
  */
 fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
+    val positionOfBrackets = verifyBrackets(commands)
+    if (positionOfBrackets[-1] != null) throw IllegalArgumentException()
     var sensor = cells / 2
     val result = MutableList(cells) { 0 }
     var current = 0
-    while (current <= limit && current < commands.length && sensor in 0 until result.size) {
+    var count = 0
+    while (count < limit && current < commands.length && sensor in 0 until result.size) {
         when (commands[current]) {
             '+' -> result[sensor]++
             '-' -> result[sensor]--
             '>' -> sensor++
             '<' -> sensor--
+            '[' -> if (result[sensor] == 0) {
+                current = positionOfBrackets.getValue(current)
+                count = current
+            }
+            ']' -> if (result[sensor] != 0) {
+                var temp = 0
+                positionOfBrackets.forEach { if (it.value == current) temp = it.key }
+                count += current - temp - 1
+                current = temp
+            }
         }
         current++
+        count++
     }
     check(sensor in 0 until result.size)
     return result
+}
+
+fun verifyBrackets(commands: String): Map<Int, Int> {
+    val mapOfBrackets = mutableMapOf<Int, Int>()
+    val validCharacters = listOf('+', '-', ' ', '>', '<')
+    val listOfNestedBrackets = mutableListOf<Int>()
+    for (i in commands.indices) {
+        when (commands[i]) {
+            '[' -> {
+                mapOfBrackets[i] = -1
+                listOfNestedBrackets.add(i)
+            }
+            ']' -> {
+                if (listOfNestedBrackets.last() != null) {
+                    mapOfBrackets[listOfNestedBrackets.last()] = i
+                    listOfNestedBrackets.removeAt(listOfNestedBrackets.lastIndex)
+                } else return mapOf(-1 to -1)
+            }
+            !in validCharacters -> return mapOf(-1 to -1)
+        }
+    }
+    if (mapOfBrackets.any { it.value == -1 }) return mapOf(-1 to -1)
+    return mapOfBrackets
+}
+
+fun main() {
+    println(verifyBrackets(">+>[+>"))
 }
