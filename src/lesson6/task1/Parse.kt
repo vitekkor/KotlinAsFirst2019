@@ -126,9 +126,22 @@ fun dateDigitToStr(digital: String): String {
  * PS: Дополнительные примеры работы функции можно посмотреть в соответствующих тестах.
  */
 fun flattenPhoneNumber(phone: String): String {
-    if (!phone.matches(Regex("""\+?([\d -]+|(\(+[\d -]+\)+))*"""))) return ""
-    return phone.filter { it != ' ' && it != '-' && it != '(' && it != ')' }
+    val clearPhone = phone.filter { it != ' ' }
+    val plusAndDigit = """(\+\d)?"""
+    val minusOrDigit = """(\d|((?<=\d)-+(?=\d)))"""
+    val brackets = "(\\($minusOrDigit+\\))?"
+    val pattern = "$plusAndDigit$minusOrDigit*$brackets$minusOrDigit+"
+    return if (clearPhone.matches(
+            Regex(pattern)
+        )
+    )
+        clearPhone.filter { it !in listOf('-', '(', ')') }
+    else ""
 }
+/**
+if (!phone.matches(Regex("""\+?([\d -]+|(\(+[\d -]+\)+))*"""))) return ""
+return phone.filter { it != ' ' && it != '-' && it != '(' && it != ')' }
+ */
 
 /**
  * Средняя
