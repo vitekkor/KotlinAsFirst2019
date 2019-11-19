@@ -129,7 +129,7 @@ fun dateDigitToStr(digital: String): String {
 fun flattenPhoneNumber(phone: String): String {
     if (!phone.matches(Regex("""\+?([\d -]+|(\(+[\d -]+\)+))*"""))) return ""
     var result = ""
-    for (i in phone.filter { it != ' ' }) {
+    for (i in phone) {
         if (i.isDigit() || i == '+') result += i
     }
     return result
@@ -328,7 +328,8 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
     val result = MutableList(cells) { 0 }
     var current = 0
     var count = 0
-    while (count < limit && current < commands.length && sensor in 0 until result.size) {
+    while (count < limit && current < commands.length) {
+        check(sensor in 0 until result.size)
         when (commands[current]) {
             '+' -> result[sensor]++
             '-' -> result[sensor]--
@@ -347,7 +348,6 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
         current++
         count++
     }
-    check(sensor in 0 until result.size)
     return result
 }
 
@@ -375,5 +375,5 @@ fun verifyBrackets(commands: String): Map<Int, Int> {
 }
 
 fun main() {
-    println(computeDeviceCells(1, "+[++]", 500))
+    println()
 }

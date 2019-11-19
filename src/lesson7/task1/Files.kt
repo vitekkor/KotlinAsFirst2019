@@ -128,31 +128,40 @@ fun foo(char: Char, lower: Boolean): String {
  *
  */
 fun centerFile(inputName: String, outputName: String) {
-    val inputStream = theLongestLine(File(inputName).readLines())
+    val inputStream = theLongestLine(File(inputName).readText().split("""\n"""), true)
     val outputStream = File(outputName).bufferedWriter()
     val largestLength = inputStream.last().toInt()
-    if (inputStream.size == 2) outputStream.write(File(inputName).readText()) else
-        for (line in inputStream) {
-            if (line.toIntOrNull() != null) continue
-            outputStream.write(line.padStart(line.length + (largestLength - line.length) / 2, ' '))
-            outputStream.newLine()
-        }
+    //if (inputStream.size == 2) outputStream.write(File(inputName).readText()) else
+    for (line in inputStream) {
+        if (line.toIntOrNull() != null) continue
+        outputStream.write(line.padStart(line.length + (largestLength - line.length) / 2, ' '))
+        outputStream.newLine()
+    }
     outputStream.close()
 }
 
-fun theLongestLine(inputLines: List<String>): List<String> {
+fun theLongestLine(inputLines: List<String>, wantToCenter: Boolean): List<String> {
     var count = 0
     val outputLines = mutableListOf<String>()
     for (i in inputLines.indices) {
-        val splitted = inputLines[i].split(" ").filter { it != "" }
-        val currentLength = inputLines[i].count { it != ' ' } + splitted.size - 1
-        if (currentLength > count) count = currentLength
-        outputLines.add(splitted.joinToString(" "))
+        if (wantToCenter) {
+            val lineWithOutSpaces = inputLines[i].dropWhile { it == ' ' }.dropLastWhile { it == ' ' }
+            outputLines.add(lineWithOutSpaces)
+            val currentLength = lineWithOutSpaces.length
+            if (currentLength > count) count = currentLength
+        } else {
+            val splitted = inputLines[i].split(" ").filter { it != "" }
+            val currentLength = inputLines[i].count { it != ' ' } + splitted.size - 1
+            if (currentLength > count) count = currentLength
+            outputLines.add(splitted.joinToString(" "))
+        }
     }
     outputLines.add("$count")
     return outputLines
 }
-
+//иа  СвТгб  абб\nВАВ,
+//иа  СвТгб  абб
+//      ВАВ,
 /**
  * Сложная
  *
@@ -181,7 +190,7 @@ fun theLongestLine(inputLines: List<String>): List<String> {
  * 8) Если входной файл удовлетворяет требованиям 1-7, то он должен быть в точности идентичен выходному файлу
  */
 fun alignFileByWidth(inputName: String, outputName: String) {
-    val inputStream = theLongestLine(File(inputName).readLines())
+    val inputStream = theLongestLine(File(inputName).readLines(), false)
     val outputStream = File(outputName).bufferedWriter()
     val largestLength = inputStream.last().toInt()
     for (line in inputStream) {
