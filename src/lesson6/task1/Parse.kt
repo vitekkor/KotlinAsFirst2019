@@ -3,6 +3,7 @@
 package lesson6.task1
 
 import lesson2.task2.daysInMonth
+import lesson5.task1.canBuildFrom
 
 /**
  * Пример
@@ -125,9 +126,14 @@ fun dateDigitToStr(digital: String): String {
  *
  * PS: Дополнительные примеры работы функции можно посмотреть в соответствующих тестах.
  */
-fun flattenPhoneNumber(phone: String): String = if (!phone.matches(Regex("""\+?([\d -]+|(\(+[\d -]+\)+))*"""))) "" else
-    phone.filter { it !in listOf(' ', '-', '(', ')') }
-
+fun flattenPhoneNumber(phone: String): String {
+    if (!phone.matches(Regex("""\+?([\d -]+|(\(+[\d -]+\)+))*"""))) return ""
+    var result = ""
+    for (i in phone.filter { it != ' ' }) {
+        if (i.isDigit() || i == '+') result += i
+    }
+    return result
+}
 
 /**
  * Средняя
@@ -317,7 +323,7 @@ fun romanToArabic(chr: Char, nextChr: Char): Int = when (chr) {
  */
 fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
     val positionOfBrackets = verifyBrackets(commands)
-    if (positionOfBrackets[-1] != null) throw IllegalArgumentException("Unpaired closing bracket")
+    if (positionOfBrackets[-1] != null) throw IllegalArgumentException()
     var sensor = cells / 2
     val result = MutableList(cells) { 0 }
     var current = 0
@@ -335,7 +341,6 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
             ']' -> if (result[sensor] != 0) {
                 var temp = 0
                 positionOfBrackets.forEach { if (it.value == current) temp = it.key }
-                count += current - temp - 1
                 current = temp
             }
         }
@@ -370,5 +375,5 @@ fun verifyBrackets(commands: String): Map<Int, Int> {
 }
 
 fun main() {
-    println(verifyBrackets("]+"))
+    println(computeDeviceCells(1, "+[++]", 500))
 }
