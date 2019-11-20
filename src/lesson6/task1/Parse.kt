@@ -336,7 +336,6 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
             '<' -> sensor--
             '[' -> if (result[sensor] == 0) {
                 current = positionOfBrackets.getValue(current)
-                count = current
             }
             ']' -> if (result[sensor] != 0) {
                 var temp = 0

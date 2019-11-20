@@ -159,9 +159,7 @@ fun theLongestLine(inputLines: List<String>, wantToCenter: Boolean): List<String
     outputLines.add("$count")
     return outputLines
 }
-//иа  СвТгб  абб\nВАВ,
-//иа  СвТгб  абб
-//      ВАВ,
+
 /**
  * Сложная
  *
@@ -220,8 +218,6 @@ fun alignFileByWidth(inputName: String, outputName: String) {
     }
     outputStream.close()
 }
-//isBlank()  true, если пустая строка или пустые символы пробела, табуляции и т.п.
-// "123456   789".count { it != ' ' } = 9
 
 /**
  * Средняя
@@ -253,10 +249,7 @@ fun top20Words(inputName: String): Map<String, Int> {
         return result.toList().sortedBy { (_, value) -> value }.reversed().dropLast(result.size - 20).toMap()
     return result
 }
-/**= countSubstrings(
-inputName,
-File(inputName).readText().toLowerCase().split(Regex("""[ \d.?,;:!\-()"]+"""))
-).toList().sortedBy { (_, value) -> value }.toMap() */
+
 /**
  * Средняя
  *
@@ -293,7 +286,20 @@ File(inputName).readText().toLowerCase().split(Regex("""[ \d.?,;:!\-()"]+"""))
  * Обратите внимание: данная функция не имеет возвращаемого значения
  */
 fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: String) {
-    TODO()
+    File(outputName).bufferedWriter().use {
+        for (char in File(inputName).readText()) {
+            val newChar = if (dictionary[char.toLowerCase()] != null) {
+                val charInDictionary = dictionary.getValue(char.toLowerCase()).toLowerCase()
+                if (char.isLowerCase()) charInDictionary
+                else charInDictionary[0].toUpperCase() + charInDictionary.drop(1)
+            } else if (dictionary[char.toUpperCase()] != null) {
+                val charInDictionary = dictionary.getValue(char.toUpperCase()).toLowerCase()
+                if (char.isLowerCase()) charInDictionary
+                else charInDictionary[0].toUpperCase() + charInDictionary.drop(1)
+            } else char.toString()
+            it.write(newChar)
+        }
+    }
 }
 
 /**
@@ -321,7 +327,27 @@ fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: 
  * Обратите внимание: данная функция не имеет возвращаемого значения
  */
 fun chooseLongestChaoticWord(inputName: String, outputName: String) {
-    TODO()
+    val inputStream = File(inputName).readLines()
+    val outputStream = File(outputName).bufferedWriter()
+    val listOfChaoticWords = mutableListOf<String>()
+    var longestChaoticWord = -1
+    for (word in inputStream) {
+        if (allCharsDifferent(word)) {
+            listOfChaoticWords.add(word)
+            longestChaoticWord = maxOf(longestChaoticWord, word.length)
+        }
+    }
+    outputStream.write(listOfChaoticWords.filter { it.length == longestChaoticWord }.joinToString(", "))
+    outputStream.close()
+}
+
+fun allCharsDifferent(String: String): Boolean {
+    val list = mutableListOf<Char>()
+    for (char in String.toLowerCase()) {
+        if (list.isNotEmpty() && char in list) return false
+        list.add(char)
+    }
+    return true
 }
 
 /**
@@ -370,7 +396,57 @@ Suspendisse <s>et elit in enim tempus iaculis</s>.
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
  */
 fun markdownToHtmlSimple(inputName: String, outputName: String) {
-    TODO()
+    val inputStream = File(inputName).readLines()
+    val outputStream = File(outputName).bufferedWriter()
+    outputStream.write("<html>\n" + "<body>\n" + "<p>")
+    for (line in inputStream) {
+        val changedLine = mutableListOf<String>()
+        var wantToContinue = false
+        val info = mutableListOf(false, false, false)
+        if (line.isBlank()) outputStream.write("</p>\n" + "<p>") else {
+            for (i in line.windowed(2)) {
+                if (wantToContinue) {
+                    wantToContinue = false
+                    continue
+                }
+                when {
+                    i == "~~" -> if (!info[0]) {
+                        changedLine.add("<s>")
+                        info[0] = true
+                        wantToContinue = true
+                    } else {
+                        changedLine.add("</s>")
+                        info[0] = false
+                        wantToContinue = true
+                    }
+                    i == "**" -> if (!info[1]) {
+                        changedLine.add("<b>")
+                        info[1] = true
+                        wantToContinue = true
+                    } else {
+                        changedLine.add("</b>")
+                        info[1] = false
+                        wantToContinue = true
+                    }
+                    i[0] == '*' -> if (!info[2]) {
+                        changedLine.add("<i>")
+                        info[2] = true
+                    } else {
+                        changedLine.add("</i>")
+                        info[2] = false
+                    }
+                    else -> {
+                        changedLine.add(i[0].toString())
+                    }
+                }
+            }
+            if (!wantToContinue) changedLine.add(if (line.takeLast(1) == "*" && info[2]) "</i>" else line.takeLast(1))
+            outputStream.write(changedLine.joinToString(""))
+        }
+        outputStream.newLine()
+    }
+    outputStream.write("</p>\n" + "</body>\n" + "</html>\n")
+    outputStream.close()
 }
 
 /**
