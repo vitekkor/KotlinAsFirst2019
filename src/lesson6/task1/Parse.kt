@@ -127,12 +127,11 @@ fun dateDigitToStr(digital: String): String {
  * PS: Дополнительные примеры работы функции можно посмотреть в соответствующих тестах.
  */
 fun flattenPhoneNumber(phone: String): String {
-    if (!phone.matches(Regex("""\+?([\d -]+|(\(+[\d -]+\)+))*"""))) return ""
-    var result = ""
-    for (i in phone) {
-        if (i.isDigit() || i == '+') result += i
-    }
-    return result
+    val filterSpaces = phone.filter { it != ' ' }
+    if ((Regex("""\([^\d -]""")).containsMatchIn(filterSpaces) ||
+        !(Regex("""[+\d\-()]+""")).matches(filterSpaces)
+    ) return ""
+    return filterSpaces.filter { it !in listOf('-', '(', ')') }
 }
 
 /**
@@ -372,8 +371,4 @@ fun verifyBrackets(commands: String): Map<Int, Int> {
     }
     if (mapOfBrackets.any { it.value == -1 }) return mapOf(-1 to -1)
     return mapOfBrackets
-}
-
-fun main() {
-    println()
 }

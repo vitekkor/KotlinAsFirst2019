@@ -104,8 +104,8 @@ Basic, Ruby, Swift.
         centerFile("input/center_in3.txt", "temp.txt")
         assertFileContent(
             "temp.txt",
-            """Па  Па  па - Па
-                |      па;""".trimMargin()
+            """ АААЫБАБ
+                |аааЫбаб --""".trimMargin()
         )
         File("temp.txt").delete()
     }
