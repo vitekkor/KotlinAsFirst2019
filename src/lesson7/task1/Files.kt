@@ -290,12 +290,12 @@ fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: 
         for (char in File(inputName).readText()) {
             val newChar = if (dictionary[char.toLowerCase()] != null) {
                 val charInDictionary = dictionary.getValue(char.toLowerCase()).toLowerCase()
-                if (char.isLowerCase() || charInDictionary == "") charInDictionary
-                else charInDictionary[0].toUpperCase() + charInDictionary.drop(1)
+                if (char.isUpperCase() && charInDictionary != "")
+                    charInDictionary[0].toUpperCase() + charInDictionary.drop(1) else charInDictionary
             } else if (dictionary[char.toUpperCase()] != null) {
                 val charInDictionary = dictionary.getValue(char.toUpperCase()).toLowerCase()
-                if (char.isLowerCase() || charInDictionary == "") charInDictionary
-                else charInDictionary[0].toUpperCase() + charInDictionary.drop(1)
+                if (char.isUpperCase() && charInDictionary != "")
+                    charInDictionary[0].toUpperCase() + charInDictionary.drop(1) else charInDictionary
             } else char.toString()
             it.write(newChar)
         }
