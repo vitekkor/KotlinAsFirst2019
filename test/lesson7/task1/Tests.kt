@@ -104,8 +104,8 @@ Basic, Ruby, Swift.
         centerFile("input/center_in3.txt", "temp.txt")
         assertFileContent(
             "temp.txt",
-            """ АААЫБАБ
-                |аааЫбаб --""".trimMargin()
+            """ баа
+                |БАА --""".trimMargin()
         )
         File("temp.txt").delete()
     }
@@ -196,6 +196,13 @@ Basic, Ruby, Swift.
             "temp.txt"
         )
         assertFileContent("temp.txt", "Zzdrавствуy,\nmyyr!!!")
+        File("temp.txt").delete()
+        transliterate(
+            "input/trans_in2.txt",
+            mapOf('|' to ""),
+            "temp.txt"
+        )
+        assertFileContent("temp.txt", "")
         File("temp.txt").delete()
     }
 

@@ -290,11 +290,11 @@ fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: 
         for (char in File(inputName).readText()) {
             val newChar = if (dictionary[char.toLowerCase()] != null) {
                 val charInDictionary = dictionary.getValue(char.toLowerCase()).toLowerCase()
-                if (char.isLowerCase()) charInDictionary
+                if (char.isLowerCase() || charInDictionary == "") charInDictionary
                 else charInDictionary[0].toUpperCase() + charInDictionary.drop(1)
             } else if (dictionary[char.toUpperCase()] != null) {
                 val charInDictionary = dictionary.getValue(char.toUpperCase()).toLowerCase()
-                if (char.isLowerCase()) charInDictionary
+                if (char.isLowerCase() || charInDictionary == "") charInDictionary
                 else charInDictionary[0].toUpperCase() + charInDictionary.drop(1)
             } else char.toString()
             it.write(newChar)
@@ -403,7 +403,7 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
         val changedLine = mutableListOf<String>()
         var wantToContinue = false
         val info = mutableListOf(false, false, false)
-        if (line.isBlank()) outputStream.write("</p>\n" + "<p>") else {
+        if (line.isEmpty()) outputStream.write("</p>\n" + "<p>") else {
             for (i in line.windowed(2)) {
                 if (wantToContinue) {
                     wantToContinue = false

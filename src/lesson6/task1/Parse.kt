@@ -346,6 +346,7 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
         current++
         count++
     }
+    check(sensor in 0 until result.size)
     return result
 }
 
