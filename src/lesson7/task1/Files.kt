@@ -3,6 +3,7 @@
 package lesson7.task1
 
 import java.io.File
+import kotlin.math.pow
 
 /**
  * Пример
@@ -128,7 +129,7 @@ fun foo(char: Char, lower: Boolean): String {
  *
  */
 fun centerFile(inputName: String, outputName: String) {
-    val inputStream = theLongestLine(File(inputName).readLines(), true)
+    val inputStream = theLongestLine(File(inputName).readText().split("""\n"""), true)
     val outputStream = File(outputName).bufferedWriter()
     val largestLength = inputStream.last().toInt()
     //if (inputStream.size == 2) outputStream.write(File(inputName).readText()) else
@@ -591,7 +592,6 @@ fun markdownToHtml(inputName: String, outputName: String) {
  */
 fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
     val outputStream = File(outputName).bufferedWriter()
-    val lhvLength = lhv.toString().length
     var number = rhv
     val answer = (lhv * rhv).toString()
     val length = answer.length
@@ -600,7 +600,6 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
     outputStream.write("*" + rhv.toString().padStart(length))
     outputStream.newLine()
     repeat(length + 1) { outputStream.write("-") }
-    val j = number.toString().length
     var i = 0
     while (number != 0) {
         outputStream.newLine()
@@ -609,7 +608,7 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
             outputStream.write("+")
         }
         if (i == 1) i++
-        repeat(lhvLength - num.length + (j - i)) { outputStream.write(" ") }
+        repeat(length - num.length + 1 - i) { outputStream.write(" ") }
         outputStream.write(num)
         number /= 10
         i++
