@@ -132,7 +132,6 @@ fun centerFile(inputName: String, outputName: String) {
     val inputStream = theLongestLine(File(inputName).readText().split("""\n"""), true)
     val outputStream = File(outputName).bufferedWriter()
     val largestLength = inputStream.last().toInt()
-    //if (inputStream.size == 2) outputStream.write(File(inputName).readText()) else
     for (line in inputStream) {
         if (line.toIntOrNull() != null) continue
         outputStream.write(line.padStart(line.length + (largestLength - line.length) / 2, ' '))
@@ -405,43 +404,42 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
         var wantToContinue = false
         val info = mutableListOf(false, false, false)
         if (line.isEmpty()) outputStream.write("</p>\n" + "<p>") else {
-            for (i in line.windowed(2)) {
+            for (i in 1 until line.length) {
                 if (wantToContinue) {
                     wantToContinue = false
                     continue
                 }
                 when {
-                    i == "~~" -> if (!info[0]) {
-                        changedLine.add("<s>")
-                        info[0] = true
+                    line[i - 1] == '*' -> if (line[i] == '*') {
                         wantToContinue = true
-                    } else {
-                        changedLine.add("</s>")
-                        info[0] = false
-                        wantToContinue = true
-                    }
-                    i == "**" -> if (!info[1]) {
-                        changedLine.add("<b>")
-                        info[1] = true
-                        wantToContinue = true
-                    } else {
-                        changedLine.add("</b>")
-                        info[1] = false
-                        wantToContinue = true
-                    }
-                    i[0] == '*' -> if (!info[2]) {
+                        if (!info[0]) {
+                            changedLine.add("<b>")
+                            info[0] = true
+                        } else {
+                            changedLine.add("</b>")
+                            info[0] = false
+                        }
+                    } else if (!info[1]) {
                         changedLine.add("<i>")
-                        info[2] = true
+                        info[1] = true
                     } else {
                         changedLine.add("</i>")
-                        info[2] = false
+                        info[1] = false
                     }
-                    else -> {
-                        changedLine.add(i[0].toString())
+                    line[i - 1] == '~' && line[i] == '~' -> {
+                        wantToContinue = true
+                        if (!info[2]) {
+                            changedLine.add("<s>")
+                            info[2] = true
+                        } else {
+                            changedLine.add("</s>")
+                            info[2] = false
+                        }
                     }
+                    else -> changedLine.add(line[i - 1].toString())
                 }
             }
-            if (!wantToContinue) changedLine.add(if (line.takeLast(1) == "*" && info[2]) "</i>" else line.takeLast(1))
+            if (!wantToContinue) changedLine.add(if (line.takeLast(1) == "*" && info[1]) "</i>" else line.takeLast(1))
             outputStream.write(changedLine.joinToString(""))
         }
         outputStream.newLine()
