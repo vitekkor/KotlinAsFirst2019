@@ -399,10 +399,10 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
     val inputStream = File(inputName).readLines()
     val outputStream = File(outputName).bufferedWriter()
     outputStream.write("<html>\n" + "<body>\n" + "<p>")
+    var wantToContinue = false
+    val info = mutableListOf(false, false, false)
     for (line in inputStream) {
         val changedLine = mutableListOf<String>()
-        var wantToContinue = false
-        val info = mutableListOf(false, false, false)
         if (line.isEmpty()) outputStream.write("</p>\n" + "<p>") else {
             for (i in 1 until line.length) {
                 if (wantToContinue) {
