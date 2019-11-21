@@ -128,7 +128,7 @@ fun foo(char: Char, lower: Boolean): String {
  *
  */
 fun centerFile(inputName: String, outputName: String) {
-    val inputStream = theLongestLine(File(inputName).readText().split("""\n"""), true)
+    val inputStream = theLongestLine(File(inputName).readLines(), true)
     val outputStream = File(outputName).bufferedWriter()
     val largestLength = inputStream.last().toInt()
     //if (inputStream.size == 2) outputStream.write(File(inputName).readText()) else
@@ -607,8 +607,8 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
         val num = (number % 10 * lhv).toString()
         if (i > 0) {
             outputStream.write("+")
-            i++
         }
+        if (i == 1) i++
         repeat(lhvLength - num.length + (j - i)) { outputStream.write(" ") }
         outputStream.write(num)
         number /= 10
