@@ -3,7 +3,6 @@
 package lesson7.task1
 
 import java.io.File
-import kotlin.math.pow
 
 /**
  * Пример
@@ -135,7 +134,7 @@ fun centerFile(inputName: String, outputName: String) {
     for (line in inputStream) {
         if (line.toIntOrNull() != null) continue
         outputStream.write(line.padStart(line.length + (largestLength - line.length) / 2, ' '))
-        outputStream.newLine()
+        outputStream.write("\n")
     }
     outputStream.close()
 }
@@ -145,7 +144,7 @@ fun theLongestLine(inputLines: List<String>, wantToCenter: Boolean): List<String
     val outputLines = mutableListOf<String>()
     for (i in inputLines.indices) {
         if (wantToCenter) {
-            val lineWithOutSpaces = inputLines[i].dropWhile { it == ' ' }.dropLastWhile { it == ' ' }
+            val lineWithOutSpaces = inputLines[i].trim()
             outputLines.add(lineWithOutSpaces)
             val currentLength = lineWithOutSpaces.length
             if (currentLength > count) count = currentLength
@@ -399,9 +398,9 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
     val inputStream = File(inputName).readLines()
     val outputStream = File(outputName).bufferedWriter()
     outputStream.write("<html>\n" + "<body>\n" + "<p>")
-    var wantToContinue = false
     val info = mutableListOf(false, false, false)
     for (line in inputStream) {
+        var wantToContinue = false
         val changedLine = mutableListOf<String>()
         if (line.isEmpty()) outputStream.write("</p>\n" + "<p>") else {
             for (i in 1 until line.length) {
@@ -549,7 +548,24 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
  */
 fun markdownToHtmlLists(inputName: String, outputName: String) {
     TODO()
+    /**val inputStream = File(inputName).readLines()
+    File(outputName).bufferedWriter().use {
+    it.write("<html>\n" + "<body>\n")
+    var openLi = false
+    var openUl = MutableList(6) { false }
+    var openOl = MutableList(6) { false }
+    for (line in inputStream) {
+    val changedLine = mutableListOf<String>()
+    if (!line.matches(Regex("""\s*\*\s.*""")) && !line.matches(Regex("""\s*\d+\.\s.*"""))) changedLine.add(line) else {
+    }
+    it.write(changedLine.joinToString(""))
+    }
+    it.write("</body>\n" + "</html>\n")
+    }
+     */
 }
+
+fun multipleOfFour(line: String): Boolean = (line.length - line.dropWhile { it == ' ' }.length) % 4 == 0
 
 /**
  * Очень сложная
@@ -589,33 +605,33 @@ fun markdownToHtml(inputName: String, outputName: String) {
  *
  */
 fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
-    val outputStream = File(outputName).bufferedWriter()
     var number = rhv
     val answer = (lhv * rhv).toString()
     val length = answer.length
-    outputStream.write(lhv.toString().padStart(length + 1))
-    outputStream.newLine()
-    outputStream.write("*" + rhv.toString().padStart(length))
-    outputStream.newLine()
-    repeat(length + 1) { outputStream.write("-") }
-    var i = 0
-    while (number != 0) {
-        outputStream.newLine()
-        val num = (number % 10 * lhv).toString()
-        if (i > 0) {
-            outputStream.write("+")
+    File(outputName).bufferedWriter().use {
+        it.write(lhv.toString().padStart(length + 1))
+        it.newLine()
+        it.write("*" + rhv.toString().padStart(length))
+        it.newLine()
+        repeat(length + 1) { _ -> it.write("-") }
+        var i = 0
+        while (number != 0) {
+            it.newLine()
+            val num = (number % 10 * lhv).toString()
+            if (i > 0) {
+                it.write("+")
+            }
+            if (i == 1) i++
+            repeat(length - num.length + 1 - i) { _ -> it.write(" ") }
+            it.write(num)
+            number /= 10
+            i++
         }
-        if (i == 1) i++
-        repeat(length - num.length + 1 - i) { outputStream.write(" ") }
-        outputStream.write(num)
-        number /= 10
-        i++
+        it.newLine()
+        repeat(length + 1) { _ -> it.write("-") }
+        it.newLine()
+        it.write(answer.padStart(length + 1))
     }
-    outputStream.newLine()
-    repeat(length + 1) { outputStream.write("-") }
-    outputStream.newLine()
-    outputStream.write(answer.padStart(length + 1))
-    outputStream.close()
 }
 
 
