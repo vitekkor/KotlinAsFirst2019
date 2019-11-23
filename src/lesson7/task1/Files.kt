@@ -402,7 +402,7 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
     for (line in inputStream) {
         var wantToContinue = false
         val changedLine = mutableListOf<String>()
-        if (line.isEmpty()) outputStream.write("</p>\n" + "<p>") else {
+        if (line.isBlank() && line.isEmpty()) outputStream.write("</p>\n" + "<p>") else {
             for (i in 1 until line.length) {
                 if (wantToContinue) {
                     wantToContinue = false
