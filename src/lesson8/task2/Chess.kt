@@ -2,6 +2,8 @@
 
 package lesson8.task2
 
+import kotlin.math.abs
+
 /**
  * Клетка шахматной доски. Шахматная доска квадратная и имеет 8 х 8 клеток.
  * Поэтому, обе координаты клетки (горизонталь row, вертикаль column) могут находиться в пределах от 1 до 8.
@@ -83,7 +85,27 @@ fun rookMoveNumber(start: Square, end: Square): Int {
  *          rookTrajectory(Square(3, 5), Square(8, 5)) = listOf(Square(3, 5), Square(8, 5))
  * Если возможно несколько вариантов самой быстрой траектории, вернуть любой из них.
  */
-fun rookTrajectory(start: Square, end: Square): List<Square> = TODO()
+fun rookTrajectory(start: Square, end: Square): List<Square> {
+    val result = mutableListOf<Square>()
+    var x = start.column
+    var y = start.row
+    result.add(start)
+    while (Square(x, y) != end) {
+        val differenceX = abs(x - end.column)
+        val differenceY = abs(y - end.row)
+        when (x - end.column) {
+            in 1..7 -> x -= differenceX
+            in -7..-1 -> x += differenceX
+            else ->
+                when (y - end.row) {
+                    in 1..7 -> y -= differenceY
+                    in -7..-1 -> y += differenceY
+                }
+        }
+        result.add(Square(x, y))
+    }
+    return result
+}
 
 /**
  * Простая
@@ -108,7 +130,15 @@ fun rookTrajectory(start: Square, end: Square): List<Square> = TODO()
  * Примеры: bishopMoveNumber(Square(3, 1), Square(6, 3)) = -1; bishopMoveNumber(Square(3, 1), Square(3, 7)) = 2.
  * Слон может пройти через клетку (6, 4) к клетке (3, 7).
  */
-fun bishopMoveNumber(start: Square, end: Square): Int = TODO()
+fun bishopMoveNumber(start: Square, end: Square): Int {
+    require(start.inside() && end.inside())
+    return when {
+        (start.column - end.column + (start.row - end.row)) % 2 != 0 -> -1
+        start == end -> 0
+        abs(start.column - end.column) == abs(start.row - end.row) -> 1
+        else -> 2
+    }
+}
 
 /**
  * Сложная
@@ -128,7 +158,26 @@ fun bishopMoveNumber(start: Square, end: Square): Int = TODO()
  *          bishopTrajectory(Square(1, 3), Square(6, 8)) = listOf(Square(1, 3), Square(6, 8))
  * Если возможно несколько вариантов самой быстрой траектории, вернуть любой из них.
  */
-fun bishopTrajectory(start: Square, end: Square): List<Square> = TODO()
+fun bishopTrajectory(start: Square, end: Square): List<Square> {
+    val result = mutableListOf(start)
+    when (bishopMoveNumber(start, end)) {
+        -1 -> return listOf()
+        0 -> return listOf(start)
+        1 -> return listOf(start, end)
+        else -> {
+            var x = start.column
+            var y = start.row
+            while (abs(x - end.column) != abs(y - end.row)) {
+                if (end.column + abs(start.row - end.row) - 1 <= 8) x++ else x--
+                if (end.row + abs(start.column - end.column) - 1 <= 8) y++ else y--
+            }
+            result.add(Square(x, y))
+            result.add(end)
+            return result
+        }
+    }
+
+}
 
 /**
  * Средняя
