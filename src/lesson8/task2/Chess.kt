@@ -35,7 +35,7 @@ data class Square(val column: Int, val row: Int) {
  * Если нотация некорректна, бросить IllegalArgumentException
  */
 fun square(notation: String): Square {
-    require(notation.isNotEmpty() && 'h' - notation[0] + 1 in 1..8 && notation.length == 2)
+    require(notation.isNotEmpty() && 'h' - notation[0] + 1 in 1..8 && notation[1].isDigit())
     return Square(8 - ('h' - notation[0]), notation[1] - '0')
 }
 
@@ -85,26 +85,10 @@ fun rookMoveNumber(start: Square, end: Square): Int {
  *          rookTrajectory(Square(3, 5), Square(8, 5)) = listOf(Square(3, 5), Square(8, 5))
  * Если возможно несколько вариантов самой быстрой траектории, вернуть любой из них.
  */
-fun rookTrajectory(start: Square, end: Square): List<Square> {
-    val result = mutableListOf<Square>()
-    var x = start.column
-    var y = start.row
-    result.add(start)
-    while (Square(x, y) != end) {
-        val differenceX = abs(x - end.column)
-        val differenceY = abs(y - end.row)
-        when (x - end.column) {
-            in 1..7 -> x -= differenceX
-            in -7..-1 -> x += differenceX
-            else ->
-                when (y - end.row) {
-                    in 1..7 -> y -= differenceY
-                    in -7..-1 -> y += differenceY
-                }
-        }
-        result.add(Square(x, y))
-    }
-    return result
+fun rookTrajectory(start: Square, end: Square): List<Square> = when (rookMoveNumber(start, end)) {
+    0 -> listOf(start)
+    1 -> listOf(start, end)
+    else -> listOf(start, Square(end.column, start.row), end)
 }
 
 /**
@@ -160,20 +144,25 @@ fun bishopMoveNumber(start: Square, end: Square): Int {
  */
 fun bishopTrajectory(start: Square, end: Square): List<Square> {
     val result = mutableListOf(start)
-    when (bishopMoveNumber(start, end)) {
-        -1 -> return listOf()
-        0 -> return listOf(start)
-        1 -> return listOf(start, end)
+    return when (bishopMoveNumber(start, end)) {
+        -1 -> listOf()
+        0 -> listOf(start)
+        1 -> listOf(start, end)
         else -> {
             var x = start.column
             var y = start.row
-            while (abs(x - end.column) != abs(y - end.row)) {
-                if (end.column + abs(start.row - end.row) - 1 <= 8) x++ else x--
-                if (end.row + abs(start.column - end.column) - 1 <= 8) y++ else y--
+            val conditionX = end.column + abs(start.row - end.row) - 1 <= 8
+            val conditionY = end.row + abs(start.column - end.column) - 1 <= 8
+            if (y != end.row) {
+                x += if (conditionX) (end.row + start.row) / 2 - 1 else -(end.row + start.row) / 2 + 1
+                y += if (conditionY) abs(x - start.column) else -abs(x - start.column)
+            } else {
+                x += if (conditionX) abs(end.column - x) / 2 else -abs(end.column - x) / 2
+                y += if (conditionY) abs(x - start.column) else -abs(x - start.column)
             }
             result.add(Square(x, y))
             result.add(end)
-            return result
+            result
         }
     }
 
