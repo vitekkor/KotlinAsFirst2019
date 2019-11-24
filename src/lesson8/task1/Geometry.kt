@@ -243,19 +243,9 @@ fun minContainingCircle(vararg points: Point): Circle {
     require(points.isNotEmpty())
     return if (points.size == 1) Circle(points[0], 0.0) else {
         val (p1, p2) = diameter(*points)
-        val circle1 = circleByDiameter(Segment(p1, p2))
-        val p3 = points.filter { it != p1 && it != p2 }.maxBy { it.distance(p1) + it.distance(p2) }
-        if (p3 != null) {
-            val circle2 = circleByThreePoints(p1, p2, p3)
-            var contains = true
-            for (p in points) {
-                if (!circle1.contains(p)) {
-                    contains = false
-                    break
-                }
-            }
-            if (contains) if (circle1.radius < circle2.radius) circle1 else circle2 else circle2
-        } else circle1
+        var circle = circleByDiameter(Segment(p1, p2))
+        for (p in points) if (!circle.contains(p)) circle = circleByThreePoints(p1, p2, p)
+        circle
     }
 }
 
