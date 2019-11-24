@@ -3,6 +3,7 @@
 package lesson8.task2
 
 import kotlin.math.abs
+import kotlin.math.sign
 
 /**
  * Клетка шахматной доски. Шахматная доска квадратная и имеет 8 х 8 клеток.
@@ -35,7 +36,7 @@ data class Square(val column: Int, val row: Int) {
  * Если нотация некорректна, бросить IllegalArgumentException
  */
 fun square(notation: String): Square {
-    require(notation.isNotEmpty() && 'h' - notation[0] + 1 in 1..8 && notation[1].isDigit())
+    require(notation.length == 2 && 'h' - notation[0] + 1 in 1..8 && notation[1].isDigit())
     return Square(8 - ('h' - notation[0]), notation[1] - '0')
 }
 
@@ -149,20 +150,19 @@ fun bishopTrajectory(start: Square, end: Square): List<Square> {
         0 -> listOf(start)
         1 -> listOf(start, end)
         else -> {
-            var x = start.column
-            var y = start.row
-            val conditionX = end.column + abs(start.row - end.row) - 1 <= 8
-            val conditionY = end.row + abs(start.column - end.column) - 1 <= 8
-            if (y != end.row) {
-                x += if (conditionX) (end.row + start.row) / 2 - 1 else -(end.row + start.row) / 2 + 1
-                y += if (conditionY) abs(x - start.column) else -abs(x - start.column)
-            } else {
-                x += if (conditionX) abs(end.column - x) / 2 else -abs(end.column - x) / 2
-                y += if (conditionY) abs(x - start.column) else -abs(x - start.column)
-            }
-            result.add(Square(x, y))
+            var b1 = start.row - start.column
+            var b2 = end.row + end.column
+            val x1 = (b2 - b1) / 2
+            val y1 = x1 + b1
+            b1 += 2 * start.column
+            b2 -= 2 * end.column
+            val x2 = (b1 - b2) / 2
+            val y2 = -x2 + b1
+            result.add(setOf(Square(x1, y1), Square(x2, y2)).first { it.inside() })
             result.add(end)
             result
+            // 2 уравнения - y = x + b и y = -x + b
+            // также необходимо учитывать, что b разные для обоих уравнений ( 1 = 3 + b и 1 = -3 + b)
         }
     }
 
@@ -211,6 +211,33 @@ fun kingMoveNumber(start: Square, end: Square): Int {
  * Если возможно несколько вариантов самой быстрой траектории, вернуть любой из них.
  */
 fun kingTrajectory(start: Square, end: Square): List<Square> = TODO()
+/**when (start) {
+end -> listOf(start)
+else -> {
+fun diagonal(list: MutableList<Square>, starts: Square) {
+var x = starts.column
+var y = starts.row
+while (Square(x, y) != end) {
+x += 1 * (end.column - x).sign
+y += 1 * (end.row - y).sign
+list.add(Square(x, y))
+}
+}
+
+val result = mutableListOf(start)
+if (bishopMoveNumber(start, end) == 1) {
+diagonal(result, start)
+} else {
+if (kingMoveNumber(start, end) > 2)
+while (bishopMoveNumber(start, end) != 1) {
+
+}
+diagonal(result, result.last())
+}
+result.add(end)
+result
+}
+}*/
 
 /**
  * Сложная
