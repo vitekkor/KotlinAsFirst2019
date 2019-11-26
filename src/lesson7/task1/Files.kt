@@ -395,7 +395,7 @@ Suspendisse <s>et elit in enim tempus iaculis</s>.
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
  */
 fun markdownToHtmlSimple(inputName: String, outputName: String) {
-    val inputStream = File(inputName).readLines()
+    val inputStream = File(inputName).readText().split("""\n""")
     val outputStream = File(outputName).bufferedWriter()
     outputStream.write("<html>\n" + "<body>\n" + "<p>")
     val info = mutableListOf(false, false, false)
@@ -448,7 +448,11 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
                     else -> changedLine.add(line[i - 1].toString())
                 }
             }
-            if (!wantToContinue) changedLine.add(if (line.takeLast(1) == "*" && info[1]) "</i>" else line.takeLast(1))
+            if (!wantToContinue) changedLine.add(
+                if (line.takeLast(1) == "*") if (!info[1]) "<i>" else "</>" else line.takeLast(
+                    1
+                )
+            )
             outputStream.write(changedLine.joinToString(""))
         }
         outputStream.newLine()
