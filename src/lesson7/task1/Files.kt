@@ -395,7 +395,7 @@ Suspendisse <s>et elit in enim tempus iaculis</s>.
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
  */
 fun markdownToHtmlSimple(inputName: String, outputName: String) {
-    val inputStream = File(inputName).readText().split("""\n""")
+    val inputStream = File(inputName).readLines()
     val outputStream = File(outputName).bufferedWriter()
     outputStream.write("<html>\n" + "<body>\n" + "<p>")
     val info = mutableListOf(false, false, false)

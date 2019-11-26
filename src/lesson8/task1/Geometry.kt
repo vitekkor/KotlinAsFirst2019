@@ -85,7 +85,7 @@ data class Circle(val center: Point, val radius: Double) {
      */
     fun contains(p: Point): Boolean = p.distance(center) <= radius
     //sqr(p.x - center.x) + sqr(p.y - center.y) <= sqr(radius) не работает
-    //Наконец-то понял почему (не хватало sqrt)
+    //Наконец-то понял почему (не хватало sqrt и погрешности)
 }
 
 /**
@@ -246,11 +246,10 @@ fun minContainingCircle(vararg points: Point): Circle {
     return if (points.size == 1) Circle(points[0], 0.0) else {
         val (p1, p2) = diameter(*points)
         var circle = circleByDiameter(Segment(p1, p2))
-        for (p in points) {
+        for (p in points.filter { it != p1 && it != p2 }) {
             if (!circle.contains(p)) circle = circleByThreePoints(p1, p2, p)
         }
         circle
     }
 }
-
 
