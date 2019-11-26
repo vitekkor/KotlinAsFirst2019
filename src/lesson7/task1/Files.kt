@@ -395,11 +395,12 @@ Suspendisse <s>et elit in enim tempus iaculis</s>.
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
  */
 fun markdownToHtmlSimple(inputName: String, outputName: String) {
-    val inputStream = File(inputName).readLines()
+    val inputStream = File(inputName).readText().split("""\n""")
     val outputStream = File(outputName).bufferedWriter()
     outputStream.write("<html>\n" + "<body>\n" + "<p>")
     val info = mutableListOf(false, false, false)
     var openedP = true
+    var paragraph = false
     for (line in inputStream) {
         var wantToContinue = false
         val changedLine = mutableListOf<String>()
@@ -407,10 +408,11 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
             outputStream.write("<p>")
             openedP = true
         }
-        if (line.isEmpty()) {
+        if (line.isEmpty() && paragraph) {
             outputStream.write("</p>\n")
             openedP = false
         } else {
+            paragraph = true
             for (i in 1 until line.length) {
                 if (wantToContinue) {
                     wantToContinue = false
