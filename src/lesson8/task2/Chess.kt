@@ -229,9 +229,13 @@ fun kingTrajectory(start: Square, end: Square): List<Square> = when (start) {
         when {
             rookMoveNumber(start, end) == 1 || bishopMoveNumber(start, end) == 1 -> diagonal(result, start, end)
             else -> {
-                val rook = rookTrajectory(start, end)[1]
-                val endsRow = abs(rook.column - start.column) + rook.row
-                diagonal(result, start, Square(rook.column, endsRow))
+                var x = start.column
+                var y = start.row
+                while (x != end.column || y != end.row) {
+                    x += 1 * (end.column - x).sign
+                    y += 1 * (end.row - y).sign
+                    result.add(Square(x, y))
+                }
                 diagonal(result, result.last(), end)
             }
         }
