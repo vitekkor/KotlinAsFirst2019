@@ -3,7 +3,9 @@
 package lesson8.task2
 
 import kotlin.math.abs
+import kotlin.math.ln
 import kotlin.math.sign
+import kotlin.math.sqrt
 
 /**
  * Клетка шахматной доски. Шахматная доска квадратная и имеет 8 х 8 клеток.
@@ -161,7 +163,7 @@ fun bishopTrajectory(start: Square, end: Square): List<Square> {
             result.add(setOf(Square(x1, y1), Square(x2, y2)).first { it.inside() })
             result.add(end)
             result
-            // 2 уравнения - y = x + b и y = -x + b
+            // 2 уравнения - y = x + b и y = -x + b. Всего 4 уравнения - по два для каждой из клеток Start и End
             // также необходимо учитывать, что b разные для обоих уравнений ( 1 = 3 + b и 1 = -3 + b)
         }
     }
@@ -210,34 +212,32 @@ fun kingMoveNumber(start: Square, end: Square): Int {
  *          kingTrajectory(Square(3, 5), Square(6, 2)) = listOf(Square(3, 5), Square(4, 4), Square(5, 3), Square(6, 2))
  * Если возможно несколько вариантов самой быстрой траектории, вернуть любой из них.
  */
-fun kingTrajectory(start: Square, end: Square): List<Square> = TODO()
-/**when (start) {
-end -> listOf(start)
-else -> {
-fun diagonal(list: MutableList<Square>, starts: Square) {
-var x = starts.column
-var y = starts.row
-while (Square(x, y) != end) {
-x += 1 * (end.column - x).sign
-y += 1 * (end.row - y).sign
-list.add(Square(x, y))
-}
-}
+fun kingTrajectory(start: Square, end: Square): List<Square> = when (start) {
+    end -> listOf(start)
+    else -> {
+        fun diagonal(list: MutableList<Square>, starts: Square, ends: Square) {
+            var x = starts.column
+            var y = starts.row
+            while (Square(x, y) != ends) {
+                x += 1 * (ends.column - x).sign
+                y += 1 * (ends.row - y).sign
+                list.add(Square(x, y))
+            }
+        }
 
-val result = mutableListOf(start)
-if (bishopMoveNumber(start, end) == 1) {
-diagonal(result, start)
-} else {
-if (kingMoveNumber(start, end) > 2)
-while (bishopMoveNumber(start, end) != 1) {
-
+        val result = mutableListOf(start)
+        when {
+            rookMoveNumber(start, end) == 1 || bishopMoveNumber(start, end) == 1 -> diagonal(result, start, end)
+            else -> {
+                val rook = rookTrajectory(start, end)[1]
+                val endsRow = abs(rook.column - start.column) + rook.row
+                diagonal(result, start, Square(rook.column, endsRow))
+                diagonal(result, result.last(), end)
+            }
+        }
+        result
+    }
 }
-diagonal(result, result.last())
-}
-result.add(end)
-result
-}
-}*/
 
 /**
  * Сложная

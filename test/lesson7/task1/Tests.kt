@@ -101,13 +101,20 @@ Basic, Ruby, Swift.
     @Test
     @Tag("Normal")
     fun centerFile() {
-        centerFile("input/center_in3.txt", "temp.txt")
+        centerFile("input/center_in1.txt", "temp.txt")
         assertFileContent(
             "temp.txt",
-            """БА ба; ба
-                |   БА""".trimMargin()
+            """              Съешь же ещё этих мягких французских булок, да выпей чаю.
+Широкая электрификация южных губерний даст мощный толчок подъёму сельского хозяйства.
+                                        Тест
+                                          """ +  // Avoiding trailing whitespaces problem
+                    """
+                                     Hello World
+           Во входном файле с именем inputName содержится некоторый текст.
+        Вывести его в выходной файл с именем outputName, выровняв по центру."""
         )
         File("temp.txt").delete()
+
     }
 
     @Test

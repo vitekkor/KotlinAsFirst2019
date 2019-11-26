@@ -128,13 +128,13 @@ fun foo(char: Char, lower: Boolean): String {
  *
  */
 fun centerFile(inputName: String, outputName: String) {
-    val inputStream = theLongestLine(File(inputName).readText().split("""\n"""), true)
+    val inputStream = theLongestLine(File(inputName).readLines(), true)
     val outputStream = File(outputName).bufferedWriter()
     val largestLength = inputStream.last().toInt()
     for (line in inputStream) {
         if (line.toIntOrNull() != null) continue
         outputStream.write(line.padStart(line.length + (largestLength - line.length) / 2, ' '))
-        outputStream.write("\n")
+        outputStream.newLine()
     }
     outputStream.close()
 }
@@ -399,10 +399,18 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
     val outputStream = File(outputName).bufferedWriter()
     outputStream.write("<html>\n" + "<body>\n" + "<p>")
     val info = mutableListOf(false, false, false)
+    var openedP = true
     for (line in inputStream) {
         var wantToContinue = false
         val changedLine = mutableListOf<String>()
-        if (line.isEmpty()) outputStream.write("</p>\n" + "<p>") else {
+        if (!openedP) {
+            outputStream.write("<p>")
+            openedP = true
+        }
+        if (line.isEmpty()) {
+            outputStream.write("</p>\n")
+            openedP = false
+        } else {
             for (i in 1 until line.length) {
                 if (wantToContinue) {
                     wantToContinue = false
@@ -443,7 +451,8 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
         }
         outputStream.newLine()
     }
-    outputStream.write("</p>\n" + "</body>\n" + "</html>\n")
+    if (openedP) outputStream.write("</p>\n")
+    outputStream.write("</body>\n" + "</html>\n")
     outputStream.close()
 }
 
