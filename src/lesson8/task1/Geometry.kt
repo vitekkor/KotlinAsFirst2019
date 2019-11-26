@@ -83,7 +83,7 @@ data class Circle(val center: Point, val radius: Double) {
      *
      * Вернуть true, если и только если окружность содержит данную точку НА себе или ВНУТРИ себя
      */
-    fun contains(p: Point): Boolean = p.distance(center) <= radius
+    fun contains(p: Point): Boolean = p.distance(center) <= radius + 1e-5
     //sqr(p.x - center.x) + sqr(p.y - center.y) <= sqr(radius) не работает
     //Наконец-то понял почему (не хватало sqrt и погрешности)
 }
@@ -252,4 +252,3 @@ fun minContainingCircle(vararg points: Point): Circle {
         circle
     }
 }
-
