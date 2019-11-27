@@ -295,6 +295,10 @@ fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: 
                 val charInDictionary = dictionary.getValue(char.toUpperCase()).toLowerCase()
                 if (char.isUpperCase() && charInDictionary != "")
                     charInDictionary[0].toUpperCase() + charInDictionary.drop(1) else charInDictionary
+            } else if (char.toUpperCase() == 'I' && dictionary['ı'] != null) {
+                val charInDictionary = dictionary.getValue('ı').toLowerCase()
+                if (char.isUpperCase() && charInDictionary != "")
+                    charInDictionary[0].toUpperCase() + charInDictionary.drop(1) else charInDictionary
             } else char.toString()
             it.write(newChar)
         }
