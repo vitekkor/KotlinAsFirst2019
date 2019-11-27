@@ -408,10 +408,12 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
             outputStream.write("<p>")
             openedP = true
         }
-        if (line.isEmpty() && paragraph) {
-            outputStream.write("</p>\n")
-            openedP = false
-            paragraph = false
+        if (line.isEmpty()) {
+            if (paragraph) {
+                outputStream.write("</p>\n")
+                openedP = false
+                paragraph = false
+            }
         } else {
             paragraph = true
             for (i in 1 until line.length) {
