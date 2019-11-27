@@ -41,32 +41,49 @@ interface Matrix<E> {
  * height = высота, width = ширина, e = чем заполнить элементы.
  * Бросить исключение IllegalArgumentException, если height или width <= 0.
  */
-fun <E> createMatrix(height: Int, width: Int, e: E): Matrix<E> = TODO()
+fun <E> createMatrix(height: Int, width: Int, e: E): Matrix<E> = MatrixImpl(height, width, e)
 
 /**
  * Средняя сложность
  *
  * Реализация интерфейса "матрица"
  */
-class MatrixImpl<E> : Matrix<E> {
-    override val height: Int = TODO()
+class MatrixImpl<E>(override val height: Int, override val width: Int, e: E) : Matrix<E> {
+    private val list = MutableList(height) { MutableList(width) { e } }
 
-    override val width: Int = TODO()
+    init {
+        require(height > 0 && width > 0)
+    }
 
-    override fun get(row: Int, column: Int): E = TODO()
+    override fun get(row: Int, column: Int): E = list[row][column]
 
-    override fun get(cell: Cell): E = TODO()
+    override fun get(cell: Cell): E = get(cell.row, cell.column)
 
     override fun set(row: Int, column: Int, value: E) {
-        TODO()
+        list[row][column] = value
     }
 
     override fun set(cell: Cell, value: E) {
-        TODO()
+        set(cell.row, cell.column, value)
     }
 
-    override fun equals(other: Any?) = TODO()
+    override fun equals(other: Any?): Boolean =
+        other is MatrixImpl<*> && height == other.height && width == other.width && list == other.list
 
-    override fun toString(): String = TODO()
+    override fun toString(): String = buildString {
+        append('[')
+        for (i in 0 until height) {
+            append('[')
+            for (j in 0 until width) {
+                if (j != 0) append(',')
+                append(get(i, j))
+            }
+            append(']')
+            if (i != height - 1) append(',')
+        }
+        append(']')
+    }
+
+    override fun hashCode(): Int = list.hashCode()
 }
 

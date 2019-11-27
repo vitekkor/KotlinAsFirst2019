@@ -569,24 +569,9 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
  */
 fun markdownToHtmlLists(inputName: String, outputName: String) {
     TODO()
-    /**val inputStream = File(inputName).readLines()
-    File(outputName).bufferedWriter().use {
-    it.write("<html>\n" + "<body>\n")
-    var openLi = false
-    var openUl = MutableList(6) { false }
-    var openOl = MutableList(6) { false }
-    for (line in inputStream) {
-    val changedLine = mutableListOf<String>()
-    if (!line.matches(Regex("""\s*\*\s.*""")) && !line.matches(Regex("""\s*\d+\.\s.*"""))) changedLine.add(line) else {
-    }
-    it.write(changedLine.joinToString(""))
-    }
-    it.write("</body>\n" + "</html>\n")
-    }
-     */
 }
 
-fun multipleOfFour(line: String): Boolean = (line.length - line.dropWhile { it == ' ' }.length) % 4 == 0
+fun multipleOfFour(line: String): Int = (line.length - line.dropWhile { it == ' ' }.length)
 
 /**
  * Очень сложная
