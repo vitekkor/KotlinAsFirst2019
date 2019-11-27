@@ -448,11 +448,14 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
                     else -> changedLine.add(line[i - 1].toString())
                 }
             }
-            if (!wantToContinue) changedLine.add(
-                if (line.takeLast(1) == "*") if (!info[1]) "<i>" else "</>" else line.takeLast(
-                    1
-                )
-            )
+            if (!wantToContinue)
+                if (line.takeLast(1) == "*") if (!info[1]) {
+                    changedLine.add("<i>")
+                    info[1] = true
+                } else {
+                    changedLine.add("</i>")
+                    info[1] = false
+                } else changedLine.add(line.takeLast(1))
             outputStream.write(changedLine.joinToString(""))
         }
         outputStream.newLine()
