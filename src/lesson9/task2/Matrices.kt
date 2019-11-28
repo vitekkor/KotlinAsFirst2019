@@ -4,6 +4,7 @@ package lesson9.task2
 
 import lesson9.task1.Matrix
 import lesson9.task1.createMatrix
+import kotlin.math.abs
 
 // Все задачи в этом файле требуют наличия реализации интерфейса "Матрица" в Matrix.kt
 
@@ -60,7 +61,40 @@ operator fun Matrix<Int>.plus(other: Matrix<Int>): Matrix<Int> {
  * 10 11 12  5
  *  9  8  7  6
  */
-fun generateSpiral(height: Int, width: Int): Matrix<Int> = TODO()
+fun generateSpiral(height: Int, width: Int): Matrix<Int> {
+    val result = createMatrix(height, width, 0)
+    val motion = mutableListOf(0 to 1, 1 to 0, 0 to -1, -1 to 0)
+    val countOfMotion = mutableListOf(0, 0, 0, 0)
+    var value = 1
+    var i = 0
+    var j = 0
+    var current = 0
+    while (value in 1..height * width) {
+        val pi = i
+        val pj = j
+        if (value != 1) {
+            i += motion[current].first
+            j += motion[current].second
+        }
+        if (countOfMotion[(current + 1) % 4] == 0) while (i in 0 until height && j in 0 until width) {
+            result[i, j] = value++
+            i += motion[current].first
+            j += motion[current].second
+        } else
+            while (abs(pj - j) - 1 < (countOfMotion[current] + countOfMotion[(current + 1) % 4])
+                && abs(pi - i) - 1 < (countOfMotion[current] + countOfMotion[(current + 1) % 4])
+            ) {
+                result[i, j] = value++
+                i += motion[current].first
+                j += motion[current].second
+            }
+        countOfMotion[current]++
+        i -= motion[current].first
+        j -= motion[current].second
+        current = (current + 1) % 4
+    }
+    return result
+}
 
 /**
  * Сложная
@@ -91,7 +125,25 @@ fun generateRectangles(height: Int, width: Int): Matrix<Int> = TODO()
  * 10 13 16 18
  * 14 17 19 20
  */
-fun generateSnake(height: Int, width: Int): Matrix<Int> = TODO()
+fun generateSnake(height: Int, width: Int): Matrix<Int> {
+    val result = createMatrix(height, width, 0)
+    var value = 1
+    for (j in 0 until width) {
+        var i = 0
+        while (i <= j) {
+            result[i, j - i] = value++
+            i++
+        }
+    }
+    for (i in 1 until height) {
+        var j = width - 1
+        while (j in 0 until width && i + width - 1 - j in 0 until height) {
+            result[i + width - 1 - j, j] = value++
+            j--
+        }
+    }
+    return result
+}
 
 /**
  * Средняя
