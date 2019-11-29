@@ -373,6 +373,13 @@ fun fifteenGameMoves(matrix: Matrix<Int>, moves: List<Int>): Matrix<Int> {
     return matrix
 }
 
+infix fun Matrix<Int>.indexOf(element: Int): Cell {
+    for (i in 0 until height) {
+        for (j in 0 until width) if (this[i, j] == element) return Cell(i, j)
+    }
+    return Cell(-1, -1)
+}
+
 /**
  * Очень сложная
  *

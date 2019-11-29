@@ -88,12 +88,5 @@ data class MatrixImpl<E>(override val height: Int, override val width: Int, val 
     }
 
     override fun hashCode(): Int = list.hashCode()
-    infix fun indexOf(element: E): Cell {
-        for (i in 0 until height) {
-            val j = list[i].indexOf(element)
-            if (j != -1) return Cell(i, j)
-        }
-        return Cell(-1, -1)
-    }
 }
 
