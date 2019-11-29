@@ -81,8 +81,8 @@ fun generateSpiral(height: Int, width: Int): Matrix<Int> {
             i += motion[current].first
             j += motion[current].second
         } else
-            while (abs(pj - j) - 1 < (countOfMotion[current] + countOfMotion[(current + 1) % 4])
-                && abs(pi - i) - 1 < (countOfMotion[current] + countOfMotion[(current + 1) % 4])
+            while (abs(pj - j) < width - countOfMotion[(current + 1) % 4]
+                && abs(pi - i) < height - countOfMotion[(current + 1) % 4]
             ) {
                 result[i, j] = value++
                 i += motion[current].first
@@ -130,7 +130,7 @@ fun generateSnake(height: Int, width: Int): Matrix<Int> {
     var value = 1
     for (j in 0 until width) {
         var i = 0
-        while (i <= j) {
+        while (i <= height - 1 && i <= j) {
             result[i, j - i] = value++
             i++
         }
