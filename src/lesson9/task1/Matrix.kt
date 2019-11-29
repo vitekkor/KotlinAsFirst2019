@@ -35,7 +35,6 @@ interface Matrix<E> {
     operator fun set(row: Int, column: Int, value: E)
 
     operator fun set(cell: Cell, value: E)
-    infix fun indexOf(element: E): Cell
 }
 
 /**
@@ -89,7 +88,7 @@ data class MatrixImpl<E>(override val height: Int, override val width: Int, val 
     }
 
     override fun hashCode(): Int = list.hashCode()
-    override fun indexOf(element: E): Cell {
+    infix fun indexOf(element: E): Cell {
         for (i in 0 until height) {
             val j = list[i].indexOf(element)
             if (j != -1) return Cell(i, j)
