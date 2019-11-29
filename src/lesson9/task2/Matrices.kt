@@ -2,6 +2,7 @@
 
 package lesson9.task2
 
+import lesson9.task1.Cell
 import lesson9.task1.Matrix
 import lesson9.task1.createMatrix
 import kotlin.math.abs
@@ -81,8 +82,8 @@ fun generateSpiral(height: Int, width: Int): Matrix<Int> {
             i += motion[current].first
             j += motion[current].second
         } else
-            while (abs(pj - j) < width - countOfMotion[(current + 1) % 4]
-                && abs(pi - i) < height - countOfMotion[(current + 1) % 4]
+            while (abs(pj - j) <= width - countOfMotion[(current + 1) % 4] - countOfMotion[(current + 3) % 4]
+                && abs(pi - i) <= height - countOfMotion[(current + 1) % 4] - countOfMotion[(current + 3) % 4]
             ) {
                 result[i, j] = value++
                 i += motion[current].first
@@ -110,7 +111,37 @@ fun generateSpiral(height: Int, width: Int): Matrix<Int> {
  *  1  2  2  2  2  1
  *  1  1  1  1  1  1
  */
-fun generateRectangles(height: Int, width: Int): Matrix<Int> = TODO()
+fun generateRectangles(height: Int, width: Int): Matrix<Int> {
+    val result = createMatrix(height, width, 0)
+    val motion = mutableListOf(0 to 1, 1 to 0, 0 to -1, -1 to 0)
+    var value = 1
+    var current = 0
+    var count = 0
+    while (count < width * height) {
+        val previous = count
+        var i = value - 1
+        var j = value - 1
+        do {
+            if (count - previous < (width + height - 2 - 4 * (value - 1)) * 2) {
+                i += motion[current].first
+                j += motion[current].second
+            }
+            while (i in 0 until height - value + 1 && j in 0 until width - value + 1 && result[i, j] == 0) {
+                result[i, j] = value
+                i += motion[current].first
+                j += motion[current].second
+                count++
+            }
+            if (count - previous < (width + height - 2 - 4 * (value - 1)) * 2) {
+                i -= motion[current].first
+                j -= motion[current].second
+            }
+            current = (current + 1) % 4
+        } while (count - previous < (width + height - 2 - 4 * (value - 1)) * 2)
+        value++
+    }
+    return result
+}
 
 /**
  * Сложная
