@@ -35,7 +35,7 @@ interface Matrix<E> {
     operator fun set(row: Int, column: Int, value: E)
 
     operator fun set(cell: Cell, value: E)
-    fun indexOf(element: E): Cell
+    infix fun indexOf(element: E): Cell
 }
 
 /**
@@ -52,7 +52,7 @@ fun <E> createMatrix(height: Int, width: Int, e: E): Matrix<E> = MatrixImpl(heig
  *
  * Реализация интерфейса "матрица"
  */
-class MatrixImpl<E>(override val height: Int, override val width: Int, e: E) : Matrix<E> {
+class MatrixImpl<E>(override val height: Int, override val width: Int, val e: E) : Matrix<E> {
     private val list = MutableList(height) { MutableList(width) { e } }
 
     init {
