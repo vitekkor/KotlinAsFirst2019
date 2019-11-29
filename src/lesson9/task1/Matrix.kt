@@ -5,7 +5,10 @@ package lesson9.task1
 /**
  * Ячейка матрицы: row = ряд, column = колонка
  */
-data class Cell(val row: Int, val column: Int)
+data class Cell(val row: Int, val column: Int) {
+    fun neighbour(other: Cell): Boolean =
+        row - 1 == other.row || row + 1 == other.row || column - 1 == other.column || column + 1 == other.column
+}
 
 /**
  * Интерфейс, описывающий возможности матрицы. E = тип элемента матрицы
@@ -32,6 +35,7 @@ interface Matrix<E> {
     operator fun set(row: Int, column: Int, value: E)
 
     operator fun set(cell: Cell, value: E)
+    fun indexOf(element: E): Cell
 }
 
 /**
@@ -85,5 +89,12 @@ class MatrixImpl<E>(override val height: Int, override val width: Int, e: E) : M
     }
 
     override fun hashCode(): Int = list.hashCode()
+    override fun indexOf(element: E): Cell {
+        for (i in 0 until height) {
+            val j = list[i].indexOf(element)
+            if (j != -1) return Cell(i, j)
+        }
+        return Cell(-1, -1)
+    }
 }
 

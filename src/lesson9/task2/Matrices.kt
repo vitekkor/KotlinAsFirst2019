@@ -202,7 +202,21 @@ fun <E> rotate(matrix: Matrix<E>): Matrix<E> = TODO()
  * 1 2 3
  * 3 1 2
  */
-fun isLatinSquare(matrix: Matrix<Int>): Boolean = TODO()
+fun isLatinSquare(matrix: Matrix<Int>): Boolean {
+    if (matrix.height != matrix.width) return false
+    val allDigits = mutableSetOf<Int>()
+    for (i in 1..matrix.height) allDigits.add(i)
+    for (i in 0 until matrix.height) {
+        val row = mutableSetOf<Int>()
+        val column = mutableSetOf<Int>()
+        for (j in 0 until matrix.width) {
+            row.add(matrix[i, j])
+            column.add(matrix[j, i])
+        }
+        if (row != allDigits || column != allDigits) return false
+    }
+    return true
+}
 
 /**
  * Средняя
@@ -238,7 +252,21 @@ fun sumNeighbours(matrix: Matrix<Int>): Matrix<Int> = TODO()
  * 0 0 1 0
  * 0 0 0 0
  */
-fun findHoles(matrix: Matrix<Int>): Holes = TODO()
+fun findHoles(matrix: Matrix<Int>): Holes {
+    val rows = mutableListOf<Int>()
+    val columns = mutableListOf<Int>()
+    for (i in 0 until matrix.height) {
+        val row = mutableSetOf<Int>()
+        val column = mutableSetOf<Int>()
+        for (j in 0 until matrix.width) {
+            row.add(matrix[i, j])
+            if (i in 0 until matrix.width && j in 0 until matrix.height) column.add(matrix[j, i])
+        }
+        if (row == setOf(0)) rows.add(i)
+        if (column == setOf(0)) columns.add(i)
+    }
+    return Holes(rows, columns)
+}
 
 /**
  * Класс для описания местонахождения "дырок" в матрице
@@ -289,7 +317,11 @@ fun canOpenLock(key: Matrix<Int>, lock: Matrix<Int>): Triple<Boolean, Int, Int> 
  * Инвертировать заданную матрицу.
  * При инвертировании знак каждого элемента матрицы следует заменить на обратный
  */
-operator fun Matrix<Int>.unaryMinus(): Matrix<Int> = TODO(this.toString())
+operator fun Matrix<Int>.unaryMinus(): Matrix<Int> {
+    for (i in 0 until height)
+        for (j in 0 until width) this[i, j] *= -1
+    return this
+}
 
 /**
  * Средняя
@@ -328,7 +360,18 @@ operator fun Matrix<Int>.times(other: Matrix<Int>): Matrix<Int> = TODO(this.toSt
  * 0  4 13  6
  * 3 10 11  8
  */
-fun fifteenGameMoves(matrix: Matrix<Int>, moves: List<Int>): Matrix<Int> = TODO()
+fun fifteenGameMoves(matrix: Matrix<Int>, moves: List<Int>): Matrix<Int> {
+    if (matrix.height != 4 && matrix.width != 4) throw IllegalStateException()
+    for (move in moves) {
+        require(move in 1..15)
+        val zero = matrix.indexOf(0)
+        val current = matrix.indexOf(move)
+        if (!zero.neighbour(current)) throw IllegalStateException()
+        matrix[zero] = move
+        matrix[current] = 0
+    }
+    return matrix
+}
 
 /**
  * Очень сложная
