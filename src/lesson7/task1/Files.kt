@@ -673,9 +673,13 @@ fun markdownToHtmlLists(inputName: String, outputName: String) {
                             last = ""
                         }
                         changedLine.add(line)
+                        changedLine.add("\n")
                     }
                 }
-            } else changedLine.add(line)
+            } else {
+                changedLine.add(line)
+                changedLine.add("\n")
+            }
             if (inputStream.lastIndex == inputStream.indexOf(line)) {
                 var previous = ""
                 fun lastOfUs(type: Char) {
@@ -724,7 +728,12 @@ fun multipleOfFour(line: String): Int = (line.length - line.dropWhile { it == ' 
  *
  */
 fun markdownToHtml(inputName: String, outputName: String) {
-    TODO()
+    markdownToHtmlLists(inputName, outputName)
+    val tmp = File(outputName).readText().removePrefix("<html>\n" + "<body>\n").removeSuffix("</body>\n" + "</html>")
+    File(outputName).bufferedWriter().use {
+        it.write(tmp)
+    }
+    markdownToHtmlSimple(outputName, outputName)
 }
 
 /**
