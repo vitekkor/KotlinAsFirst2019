@@ -2,7 +2,6 @@
 
 package lesson9.task1
 
-import org.junit.internal.runners.model.EachTestNotifier
 
 /**
  * Ячейка матрицы: row = ряд, column = колонка
@@ -37,7 +36,14 @@ interface Matrix<E> {
     operator fun set(row: Int, column: Int, value: E)
 
     operator fun set(cell: Cell, value: E)
-    fun cellContaining(element: E): Cell
+
+    fun cellContaining(element: E): Cell {
+        for (i in 0 until height) {
+            for (j in 0 until width)
+                if (this[i, j] == element) return Cell(i, j)
+        }
+        return Cell(-1, -1)
+    }
 }
 
 /**
@@ -54,7 +60,7 @@ fun <E> createMatrix(height: Int, width: Int, e: E): Matrix<E> = MatrixImpl(heig
  *
  * Реализация интерфейса "матрица"
  */
-class MatrixImpl<E>(override val height: Int, override val width: Int, val e: E) : Matrix<E> {
+data class MatrixImpl<E>(override val height: Int, override val width: Int, val e: E) : Matrix<E> {
     private val list = MutableList(height) { MutableList(width) { e } }
 
     init {
@@ -91,13 +97,5 @@ class MatrixImpl<E>(override val height: Int, override val width: Int, val e: E)
     }
 
     override fun hashCode(): Int = list.hashCode()
-
-    override fun cellContaining(element: E): Cell {
-        for (i in 0 until height) {
-            val j = list[i].indexOf(element)
-            if (j != -1) return Cell(i, j)
-        }
-        return Cell(-1, -1)
-    }
 }
 
