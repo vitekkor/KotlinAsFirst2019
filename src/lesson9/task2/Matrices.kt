@@ -371,8 +371,8 @@ fun fifteenGameMoves(matrix: Matrix<Int>, moves: List<Int>): Matrix<Int> {
     if (matrix.height != 4 && matrix.width != 4) throw IllegalStateException()
     for (move in moves) {
         require(move in 1..15)
-        val zero = matrix.cellOf(0)
-        val current = matrix.cellOf(move)
+        val zero = matrix.cellContaining(0)
+        val current = matrix.cellContaining(move)
         if (!zero.neighbour(current)) throw IllegalStateException()
         matrix[zero] = move
         matrix[current] = 0
