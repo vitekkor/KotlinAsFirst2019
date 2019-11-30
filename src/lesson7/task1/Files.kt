@@ -572,7 +572,145 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
  */
 fun markdownToHtmlLists(inputName: String, outputName: String) {
-    TODO()
+    val inputStream = File(inputName).readLines()
+    File(outputName).bufferedWriter().use {
+        it.write("<html>\n" + "<body>\n")
+        val openLi = MutableList(6) { false }
+        val openUl = MutableList(6) { false }
+        val openOl = MutableList(6) { false }
+        var previousSpaces = 0
+        var u = 0
+        var o = 0
+        var l = 0
+        var last = ""
+        fun change(type: Char, spaces: Int, stack: MutableList<String>) {
+            val nesting = if (type == 'u') openUl else openOl
+            var i = if (type == 'u') u else o
+            if (!nesting[i]) {
+                when {
+                    previousSpaces < spaces || l == 0 -> {
+                        last = "$type"
+                        nesting[i] = true
+                        i++
+                        stack.add("<" + "$type" + "l>\n")
+                    }
+                    previousSpaces == spaces -> {
+                        last = "$type"
+                        l--
+                        openLi[l] = false
+                        stack.add("</li>\n")
+                    }
+                    previousSpaces > spaces -> {
+                        l--
+                        openLi[l] = false
+                        stack.add("</li>\n")
+                        last = ""
+                        i--
+                        nesting[i] = false
+                        stack.add("</" + "$type" + "l>\n")
+                        if (l > 0) {
+                            l--
+                            openLi[l] = false
+                            stack.add("</li>\n")
+                        }
+                    }
+                }
+            }
+            if (type == 'u') {
+                openUl.indices.forEach { index -> openUl[index] = nesting[index] }
+                u = i
+            } else {
+                openOl.indices.forEach { index -> openOl[index] = nesting[index] }
+                o = i
+            }
+        }
+        for (line in inputStream) {
+            val ul = line.matches(Regex("""\s*\*\s.*"""))
+            val ol = line.matches(Regex("""\s*\d+\.\s.*"""))
+            val changedLine = mutableListOf<String>()
+            val spaces = multipleOfFour(line)
+            if (spaces % 4 == 0) {
+                when {
+                    ul -> {
+                        if (last == "o" && previousSpaces > spaces) change('o', spaces, changedLine) else
+                            change('u', spaces, changedLine)
+                        if (!openLi[l]) {
+                            openLi[l] = true
+                            l++
+                            changedLine.add("<li>")
+                        }
+                        changedLine.add(line.replaceFirst(Regex("""\s*\*\s"""), ""))
+                    }
+                    ol -> {
+                        if (last == "u" && previousSpaces > spaces) change('u', spaces, changedLine)
+                        else change('o', spaces, changedLine)
+                        if (!openLi[l]) {
+                            openLi[l] = true
+                            l++
+                            changedLine.add("<li>")
+                        }
+                        changedLine.add(line.replaceFirst(Regex("""\s*\d+\.\s"""), ""))
+                    }
+                    else -> {
+                        if (line.isEmpty()) {
+                            if (l > 0) {
+                                l--
+                                openLi[l] = false
+                                changedLine.add("</li>\n")
+                            }
+                            when (last) {
+                                "u" -> {
+                                    u--
+                                    openUl[u] = false
+                                    changedLine.add("</ul>\n")
+                                }
+                                "o" -> {
+                                    o--
+                                    openOl[o] = false
+                                    changedLine.add("</ol>\n")
+                                }
+                            }
+                            last = ""
+                        }
+                        changedLine.add(line)
+                    }
+                }
+            } else changedLine.add(line)
+            if (inputStream.lastIndex == inputStream.indexOf(line)) {
+                var previous = ""
+                fun lastOfUs(type: Char) {
+                    var i = if (type == 'u') u else o
+                    i--
+                    changedLine.add("</" + "$type" + "l>\n")
+                    previous = "$type"
+                    if (type == 'u') u = i else o = i
+                }
+                while (l > 0 || u > 0 || o > 0) {
+                    if (l > 0) {
+                        l--
+                        openLi[l] = false
+                        changedLine.add("</li>\n")
+                    }
+                    when {
+                        u > o -> lastOfUs('u')
+
+                        u < o -> lastOfUs('o')
+
+                        else -> {
+                            when (previous) {
+                                "u" -> lastOfUs('u')
+                                "o" -> lastOfUs('o')
+                                "" -> if (last != "") lastOfUs(last[0])
+                            }
+                        }
+                    }
+                }
+            }
+            it.write(changedLine.joinToString(""))
+            previousSpaces = spaces
+        }
+        it.write("\n</body>\n" + "</html>")
+    }
 }
 
 fun multipleOfFour(line: String): Int = (line.length - line.dropWhile { it == ' ' }.length)

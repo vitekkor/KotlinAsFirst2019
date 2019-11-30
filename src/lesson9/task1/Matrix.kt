@@ -37,7 +37,7 @@ interface Matrix<E> {
 
     operator fun set(cell: Cell, value: E)
 
-    fun cellContaining(element: E): Cell {
+    infix fun cellWithThis(element: E): Cell {
         for (i in 0 until height) {
             for (j in 0 until width)
                 if (this[i, j] == element) return Cell(i, j)
@@ -60,7 +60,7 @@ fun <E> createMatrix(height: Int, width: Int, e: E): Matrix<E> = MatrixImpl(heig
  *
  * Реализация интерфейса "матрица"
  */
-data class MatrixImpl<E>(override val height: Int, override val width: Int, val e: E) : Matrix<E> {
+class MatrixImpl<E>(override val height: Int, override val width: Int, val e: E) : Matrix<E> {
     private val list = MutableList(height) { MutableList(width) { e } }
 
     init {
