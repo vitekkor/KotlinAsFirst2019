@@ -2,6 +2,8 @@
 
 package lesson9.task1
 
+import org.junit.internal.runners.model.EachTestNotifier
+
 /**
  * Ячейка матрицы: row = ряд, column = колонка
  */
@@ -35,6 +37,7 @@ interface Matrix<E> {
     operator fun set(row: Int, column: Int, value: E)
 
     operator fun set(cell: Cell, value: E)
+    fun indexOf(element: E): Cell
 }
 
 /**
@@ -88,5 +91,11 @@ data class MatrixImpl<E>(override val height: Int, override val width: Int, val 
     }
 
     override fun hashCode(): Int = list.hashCode()
+    override fun indexOf(element: E): Cell {
+        for (i in 0 until height) {
+            for (j in 0 until width) if (this[i, j] == element) return Cell(i, j)
+        }
+        return Cell(-1, -1)
+    }
 }
 

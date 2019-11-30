@@ -126,7 +126,7 @@ fun generateRectangles(height: Int, width: Int): Matrix<Int> {
                 i += motion[current].first
                 j += motion[current].second
             }
-            while (i in 0 until height - value + 1 && j in 0 until width - value + 1 && result[i, j] == 0) {
+            while (i in value - 1 until height - value + 1 && j in value - 1 until width - value + 1 && result[i, j] == 0) {
                 result[i, j] = value
                 i += motion[current].first
                 j += motion[current].second
@@ -255,12 +255,19 @@ fun sumNeighbours(matrix: Matrix<Int>): Matrix<Int> = TODO()
 fun findHoles(matrix: Matrix<Int>): Holes {
     val rows = mutableListOf<Int>()
     val columns = mutableListOf<Int>()
-    for (i in 0 until matrix.height) {
+    for (i in 0 until maxOf(matrix.height, matrix.width)) {
         val row = mutableSetOf<Int>()
         val column = mutableSetOf<Int>()
-        for (j in 0 until matrix.width) {
-            row.add(matrix[i, j])
-            if (i in 0 until matrix.width && j in 0 until matrix.height) column.add(matrix[j, i])
+        for (j in 0 until minOf(matrix.height, matrix.width)) {
+            val cell1 = Cell(i, j)
+            val cell2 = Cell(j, i)
+            if (maxOf(matrix.height, matrix.width) == matrix.height) {
+                row.add(matrix[cell1])
+                if (i in 0 until matrix.width && j in 0 until matrix.height) column.add(matrix[cell2])
+            } else {
+                row.add(matrix[cell2])
+                if (i in 0 until matrix.height && j in 0 until matrix.width) column.add(matrix[cell1])
+            }
         }
         if (row == setOf(0)) rows.add(i)
         if (column == setOf(0)) columns.add(i)
@@ -373,12 +380,6 @@ fun fifteenGameMoves(matrix: Matrix<Int>, moves: List<Int>): Matrix<Int> {
     return matrix
 }
 
-infix fun Matrix<Int>.indexOf(element: Int): Cell {
-    for (i in 0 until height) {
-        for (j in 0 until width) if (this[i, j] == element) return Cell(i, j)
-    }
-    return Cell(-1, -1)
-}
 
 /**
  * Очень сложная
