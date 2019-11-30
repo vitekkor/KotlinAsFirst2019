@@ -408,7 +408,7 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
     for (line in inputStream) {
         var wantToContinue = false
         val changedLine = mutableListOf<String>()
-        if (!openedP) {
+        if (!openedP && line.isNotEmpty()) {
             outputStream.write("<p>")
             openedP = true
         }
