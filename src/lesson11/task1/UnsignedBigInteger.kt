@@ -15,7 +15,14 @@ import kotlin.math.abs
  * сравнение на равенство и неравенство
  */
 fun main() {
-    print("999999999999999999999".toInt())
+    print(listOf(1, 2, 3) == listOf(4, 2, 3))
+}
+
+fun foo(list1: List<Int>, list2: List<Int>): Boolean {
+    for (i in list1.indices) {
+        if (list1[i] < list2[i]) return false
+    }
+    return true
 }
 
 class UnsignedBigInteger(val list: MutableList<Int>) : Comparable<UnsignedBigInteger> {
@@ -78,7 +85,12 @@ class UnsignedBigInteger(val list: MutableList<Int>) : Comparable<UnsignedBigInt
     /**
      * Сравнение на больше/меньше (по контракту Comparable.compareTo)
      */
-    override fun compareTo(other: UnsignedBigInteger): Int = TODO()
+    override fun compareTo(other: UnsignedBigInteger): Int = when {
+        this == other -> 0
+        this.list.size > other.list.size || this.list.size == other.list.size && foo(this.list, other.list) -> 1
+        else -> -1
+    }
+
 
     /**
      * Преобразование в строку
