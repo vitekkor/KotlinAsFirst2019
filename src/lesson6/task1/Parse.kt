@@ -3,7 +3,6 @@
 package lesson6.task1
 
 import lesson2.task2.daysInMonth
-import lesson5.task1.canBuildFrom
 
 /**
  * Пример
@@ -74,10 +73,6 @@ println("Достигнут <конец файла> в процессе чтен
  */
 fun dateStrToDigit(str: String): String {
     if (!str.matches(Regex("""\d{1,2} [а-я]+ \d+"""))) return ""
-    val months = listOf(
-        "января", "февраля", "марта", "апреля", "мая", "июня", "июля",
-        "августа", "сентября", "октября", "ноября", "декабря"
-    )
     val partsOfDate = str.split(" ")
     val day = partsOfDate[0].toInt()
     val month = months.indexOf(partsOfDate[1]) + 1
@@ -86,6 +81,11 @@ fun dateStrToDigit(str: String): String {
     else ""
 
 }
+
+private val months = listOf(
+    "января", "февраля", "марта", "апреля", "мая", "июня", "июля",
+    "августа", "сентября", "октября", "ноября", "декабря"
+)
 
 /**
  * Средняя
@@ -99,10 +99,6 @@ fun dateStrToDigit(str: String): String {
  */
 fun dateDigitToStr(digital: String): String {
     if (!digital.matches(Regex("""(\d{2}\.){2}\d+"""))) return ""
-    val months = listOf(
-        "января", "февраля", "марта", "апреля", "мая", "июня", "июля",
-        "августа", "сентября", "октября", "ноября", "декабря"
-    )
     val partsOfDate = digital.split(".")
     val day = partsOfDate[0].toInt()
     val month = partsOfDate[1].toInt()
@@ -206,10 +202,10 @@ fun plusMinus(expression: String): Int {
  */
 fun firstDuplicateIndex(str: String): Int {
     if (!str.matches(Regex("""(.+ +)+.+"""))) return -1
-    val partsOfString = str.split(" ")
+    val partsOfString = str.toLowerCase().split(" ")
     var sumOfLength = partsOfString[0].length
     for (i in 1 until partsOfString.size) {
-        if (partsOfString[i].toLowerCase() == partsOfString[i - 1].toLowerCase()) return sumOfLength - partsOfString[i].length
+        if (partsOfString[i] == partsOfString[i - 1]) return sumOfLength - partsOfString[i].length
         sumOfLength += partsOfString[i].length + 1
     }
     return -1
@@ -257,8 +253,9 @@ fun fromRoman(roman: String): Int {
     var digit = 0
     var result = 0
     while (digit < roman.length - 1) {
-        result += romanToArabic(roman[digit], roman[digit + 1])
-        if (romanToArabic(roman[digit], roman[digit + 1]) in valid) digit++
+        val tmp = romanToArabic(roman[digit], roman[digit + 1])
+        result += tmp
+        if (tmp in valid) digit++
         digit++
     }
     if (digit != roman.length) result += romanToArabic(roman[roman.length - 1], 'I')

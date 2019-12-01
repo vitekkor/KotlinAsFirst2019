@@ -114,31 +114,38 @@ fun generateSpiral(height: Int, width: Int): Matrix<Int> {
 fun generateRectangles(height: Int, width: Int): Matrix<Int> {
     val result = createMatrix(height, width, 0)
     val motion = mutableListOf(0 to 1, 1 to 0, 0 to -1, -1 to 0)
-    var value = 1
+    val countOfMotion = mutableListOf(0, 0, 0, 0)
+    var value = 0
+    var i = 0
+    var j = 0
     var current = 0
     var count = 0
-    while (count < width * height) {
-        val previous = count
-        var i = value - 1
-        var j = value - 1
-        do {
-            if (count - previous < (width + height - 2 - 4 * (value - 1)) * 2) {
-                i += motion[current].first
-                j += motion[current].second
-            }
-            while (i in value - 1 until height - value + 1 && j in value - 1 until width - value + 1 && result[i, j] == 0) {
+    while (count in 0 until height * width) {
+        val pi = i
+        val pj = j
+        if (value != 0) {
+            i += motion[current].first
+            j += motion[current].second
+        }
+        if (current == 0) value++
+        if (countOfMotion[(current + 1) % 4] == 0) while (i in 0 until height && j in 0 until width) {
+            result[i, j] = value
+            i += motion[current].first
+            j += motion[current].second
+            count++
+        } else
+            while (abs(pj - j) <= width - countOfMotion[(current + 1) % 4] - countOfMotion[(current + 3) % 4]
+                && abs(pi - i) <= height - countOfMotion[(current + 1) % 4] - countOfMotion[(current + 3) % 4]
+            ) {
                 result[i, j] = value
                 i += motion[current].first
                 j += motion[current].second
                 count++
             }
-            if (count - previous < (width + height - 2 - 4 * (value - 1)) * 2) {
-                i -= motion[current].first
-                j -= motion[current].second
-            }
-            current = (current + 1) % 4
-        } while (count - previous < (width + height - 2 - 4 * (value - 1)) * 2)
-        value++
+        countOfMotion[current]++
+        i -= motion[current].first
+        j -= motion[current].second
+        current = (current + 1) % 4
     }
     return result
 }
@@ -255,13 +262,15 @@ fun sumNeighbours(matrix: Matrix<Int>): Matrix<Int> = TODO()
 fun findHoles(matrix: Matrix<Int>): Holes {
     val rows = mutableListOf<Int>()
     val columns = mutableListOf<Int>()
-    for (i in 0 until maxOf(matrix.height, matrix.width)) {
+    val newH = maxOf(matrix.height, matrix.width)
+    val newW = minOf(matrix.height, matrix.width)
+    for (i in 0 until newH) {
         val row = mutableSetOf<Int>()
         val column = mutableSetOf<Int>()
-        for (j in 0 until minOf(matrix.height, matrix.width)) {
+        for (j in 0 until newW) {
             val cell1 = Cell(i, j)
             val cell2 = Cell(j, i)
-            if (maxOf(matrix.height, matrix.width) == matrix.height) {
+            if (newH == matrix.height) {
                 row.add(matrix[cell1])
                 if (i in 0 until matrix.width && j in 0 until matrix.height) column.add(matrix[cell2])
             } else {
@@ -272,7 +281,7 @@ fun findHoles(matrix: Matrix<Int>): Holes {
         if (row == setOf(0)) rows.add(i)
         if (column == setOf(0)) columns.add(i)
     }
-    return Holes(rows, columns)
+    return if (newH == matrix.height) Holes(rows, columns) else Holes(columns, rows)
 }
 
 /**
