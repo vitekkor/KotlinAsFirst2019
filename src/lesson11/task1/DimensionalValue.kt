@@ -20,58 +20,93 @@ class DimensionalValue(value: Double, dimension: String) : Comparable<Dimensiona
     /**
      * Величина с БАЗОВОЙ размерностью (например для 1.0Kg следует вернуть результат в граммах -- 1000.0)
      */
-    val value: Double get() = TODO()
+    private val notBasicValue = value
+    val value: Double
+        get() = if (notBasicDimension.length > 1) when (notBasicDimension[0].toString()) {
+            DimensionPrefix.KILO.abbreviation -> notBasicValue * 1000
+            DimensionPrefix.MILLI.abbreviation -> notBasicValue * 0.001
+            else -> throw IllegalArgumentException()
+        } else notBasicValue
 
     /**
      * БАЗОВАЯ размерность (опять-таки для 1.0Kg следует вернуть GRAM)
      */
-    val dimension: Dimension get() = TODO()
+    private val notBasicDimension = dimension
+    val dimension: Dimension
+        get() = when (notBasicDimension.last().toString()) {
+            Dimension.GRAM.abbreviation -> Dimension.GRAM
+            Dimension.METER.abbreviation -> Dimension.METER
+            else -> throw IllegalArgumentException()
+        }
 
     /**
      * Конструктор из строки. Формат строки: значение пробел размерность (1 Kg, 3 mm, 100 g и так далее).
      */
-    constructor(s: String) : this(TODO(), TODO())
+    constructor(s: String) : this(s.split(" ")[0].toDouble(), s.split(" ")[1])
 
     /**
      * Сложение с другой величиной. Если базовая размерность разная, бросить IllegalArgumentException
      * (нельзя складывать метры и килограммы)
      */
-    operator fun plus(other: DimensionalValue): DimensionalValue = TODO()
+    operator fun plus(other: DimensionalValue): DimensionalValue {
+        require(dimension == other.dimension)
+        return DimensionalValue(value + other.value, dimension.abbreviation)
+    }
 
     /**
      * Смена знака величины
      */
-    operator fun unaryMinus(): DimensionalValue = TODO()
+    operator fun unaryMinus(): DimensionalValue = DimensionalValue(-1 * value, dimension.abbreviation)
 
     /**
      * Вычитание другой величины. Если базовая размерность разная, бросить IllegalArgumentException
      */
-    operator fun minus(other: DimensionalValue): DimensionalValue = TODO()
+    operator fun minus(other: DimensionalValue): DimensionalValue {
+        require(dimension == other.dimension)
+        return DimensionalValue(value - other.value, dimension.abbreviation)
+    }
 
     /**
      * Умножение на число
      */
-    operator fun times(other: Double): DimensionalValue = TODO()
+    operator fun times(other: Double): DimensionalValue = DimensionalValue(value * other, dimension.abbreviation)
 
     /**
      * Деление на число
      */
-    operator fun div(other: Double): DimensionalValue = TODO()
+    operator fun div(other: Double): DimensionalValue = DimensionalValue(value / other, dimension.abbreviation)
 
     /**
      * Деление на другую величину. Если базовая размерность разная, бросить IllegalArgumentException
      */
-    operator fun div(other: DimensionalValue): Double = TODO()
+    operator fun div(other: DimensionalValue): Double {
+        require(dimension == other.dimension)
+        return value / other.value
+    }
 
     /**
      * Сравнение на равенство
      */
-    override fun equals(other: Any?): Boolean = TODO()
+    override fun equals(other: Any?): Boolean =
+        other is DimensionalValue && value == other.value && dimension == other.dimension
 
-    /**
-     * Сравнение на больше/меньше. Если базовая размерность разная, бросить IllegalArgumentException
+    override fun hashCode(): Int {
+        var result = 1
+        result = 31 * result + value.toBits().toInt()
+        result = 31 * result + dimension.abbreviation.hashCode()
+        return result
+    }
+
+    /** Сравнение на больше/меньше. Если базовая размерность разная, бросить IllegalArgumentException
      */
-    override fun compareTo(other: DimensionalValue): Int = TODO()
+    override fun compareTo(other: DimensionalValue): Int {
+        require(dimension == other.dimension)
+        return when {
+            value > other.value -> 1
+            value < other.value -> -1
+            else -> 0
+        }
+    }
 }
 
 /**
