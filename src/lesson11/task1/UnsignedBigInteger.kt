@@ -18,7 +18,7 @@ fun main() {
     print(listOf(1, 2, 3) == listOf(4, 2, 3))
 }
 
-fun foo(list1: List<Int>, list2: List<Int>): Boolean {
+private fun compare2Lists(list1: List<Int>, list2: List<Int>): Boolean {
     for (i in list1.indices) {
         if (list1[i] < list2[i]) return false
     }
@@ -47,9 +47,9 @@ class UnsignedBigInteger(val list: MutableList<Int>) : Comparable<UnsignedBigInt
         val result = MutableList(maxSize) { 0 }
         val different = abs(this.list.size - other.list.size)
         var mod = 0
-        for (k in maxSize - 1 downTo 0) {
-            result[k] = (max[k] + (min.getOrNull(different - k) ?: 0) + mod) % 10
-            mod = (max[k] + (min.getOrNull(different - k) ?: 0) + mod) / 10
+        for (i in maxSize - 1 downTo 0) {
+            result[i] = (max[i] + (min.getOrNull(abs(different - i)) ?: 0) + mod) % 10
+            mod = (max[i] + (min.getOrNull(abs(different - i)) ?: 0) + mod) / 10
         }
         if (mod != 0) result.add(0, mod)
         return UnsignedBigInteger(result)
@@ -58,7 +58,34 @@ class UnsignedBigInteger(val list: MutableList<Int>) : Comparable<UnsignedBigInt
     /**
      * Вычитание (бросить ArithmeticException, если this < other)
      */
-    operator fun minus(other: UnsignedBigInteger): UnsignedBigInteger = TODO()
+    operator fun minus(other: UnsignedBigInteger): UnsignedBigInteger {
+        if (other > this) throw ArithmeticException()
+        if (other == this) return UnsignedBigInteger(mutableListOf(0))
+        val result = MutableList(list.size) { 0 }
+        val different = abs(this.list.size - other.list.size)
+        var i = list.size - 1
+        while (i in list.size - 1 downTo 0) {
+            if (list[i] >= (other.list.getOrNull(abs(different - i)) ?: 0)) {
+                list[i] = list[i] - (other.list.getOrNull(abs(different - i)) ?: 0)
+                if (other.list.getOrNull(abs(different - i)) != null) other.list[abs(different - i)] = 0
+            } else {
+                var j = i - 1
+                while (list[j] == 0) {
+                    j--
+                }
+                val required = j
+                while (j != i + 1) {
+                    if (j != i) list[j] -= 1
+                    if (j != required) list[j] += 10
+                    j++
+                }
+                list[i] = list[i] - (other.list.getOrNull(abs(different - i)) ?: 0)
+                other.list[abs(different - i)] = 0
+            }
+            i--
+        }
+        return UnsignedBigInteger(list.dropWhile { it == 0 }.toMutableList())
+    }
 
     /**
      * Умножение
@@ -87,7 +114,10 @@ class UnsignedBigInteger(val list: MutableList<Int>) : Comparable<UnsignedBigInt
      */
     override fun compareTo(other: UnsignedBigInteger): Int = when {
         this == other -> 0
-        this.list.size > other.list.size || this.list.size == other.list.size && foo(this.list, other.list) -> 1
+        this.list.size > other.list.size || this.list.size == other.list.size && compare2Lists(
+            this.list,
+            other.list
+        ) -> 1
         else -> -1
     }
 

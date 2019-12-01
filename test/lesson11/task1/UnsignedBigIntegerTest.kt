@@ -18,8 +18,10 @@ internal class UnsignedBigIntegerTest {
     @Test
     @Tag("Normal")
     fun minus() {
+        assertEquals(UnsignedBigInteger("1"), UnsignedBigInteger("1000") - UnsignedBigInteger("999"))
         assertEquals(UnsignedBigInteger(2), UnsignedBigInteger(4) - UnsignedBigInteger(2))
         assertEquals(UnsignedBigInteger("9087654329"), UnsignedBigInteger("9087654330") - UnsignedBigInteger(1))
+        assertEquals(UnsignedBigInteger("0"), UnsignedBigInteger("9087654330") - UnsignedBigInteger("9087654330"))
         assertThrows(ArithmeticException::class.java) {
             UnsignedBigInteger(2) - UnsignedBigInteger(4)
         }
