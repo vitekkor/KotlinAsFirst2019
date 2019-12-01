@@ -259,31 +259,7 @@ fun sumNeighbours(matrix: Matrix<Int>): Matrix<Int> = TODO()
  * 0 0 1 0
  * 0 0 0 0
  */
-fun findHoles(matrix: Matrix<Int>): Holes {
-    val rows = mutableListOf<Int>()
-    val columns = mutableListOf<Int>()
-    val newH = maxOf(matrix.height, matrix.width)
-    val newW = minOf(matrix.height, matrix.width)
-    for (i in 0 until newH) {
-        val row = mutableSetOf<Int>()
-        val column = mutableSetOf<Int>()
-        for (j in 0 until newW) {
-            val cell1 = Cell(i, j)
-            val cell2 = Cell(j, i)
-            if (newH == matrix.height) {
-                row.add(matrix[cell1])
-                if (i in 0 until matrix.width && j in 0 until matrix.height) column.add(matrix[cell2])
-            } else {
-                row.add(matrix[cell2])
-                if (i in 0 until matrix.height && j in 0 until matrix.width) column.add(matrix[cell1])
-            }
-        }
-        if (row == setOf(0)) rows.add(i)
-        if (column == setOf(0)) columns.add(i)
-    }
-    return if (newH == matrix.height) Holes(rows, columns) else Holes(columns, rows)
-}
-
+fun findHoles(matrix: Matrix<Int>): Holes = TODO()
 /**
  * Класс для описания местонахождения "дырок" в матрице
  */

@@ -109,7 +109,7 @@ fun diameter(vararg points: Point): Segment {
     require(points.size >= 2)
     var max = points[0].distance(points[1])
     var result = Segment(points[0], points[1])
-    for (i in 1 until points.size - 1)
+    for (i in 0 until points.size - 1)
         for (j in i + 1 until points.size) {
             val distance = points[i].distance(points[j])
             if (distance > max) {
