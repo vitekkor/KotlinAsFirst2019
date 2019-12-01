@@ -27,10 +27,6 @@ fun fromString(s: String, number: Boolean): Int {
     return if (number) s.replace(".", "").toInt() else reg.findAll(s).elementAt(1).value.length
 }
 
-fun main() {
-    println(FixedPointNumber(19.7532, 4))
-}
-
 class FixedPointNumber(val number: Int, val precision: Int) : Comparable<FixedPointNumber> {
     /**
      * Точность - число десятичных цифр после запятой.
@@ -66,8 +62,10 @@ class FixedPointNumber(val number: Int, val precision: Int) : Comparable<FixedPo
      */
     operator fun plus(other: FixedPointNumber): FixedPointNumber {
         val p = maxOf(this.precision, other.precision)
-        val pow = 10.0.pow(abs(p - this.precision)).toInt()
-        return FixedPointNumber(this.number * pow + other.number * pow, p)
+        return FixedPointNumber(
+            this.number * 10.0.pow(abs(p - this.precision)).toInt() + other.number * 10.0.pow(abs(p - other.precision)).toInt(),
+            p
+        )
     }
 
     /**
@@ -93,7 +91,7 @@ class FixedPointNumber(val number: Int, val precision: Int) : Comparable<FixedPo
     /**
      * Деление
      */
-    operator fun div(other: FixedPointNumber): FixedPointNumber{
+    operator fun div(other: FixedPointNumber): FixedPointNumber {
         val p = maxOf(this.precision, other.precision)
         val pow = 10.0.pow(p)
         return FixedPointNumber(round(this.toDouble() / other.toDouble() * pow) / pow, p)
