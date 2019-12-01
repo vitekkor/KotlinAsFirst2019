@@ -1,5 +1,8 @@
 package lesson11.task1
 
+import ru.spbstu.wheels.getOrNull
+import kotlin.math.abs
+
 /**
  * Класс "беззнаковое большое целое число".
  *
@@ -11,26 +14,39 @@ package lesson11.task1
  * преобразование в строку/из строки, преобразование в целое/из целого,
  * сравнение на равенство и неравенство
  */
-class UnsignedBigInteger : Comparable<UnsignedBigInteger> {
+fun main() {
+    print("999999999999999999999".toInt())
+}
+
+class UnsignedBigInteger(val list: MutableList<Int>) : Comparable<UnsignedBigInteger> {
 
     /**
      * Конструктор из строки
      */
-    constructor(s: String) {
-        TODO()
-    }
+    constructor(s: String) : this(s.split("").drop(1).dropLast(1).map { it.toInt() }.toMutableList())
 
     /**
      * Конструктор из целого
      */
-    constructor(i: Int) {
-        TODO()
-    }
+    constructor(i: Int) : this(i.toString())
 
     /**
      * Сложение
      */
-    operator fun plus(other: UnsignedBigInteger): UnsignedBigInteger = TODO()
+    operator fun plus(other: UnsignedBigInteger): UnsignedBigInteger {
+        val maxSize = maxOf(this.list.size, other.list.size)
+        val max = if (maxSize == this.list.size) this.list else other.list
+        val min = if (maxSize == this.list.size) other.list else this.list
+        val result = MutableList(maxSize) { 0 }
+        val different = abs(this.list.size - other.list.size)
+        var mod = 0
+        for (k in maxSize - 1 downTo 0) {
+            result[k] = (max[k] + (min.getOrNull(different - k) ?: 0) + mod) % 10
+            mod = (max[k] + (min.getOrNull(different - k) ?: 0) + mod) / 10
+        }
+        if (mod != 0) result.add(0, mod)
+        return UnsignedBigInteger(result)
+    }
 
     /**
      * Вычитание (бросить ArithmeticException, если this < other)
@@ -55,7 +71,9 @@ class UnsignedBigInteger : Comparable<UnsignedBigInteger> {
     /**
      * Сравнение на равенство (по контракту Any.equals)
      */
-    override fun equals(other: Any?): Boolean = TODO()
+    override fun equals(other: Any?): Boolean = other is UnsignedBigInteger && list.hashCode() == other.list.hashCode()
+
+    override fun hashCode(): Int = list.hashCode()
 
     /**
      * Сравнение на больше/меньше (по контракту Comparable.compareTo)
@@ -65,12 +83,18 @@ class UnsignedBigInteger : Comparable<UnsignedBigInteger> {
     /**
      * Преобразование в строку
      */
-    override fun toString(): String = TODO()
+    override fun toString(): String = list.joinToString("")
 
     /**
      * Преобразование в целое
      * Если число не влезает в диапазон Int, бросить ArithmeticException
      */
-    fun toInt(): Int = TODO()
+    fun toInt(): Int {
+        try {
+            return this.toString().toInt()
+        } catch (e: NumberFormatException) {
+            throw ArithmeticException()
+        }
+    }
 
 }
