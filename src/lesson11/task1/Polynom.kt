@@ -2,6 +2,11 @@
 
 package lesson11.task1
 
+import kotlinx.html.P
+import ru.spbstu.wheels.getOrNull
+import kotlin.math.abs
+import kotlin.math.pow
+
 /**
  * Класс "полином с вещественными коэффициентами".
  *
@@ -19,17 +24,18 @@ package lesson11.task1
  * Нули в середине и в конце пропускаться не должны, например: x^3+2x+1 --> Polynom(1.0, 2.0, 0.0, 1.0)
  * Старшие коэффициенты, равные нулю, игнорировать, например Polynom(0.0, 0.0, 5.0, 3.0) соответствует 5x+3
  */
-class Polynom(vararg coeffs: Double) {
-
+class Polynom(vararg coefficients: Double) {
+    private val coefficients = coefficients.toList()
     /**
      * Геттер: вернуть значение коэффициента при x^i
      */
-    fun coeff(i: Int): Double = TODO()
+    fun coeff(i: Int): Double = coefficients.first()
 
     /**
      * Расчёт значения при заданном x
      */
-    fun getValue(x: Double): Double = TODO()
+    fun getValue(x: Double): Double =
+        this.coefficients.indices.fold(0.0, { sum, it -> sum + coefficients[it] * x.pow(coefficients.size - 1 - it) })
 
     /**
      * Степень (максимальная степень x при ненулевом слагаемом, например 2 для x^2+x+1).
@@ -38,22 +44,35 @@ class Polynom(vararg coeffs: Double) {
      * Слагаемые с нулевыми коэффициентами игнорировать, т.е.
      * степень 0x^2+0x+2 также равна 0.
      */
-    fun degree(): Int = TODO()
+    fun degree(): Int {
+        val size = this.coefficients.size - 1
+        return size - (this.coefficients.indices.firstOrNull { this.coefficients[it] != 0.0 } ?: size)
+    }
 
     /**
      * Сложение
      */
-    operator fun plus(other: Polynom): Polynom = TODO()
+    operator fun plus(other: Polynom): Polynom {
+        val max = maxOf(this.coefficients.size, other.coefficients.size)
+        val maxK = if (max == this.coefficients.size) this.coefficients else other.coefficients
+        val minK = if (max == this.coefficients.size) other.coefficients else this.coefficients
+        val different = abs(this.coefficients.size - other.coefficients.size)
+        val result = mutableListOf<Double>()
+        for (k in maxK.indices) {
+            if (k < different) result.add(maxK[k]) else result.add(maxK[k] + minK[k - different])
+        }
+        return Polynom(*result.toDoubleArray())
+    }
 
     /**
      * Смена знака (при всех слагаемых)
      */
-    operator fun unaryMinus(): Polynom = TODO()
+    operator fun unaryMinus(): Polynom = Polynom(*this.coefficients.map { -it }.toDoubleArray())
 
     /**
      * Вычитание
      */
-    operator fun minus(other: Polynom): Polynom = TODO()
+    operator fun minus(other: Polynom): Polynom = this.plus(other.unaryMinus())
 
     /**
      * Умножение
@@ -78,10 +97,16 @@ class Polynom(vararg coeffs: Double) {
     /**
      * Сравнение на равенство
      */
-    override fun equals(other: Any?): Boolean = TODO()
+    override fun equals(other: Any?): Boolean = other is Polynom && this.hashCode() == other.hashCode()
 
     /**
      * Получение хеш-кода
      */
-    override fun hashCode(): Int = TODO()
+    override fun hashCode(): Int {
+        var result = 1
+        for (k in coefficients) {
+            result += 31 * k.toInt() + k.toInt()
+        }
+        return result * 31
+    }
 }
