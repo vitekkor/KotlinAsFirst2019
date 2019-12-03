@@ -20,24 +20,20 @@ class DimensionalValue(value: Double, dimension: String) : Comparable<Dimensiona
     /**
      * Величина с БАЗОВОЙ размерностью (например для 1.0Kg следует вернуть результат в граммах -- 1000.0)
      */
-    private val notBasicValue = value
-    val value: Double
-        get() = if (notBasicDimension.length > 1) when (notBasicDimension[0].toString()) {
-            DimensionPrefix.KILO.abbreviation -> notBasicValue * 1000
-            DimensionPrefix.MILLI.abbreviation -> notBasicValue * 0.001
-            else -> throw IllegalArgumentException()
-        } else notBasicValue
+    val value = if (dimension.length > 1) when (dimension[0].toString()) {
+        DimensionPrefix.KILO.abbreviation -> value * 1000
+        DimensionPrefix.MILLI.abbreviation -> value * 0.001
+        else -> throw IllegalArgumentException()
+    } else value
 
     /**
      * БАЗОВАЯ размерность (опять-таки для 1.0Kg следует вернуть GRAM)
      */
-    private val notBasicDimension = dimension
-    val dimension: Dimension
-        get() = when (notBasicDimension.last().toString()) {
-            Dimension.GRAM.abbreviation -> Dimension.GRAM
-            Dimension.METER.abbreviation -> Dimension.METER
-            else -> throw IllegalArgumentException()
-        }
+    val dimension = when (dimension.last().toString()) {
+        Dimension.GRAM.abbreviation -> Dimension.GRAM
+        Dimension.METER.abbreviation -> Dimension.METER
+        else -> throw IllegalArgumentException()
+    }
 
     /**
      * Конструктор из строки. Формат строки: значение пробел размерность (1 Kg, 3 mm, 100 g и так далее).
