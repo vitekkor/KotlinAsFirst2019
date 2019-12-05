@@ -223,7 +223,9 @@ fun firstDuplicateIndex(str: String): Int {
  * Все цены должны быть больше либо равны нуля.
  */
 fun mostExpensive(description: String): String {
-    if (!description.matches(Regex("""(.+ \d+(\.\d+)*(; .+ \d+(\.\d+)*)*)+"""))) return ""
+    val pattern = """.+ \d+(\.\d+)"""
+    val globalPattern = "($pattern*(; $pattern*)*)+"
+    if (!description.matches(Regex(globalPattern))) return ""
     val products = description.split("; ")
     var result = ""
     var mostExpensive = -1.0
@@ -250,15 +252,15 @@ fun mostExpensive(description: String): String {
 fun fromRoman(roman: String): Int {
     if (!roman.matches(Regex("""[IVXLCDM]+"""))) return -1
     val valid = listOf(4, 9, 40, 90, 400, 900)
-    var digit = 0
+    var count = 0
     var result = 0
-    while (digit < roman.length - 1) {
-        val tmp = romanToArabic(roman[digit], roman[digit + 1])
-        result += tmp
-        if (tmp in valid) digit++
-        digit++
+    while (count < roman.length - 1) {
+        val digit = romanToArabic(roman[count], roman[count + 1])
+        result += digit
+        if (digit in valid) count++
+        count++
     }
-    if (digit != roman.length) result += romanToArabic(roman[roman.length - 1], 'I')
+    if (count != roman.length) result += romanToArabic(roman[roman.length - 1], 'I')
     if (lesson4.task1.roman(result) != roman) result = -1
     return result
 }

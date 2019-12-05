@@ -2,8 +2,6 @@
 
 package lesson11.task1
 
-import kotlinx.html.P
-import ru.spbstu.wheels.getOrNull
 import kotlin.math.abs
 import kotlin.math.pow
 
@@ -25,7 +23,7 @@ import kotlin.math.pow
  * Старшие коэффициенты, равные нулю, игнорировать, например Polynom(0.0, 0.0, 5.0, 3.0) соответствует 5x+3
  */
 class Polynom(vararg coefficients: Double) {
-    private val coefficients = coefficients.toList()
+    private val coefficients = coefficients.toMutableList()
     /**
      * Геттер: вернуть значение коэффициента при x^i
      */

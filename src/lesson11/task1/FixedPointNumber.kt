@@ -21,7 +21,7 @@ import kotlin.math.truncate
  * (в виде строки, целого числа, двух целых чисел и т.д.).
  * Представление числа должно позволять хранить числа с общим числом десятичных цифр не менее 9.
  */
-fun fromString(s: String, number: Boolean): Int {
+private fun fromString(s: String, number: Boolean): Int {
     if (s.length > 10 && !s.matches(Regex("""\d+.?\d+"""))) throw NumberFormatException()
     val reg = Regex("""\d+""")
     return if (number) s.replace(".", "").toInt() else reg.findAll(s).elementAt(1).value.length

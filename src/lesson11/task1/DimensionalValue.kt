@@ -2,6 +2,8 @@
 
 package lesson11.task1
 
+import kotlin.math.absoluteValue
+
 /**
  * Класс "Величина с размерностью".
  *
@@ -30,7 +32,9 @@ class DimensionalValue(value: Double, dimension: String) : Comparable<Dimensiona
      * БАЗОВАЯ размерность (опять-таки для 1.0Kg следует вернуть GRAM)
      */
     val dimension = when (dimension.last().toString()) {
+        Dimension.NUTON.abbreviation -> Dimension.NUTON
         Dimension.GRAM.abbreviation -> Dimension.GRAM
+        Dimension.SECOND.abbreviation -> Dimension.SECOND
         Dimension.METER.abbreviation -> Dimension.METER
         else -> throw IllegalArgumentException()
     }
@@ -109,7 +113,9 @@ class DimensionalValue(value: Double, dimension: String) : Comparable<Dimensiona
  * Размерность. В этот класс можно добавлять новые варианты (секунды, амперы, прочие), но нельзя убирать
  */
 enum class Dimension(val abbreviation: String) {
+    NUTON("N"),
     METER("m"),
+    SECOND("s"),
     GRAM("g");
 }
 
@@ -117,6 +123,10 @@ enum class Dimension(val abbreviation: String) {
  * Приставка размерности. Опять-таки можно добавить новые варианты (деци-, санти-, мега-, ...), но нельзя убирать
  */
 enum class DimensionPrefix(val abbreviation: String, val multiplier: Double) {
+    GIGA("G", 1000000000.0),
+    MEGA("M", 1000000.0),
     KILO("K", 1000.0),
-    MILLI("m", 0.001);
+    SANTI("s", 0.01),
+    MILLI("m", 0.001),
+    NANO("n", 0.000000001)
 }
