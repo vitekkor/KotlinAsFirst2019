@@ -1,5 +1,6 @@
 package lesson8.task3
 
+import lesson8.task2.Square
 import java.util.*
 
 class Graph {
@@ -47,6 +48,43 @@ class Graph {
             }
         }
         return -1
+    }
+
+    fun bffs(start: String, finish: String): List<Square> {
+        if (start == finish) return listOf(Square(start.split(" ")[0].toInt(), start.split(" ")[1].toInt()))
+        val way = bffs(this[start], this[finish])
+        val distance = way[Vertex("great2be")]
+        val result = mutableListOf<Square>()
+        outer@ for (i in distance!! downTo 0) {
+            val check = way.filter { it.value == i }
+            val current =
+                if (result.isEmpty()) this[finish] else this["${result.last().column} ${result.last().row}"]
+            for ((key) in check) if (key in current.neighbors) {
+                result.add(Square(key.name.split(" ")[0].toInt(), key.name.split(" ")[1].toInt()))
+                continue@outer
+            }
+        }
+        return result.reversed()
+    }
+
+    private fun bffs(start: Vertex, finish: Vertex): Map<Vertex, Int> {
+        val queue = ArrayDeque<Vertex>()
+        queue.add(start)
+        val visited = mutableMapOf(start to 0)
+        while (queue.isNotEmpty()) {
+            val next = queue.poll()
+            val distance = visited[next]!!
+            if (next == finish) {
+                visited[Vertex("great2be")] = distance
+                return visited
+            }
+            for (neighbor in next.neighbors) {
+                if (neighbor in visited) continue
+                visited[neighbor] = distance + 1
+                queue.add(neighbor)
+            }
+        }
+        return mutableMapOf()
     }
 
     /**

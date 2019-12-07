@@ -267,32 +267,39 @@ fun kingTrajectory(start: Square, end: Square): List<Square> = when (start) {
  */
 fun knightMoveNumber(start: Square, end: Square): Int {
     require(start.inside() && end.inside())
-    val graph = Graph()
-    for (i in 1..8)
-        for (j in 1..8) {
-            graph.addVertex("$i $j")
-        }
-    for (i in 1..8)
-        for (j in 1..8) {
-            val cells = mutableListOf(
-                i + 2 to j + 1,
-                i + 2 to j - 1,
-                i - 2 to j + 1,
-                i - 2 to j - 1,
-                i + 1 to j + 2,
-                i - 1 to j + 2,
-                i + 1 to j - 2,
-                i - 1 to j - 2
-            )
-            cells.forEach {
-                if (Square(it.first, it.second).inside()) graph.connect(
-                    "$i $j",
-                    "${it.first} ${it.second}"
-                )
-            }
-        }
     return graph.bfs("${start.column} ${start.row}", "${end.column} ${end.row}")
 }
+
+private val graph: Graph
+    get() {
+        val gr = Graph()
+        for (i in 1..8)
+            for (j in 1..8) {
+                gr.addVertex("$i $j")
+            }
+        for (i in 1..8)
+            for (j in 1..8) {
+                val cells = mutableListOf(
+                    i + 2 to j + 1,
+                    i + 2 to j - 1,
+                    i - 2 to j + 1,
+                    i - 2 to j - 1,
+                    i + 1 to j + 2,
+                    i - 1 to j + 2,
+                    i + 1 to j - 2,
+                    i - 1 to j - 2,
+                    i to j
+                )
+                cells.forEach {
+                    if (Square(it.first, it.second).inside()) gr.connect(
+                        "$i $j",
+                        "${it.first} ${it.second}"
+                    )
+                }
+            }
+        return gr
+    }
+
 
 /**
  * Очень сложная
@@ -314,4 +321,7 @@ fun knightMoveNumber(start: Square, end: Square): Int {
  *
  * Если возможно несколько вариантов самой быстрой траектории, вернуть любой из них.
  */
-fun knightTrajectory(start: Square, end: Square): List<Square> = TODO()
+fun knightTrajectory(start: Square, end: Square): List<Square> {
+    require(start.inside() && end.inside())
+    return graph.bffs("${start.column} ${start.row}", "${end.column} ${end.row}") //добавлена функция в классе Graph
+}
