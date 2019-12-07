@@ -2,10 +2,9 @@
 
 package lesson8.task2
 
+import lesson8.task3.Graph
 import kotlin.math.abs
-import kotlin.math.ln
 import kotlin.math.sign
-import kotlin.math.sqrt
 
 /**
  * Клетка шахматной доски. Шахматная доска квадратная и имеет 8 х 8 клеток.
@@ -266,7 +265,34 @@ fun kingTrajectory(start: Square, end: Square): List<Square> = when (start) {
  * Пример: knightMoveNumber(Square(3, 1), Square(6, 3)) = 3.
  * Конь может последовательно пройти через клетки (5, 2) и (4, 4) к клетке (6, 3).
  */
-fun knightMoveNumber(start: Square, end: Square): Int = TODO()
+fun knightMoveNumber(start: Square, end: Square): Int {
+    require(start.inside() && end.inside())
+    val graph = Graph()
+    for (i in 1..8)
+        for (j in 1..8) {
+            graph.addVertex("$i $j")
+        }
+    for (i in 1..8)
+        for (j in 1..8) {
+            val cells = mutableListOf(
+                i + 2 to j + 1,
+                i + 2 to j - 1,
+                i - 2 to j + 1,
+                i - 2 to j - 1,
+                i + 1 to j + 2,
+                i - 1 to j + 2,
+                i + 1 to j - 2,
+                i - 1 to j - 2
+            )
+            cells.forEach {
+                if (Square(it.first, it.second).inside()) graph.connect(
+                    "$i $j",
+                    "${it.first} ${it.second}"
+                )
+            }
+        }
+    return graph.bfs("${start.column} ${start.row}", "${end.column} ${end.row}")
+}
 
 /**
  * Очень сложная
