@@ -163,7 +163,7 @@ fun bishopTrajectory(start: Square, end: Square): List<Square> {
             result.add(setOf(Square(x1, y1), Square(x2, y2)).first { it.inside() })
             result.add(end)
             result
-            // 2 уравнения - y = x + b и y = -x + b. Всего 4 уравнения - по два для каждой из клеток Start и End
+            // 2 уравнения : y = x + b и y = -x + b. Всего 4 уравнения - по два для каждой из клеток Start и End
             // также необходимо учитывать, что b разные для обоих уравнений каждой клетки ( 1 = 3 + b и 1 = -3 + b)
         }
     }

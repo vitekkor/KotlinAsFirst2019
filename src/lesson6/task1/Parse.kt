@@ -44,20 +44,20 @@ fun timeSecondsToStr(seconds: Int): String {
 /**
  * Пример: консольный ввод
  */
-/**fun main() {
-println("Введите время в формате ЧЧ:ММ:СС")
-val line = readLine()
-if (line != null) {
-val seconds = timeStrToSeconds(line)
-if (seconds == -1) {
-println("Введённая строка $line не соответствует формату ЧЧ:ММ:СС")
-} else {
-println("Прошло секунд с начала суток: $seconds")
+fun main() {
+    println("Введите время в формате ЧЧ:ММ:СС")
+    val line = readLine()
+    if (line != null) {
+        val seconds = timeStrToSeconds(line)
+        if (seconds == -1) {
+            println("Введённая строка $line не соответствует формату ЧЧ:ММ:СС")
+        } else {
+            println("Прошло секунд с начала суток: $seconds")
+        }
+    } else {
+        println("Достигнут <конец файла> в процессе чтения строки. Программа прервана")
+    }
 }
-} else {
-println("Достигнут <конец файла> в процессе чтения строки. Программа прервана")
-}
-}*/
 
 
 /**

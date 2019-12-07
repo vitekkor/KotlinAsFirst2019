@@ -23,8 +23,12 @@ class DimensionalValue(value: Double, dimension: String) : Comparable<Dimensiona
      * Величина с БАЗОВОЙ размерностью (например для 1.0Kg следует вернуть результат в граммах -- 1000.0)
      */
     val value = if (dimension.length > 1) when (dimension[0].toString()) {
-        DimensionPrefix.KILO.abbreviation -> value * 1000
-        DimensionPrefix.MILLI.abbreviation -> value * 0.001
+        DimensionPrefix.KILO.abbreviation -> value * DimensionPrefix.KILO.multiplier
+        DimensionPrefix.MILLI.abbreviation -> value * DimensionPrefix.MILLI.multiplier
+        DimensionPrefix.NANO.abbreviation -> value * DimensionPrefix.NANO.multiplier
+        DimensionPrefix.MEGA.abbreviation -> value * DimensionPrefix.MEGA.multiplier
+        DimensionPrefix.SANTI.abbreviation -> value * DimensionPrefix.SANTI.multiplier
+        DimensionPrefix.GIGA.abbreviation -> value * DimensionPrefix.GIGA.multiplier
         else -> throw IllegalArgumentException()
     } else value
 

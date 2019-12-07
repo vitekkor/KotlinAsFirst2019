@@ -2,6 +2,7 @@
 
 package lesson11.task1
 
+import java.lang.IllegalArgumentException
 import kotlin.math.abs
 import kotlin.math.pow
 
@@ -15,7 +16,7 @@ import kotlin.math.pow
  * Полиномы можно складывать -- (x^2+3x+2) + (x^3-2x^2-x+4) = x^3-x^2+2x+6,
  * вычитать -- (x^3-2x^2-x+4) - (x^2+3x+2) = x^3-3x^2-4x+2,
  * умножать -- (x^2+3x+2) * (x^3-2x^2-x+4) = x^5+x^4-5x^3-3x^2+10x+8,
- * делить с остатком -- (x^3-2x^2-x+4) / (x^2+3x+2) = x-5, остаток 12x+16
+ * делить с остатком -- (x^3-2x^2-x+4) / (x^2+3x+2) = x-5, остаток 12x+14
  * вычислять значение при заданном x: при x=5 (x^2+3x+2) = 42.
  *
  * В конструктор полинома передаются его коэффициенты, начиная со старшего.
@@ -23,11 +24,24 @@ import kotlin.math.pow
  * Старшие коэффициенты, равные нулю, игнорировать, например Polynom(0.0, 0.0, 5.0, 3.0) соответствует 5x+3
  */
 class Polynom(vararg coefficients: Double) {
-    private val coefficients = coefficients.toMutableList()
+    private val coefficients = coefficients.toList()
+
+    /**
+     * Конструктор из строки an * x^n + an-1 * x^n-1...a1 * x + a0
+     * Все коэффициенты должны быть, т.е Polynom(1.0, 0.0) == "x + 0.0"
+     */
+    constructor(s: String) : this(*s.split(Regex("""x\^?\d*""")).map {
+        when (it) {
+            "" -> 1.0
+            "-" -> -1.0
+            else -> it.toDouble()
+        }
+    }.toDoubleArray())
+
     /**
      * Геттер: вернуть значение коэффициента при x^i
      */
-    fun coeff(i: Int): Double = coefficients.first()
+    fun coeff(i: Int): Double = coefficients[coefficients.size - i - 1]
 
     /**
      * Расчёт значения при заданном x
@@ -75,7 +89,20 @@ class Polynom(vararg coefficients: Double) {
     /**
      * Умножение
      */
-    operator fun times(other: Polynom): Polynom = TODO()
+    operator fun times(other: Polynom): Polynom {
+        var result = Polynom(0.0)
+        val biggest = if (this.degree() >= other.degree()) this else other
+        val smallest = if (this.degree() < other.degree()) this else other
+        for (i in biggest.coefficients.indices) {
+            val k = mutableListOf<Double>()
+            for (j in smallest.coefficients) {
+                k.add(j * biggest.coefficients[i])
+            }
+            while (k.size != biggest.coefficients.size - i + smallest.coefficients.size - 1) k.add(0.0)
+            result += Polynom(*k.toDoubleArray())
+        }
+        return result
+    }
 
     /**
      * Деление
@@ -85,12 +112,46 @@ class Polynom(vararg coefficients: Double) {
      *
      * Если A / B = C и A % B = D, то A = B * C + D и степень D меньше степени B
      */
-    operator fun div(other: Polynom): Polynom = TODO()
+    operator fun div(other: Polynom): Polynom {
+        when {
+            this < other -> return Polynom(0.0)
+            other == Polynom(0.0) -> throw IllegalArgumentException()
+            this == Polynom(0.0) -> return Polynom(0.0)
+            this == other -> return Polynom(1.0)
+            other.degree() == 0 -> return Polynom(*this.coefficients.map { it / other.coefficients.last() }.toDoubleArray())
+        }
+        var dividend = this
+        var result = Polynom(0.0)
+        while (dividend >= other) {
+            val list = MutableList(dividend.degree() - other.degree() + 1) { 0.0 }
+            list[0] = dividend.coeff(dividend.degree())
+            dividend -= other * Polynom(*list.toDoubleArray())
+            result += Polynom(*list.toDoubleArray())
+        }
+        return result
+    }
 
     /**
      * Взятие остатка
      */
-    operator fun rem(other: Polynom): Polynom = TODO()
+    operator fun rem(other: Polynom): Polynom {
+        when {
+            this < other -> return this
+            other == Polynom(0.0) -> throw IllegalArgumentException()
+            this == Polynom(0.0) -> return Polynom(0.0)
+            this == other -> return Polynom(0.0)
+            other.degree() == 0 -> return Polynom(0.0)
+        }
+        var dividend = this
+        var result = Polynom(0.0)
+        while (dividend >= other) {
+            val list = MutableList(dividend.degree() - other.degree() + 1) { 0.0 }
+            list[0] = dividend.coeff(dividend.degree())
+            dividend -= other * Polynom(*list.toDoubleArray())
+            result += Polynom(*list.toDoubleArray())
+        }
+        return dividend
+    }
 
     /**
      * Сравнение на равенство
@@ -102,9 +163,13 @@ class Polynom(vararg coefficients: Double) {
      */
     override fun hashCode(): Int {
         var result = 1
-        for (k in coefficients) {
-            result += 31 * k.toInt() + k.toInt()
+        for (k in coefficients.dropWhile { it == 0.0 }) {
+            result += 32 * k.toInt()
         }
-        return result * 31
+        return result + coefficients.dropWhile { it == 0.0 }.size
     }
+
+    operator fun compareTo(other: Polynom): Int = this.degree() - other.degree()
+
+
 }
