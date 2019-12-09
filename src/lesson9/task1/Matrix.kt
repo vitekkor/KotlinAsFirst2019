@@ -2,6 +2,9 @@
 
 package lesson9.task1
 
+import lesson1.task1.sqr
+import kotlin.math.sqrt
+
 
 /**
  * Ячейка матрицы: row = ряд, column = колонка
@@ -9,6 +12,12 @@ package lesson9.task1
 data class Cell(val row: Int, val column: Int) {
     fun neighbour(other: Cell): Boolean =
         row - 1 == other.row || row + 1 == other.row || column - 1 == other.column || column + 1 == other.column
+
+    fun listOfNeighbours(): List<Cell> =
+        listOf(Cell(row - 1, column), Cell(row + 1, column), Cell(row, column + 1), Cell(row, column - 1))
+
+    fun distance(other: Cell): Int = sqrt((sqr(row - other.row) + sqr(column - other.column)).toDouble()).toInt()
+    fun inMatrixInt(matrix: Matrix<Int>): Boolean = row in 1..matrix.height && column in 1..matrix.width
 }
 
 /**
