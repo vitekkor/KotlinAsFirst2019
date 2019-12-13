@@ -2,10 +2,12 @@
 
 package lesson9.task2
 
-import lesson9.task1.Cell
+import com.sun.java.accessibility.util.EventID.ITEM
 import lesson9.task1.Matrix
 import lesson9.task1.createMatrix
+import java.util.*
 import kotlin.math.abs
+
 
 // Все задачи в этом файле требуют наличия реализации интерфейса "Матрица" в Matrix.kt
 
@@ -260,6 +262,7 @@ fun sumNeighbours(matrix: Matrix<Int>): Matrix<Int> = TODO()
  * 0 0 0 0
  */
 fun findHoles(matrix: Matrix<Int>): Holes = TODO()
+
 /**
  * Класс для описания местонахождения "дырок" в матрице
  */
@@ -353,16 +356,18 @@ operator fun Matrix<Int>.times(other: Matrix<Int>): Matrix<Int> = TODO(this.toSt
  * 3 10 11  8
  */
 fun fifteenGameMoves(matrix: Matrix<Int>, moves: List<Int>): Matrix<Int> {
-    if (matrix.height != 4 && matrix.width != 4) throw IllegalStateException()
+    check(matrix.height == 4 && matrix.width == 4)
+    val mm = createMatrix(4, 4, 0)
+    for (i in 0..3) for (j in 0..3) mm[i, j] = matrix[i, j]
     for (move in moves) {
-        require(move in 1..15)
-        val zero = matrix.cellWithThis(0)
-        val current = matrix.cellWithThis(move)
-        if (!zero.neighbour(current)) throw IllegalStateException()
-        matrix[zero] = move
-        matrix[current] = 0
+        check(move in 1..15)
+        val zero = mm.cellWithThis(0)
+        val current = mm.cellWithThis(move)
+        check(zero.neighbour(current))
+        mm[zero] = move
+        mm[current] = 0
     }
-    return matrix
+    return mm
 }
 
 
@@ -405,4 +410,105 @@ fun fifteenGameMoves(matrix: Matrix<Int>, moves: List<Int>): Matrix<Int> {
  *
  * Перед решением этой задачи НЕОБХОДИМО решить предыдущую
  */
-fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> = TODO()
+fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> = Solver(Fifteens(matrix)).solution()
+
+class Fifteens(matrix: Matrix<Int>) {
+    private val zero = matrix.cellWithThis(0)
+    private var h = 0 // эвристическая функция, равная количеству клеток, стоящих не на своем месте.
+    val m = createMatrix(matrix.height, matrix.width, 0)
+
+    init {
+        for (i in 0 until matrix.height)
+            for (j in 0 until matrix.width) {
+                val truCell = if (i * j != 9) i + j + 1 else 0
+                if (matrix[i, j] != truCell && matrix[i, j] != 0) h++
+                m[i, j] = matrix[i, j]
+            }
+    }
+
+    fun h(): Int = h
+
+    fun isDecision(): Boolean = h == 0
+
+    fun neighbours(): List<Fifteens> {
+        val result = mutableListOf<Fifteens>()
+        val zeroNeighbours = zero.listOfNeighbours()
+        for (neighbour in zeroNeighbours)
+            if (neighbour.row in 0..3 && neighbour.column in 0..3)
+                result.add(Fifteens(fifteenGameMoves(m, listOf(m[neighbour]))))
+        return result
+    }
+
+    fun list(): List<Int> {
+        val result = mutableListOf<Int>()
+        for (i in 0 until m.height)
+            for (j in 0 until m.width)
+                result.add(m[i, j])
+        return result
+    }
+
+    override fun equals(other: Any?): Boolean = other is Fifteens && this.m == other.m
+
+    override fun toString(): String = m.toString()
+    fun different(other: Fifteens): Int {
+        val otherZero = other.m.cellWithThis(0)
+        return m[otherZero]
+    }
+}
+
+class Solver(private val fifteens: Fifteens) {
+    private val cameFrom = mutableMapOf<Fifteens, Fifteens>()
+    private var present = fifteens
+    private val end = createMatrix(4, 4, 0)
+    private fun isSolvable(): Boolean {
+        val list = fifteens.list()
+        var res = 0
+        for (i in 0 until 16) {
+            if (list[i] == 0) res += 1 + i / 4
+            for (j in 0 until i) if (list[j] > list[i]) res++
+        }
+        return res % 2 == 0
+    }
+
+    init {
+        val visited = mutableListOf<Fifteens>()
+        for (i in 0..3) for (j in 0..3) end[i, j] = if (i * j != 9) i + j + 1 else 0
+        if (!this.isSolvable()) {
+            end[3, 1] = 15
+            end[3, 2] = 14
+        }
+        val queue = mutableListOf<Fifteens>()
+        val h = mutableMapOf<Fifteens, Int>()
+        h[fifteens] = fifteens.h()
+        queue.add(fifteens)
+        while (true) {
+            val current = h.filter { it.key in queue }.minBy { it.value }!!.key
+            visited.add(current)
+            queue.remove(current)
+            if (current.isDecision()) {
+                present = current
+                break
+            }
+            for (neighbour in current.neighbours()) {
+                if (neighbour !in visited) {
+                    cameFrom[neighbour] = current
+                    if (neighbour !in queue) queue.add(neighbour)
+                }
+            }
+        }
+    }
+
+    fun solution(): MutableList<Int> {
+        val res = mutableListOf<Fifteens>()
+        val result = mutableListOf<Int>()
+        res.add(present)
+        while (present in cameFrom.keys) {
+            present = cameFrom[present]!!
+            res.add(present)
+        }
+        for (i in res.size - 1 downTo 0) {
+            result[res.size - 1 - i] = if (i != 0) res[i].different(res[i - 1]) else res[i].different(Fifteens(end))
+        }
+        return result
+    }
+}

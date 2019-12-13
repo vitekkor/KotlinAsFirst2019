@@ -572,9 +572,13 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
  */
 fun markdownToHtmlLists(inputName: String, outputName: String) {
+    htmlLists(inputName, outputName, true)
+}
+
+fun htmlLists(inputName: String, outputName: String, wantToAdd: Boolean) {
     val inputStream = File(inputName).readLines()
     File(outputName).bufferedWriter().use {
-        it.write("<html>\n" + "<body>\n")
+        if (wantToAdd) it.write("<html>\n" + "<body>\n")
         val openLi = MutableList(6) { false }
         val openUl = MutableList(6) { false }
         val openOl = MutableList(6) { false }
@@ -713,7 +717,7 @@ fun markdownToHtmlLists(inputName: String, outputName: String) {
             it.write(changedLine.joinToString(""))
             previousSpaces = spaces
         }
-        it.write("\n</body>\n" + "</html>")
+        if (wantToAdd) it.write("\n</body>\n" + "</html>")
     }
 }
 
@@ -728,8 +732,8 @@ fun multipleOfFour(line: String): Int = (line.length - line.dropWhile { it == ' 
  *
  */
 fun markdownToHtml(inputName: String, outputName: String) {
-    markdownToHtmlLists(inputName, outputName)
-    val tmp = File(outputName).readText().removePrefix("<html>\n" + "<body>\n").removeSuffix("</body>\n" + "</html>")
+    htmlLists(inputName, outputName, false)
+    val tmp = File(outputName).readText()
     File(outputName).bufferedWriter().use {
         it.write(tmp)
     }
