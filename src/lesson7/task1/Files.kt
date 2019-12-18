@@ -734,9 +734,9 @@ fun multipleOfFour(line: String): Int = (line.length - line.dropWhile { it == ' 
 fun markdownToHtml(inputName: String, outputName: String) {
     htmlLists(inputName, outputName, false)
     val tmp = File(outputName).readText()
-    File(outputName).bufferedWriter().use {
-        it.write(tmp)
-    }
+    val output = File(outputName).bufferedWriter()
+    output.write(tmp)
+    output.close()
     markdownToHtmlSimple(outputName, outputName)
 }
 

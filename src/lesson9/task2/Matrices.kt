@@ -2,10 +2,9 @@
 
 package lesson9.task2
 
-import com.sun.java.accessibility.util.EventID.ITEM
+import lesson9.task1.Cell
 import lesson9.task1.Matrix
 import lesson9.task1.createMatrix
-import java.util.*
 import kotlin.math.abs
 
 
@@ -410,4 +409,94 @@ fun fifteenGameMoves(matrix: Matrix<Int>, moves: List<Int>): Matrix<Int> {
  *
  * Перед решением этой задачи НЕОБХОДИМО решить предыдущую
  */
-fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> = TODO()
+fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> {
+    val start = Fifteen(matrix)
+    val goal = start.goal()
+    val open = mutableListOf(start)
+    val visited = mutableListOf<Fifteen>()
+    val cameFrom = mutableMapOf<Fifteen, Fifteen>()
+    if (matrix == goal) return listOf()
+    while (open.isNotEmpty()) {
+        val current = open.minBy { it.h() }
+        if (current == Fifteen(goal)) return reconstructPath(cameFrom, current, start)
+        open.remove(current)
+        visited.add(current!!)
+        for (neighbour in current.neighbours()) {
+            if (current.h() >= neighbour.h()) {
+                cameFrom[neighbour] = current
+                if (neighbour !in open && neighbour !in visited) open.add(neighbour)
+            }
+        }
+    }
+    return listOf()
+}
+
+fun reconstructPath(cameFrom: MutableMap<Fifteen, Fifteen>, current: Fifteen, start: Fifteen): List<Int> {
+    val totalPath = mutableListOf<Int>()
+    var curr = current
+    while (curr in cameFrom.keys) {
+        val next = cameFrom[curr]!!
+        totalPath.add(curr.difference(next))
+        curr = next
+    }
+    totalPath.add(curr.difference(start))
+    return totalPath.reversed()
+}
+
+class Fifteen(val matrix: Matrix<Int>) {
+    private val blocks = mutableListOf<Int>()
+    private var h = 0
+    private var zero = Cell(0, 0)
+
+    init {
+        for (i in 0..3)
+            for (j in 0..3) {
+                val cell = matrix[i, j]
+                val truCell = if (i * j != 9) i + j + 1 else 0
+                blocks.add(cell)
+                if (cell != 0 && cell != truCell) h++
+                if (cell == 0) zero = Cell(i, j)
+            }
+    }
+
+    fun h() = h
+    fun neighbours(): List<Fifteen> {
+        val result = mutableListOf<Fifteen>()
+        val zeroNeighbours = zero.listOfNeighbours()
+        for (neighbour in zeroNeighbours)
+            if (neighbour.row in 0..3 && neighbour.column in 0..3)
+                result.add(Fifteen(fifteenGameMoves(matrix, listOf(matrix[neighbour]))))
+        return result
+    }
+
+    private fun isSolvable(): Boolean {
+        var res = 0
+        for (i in 0 until 16) {
+            if (blocks[i] == 0) res += 1 + i / 4
+            for (j in 0 until i) if (blocks[j] > blocks[i] && blocks[i] != 0) res++
+        }
+        return res % 2 == 0
+    }
+
+    fun goal(): Matrix<Int> {
+        val end = createMatrix(4, 4, 0)
+        for (i in 0..3) for (j in 0..3)
+            end[i, j] = if (i * j != 9) i * 4 + j + 1 else 0
+        if (!this.isSolvable()) {
+            end[3, 1] = 15
+            end[3, 2] = 14
+        }
+        return end
+    }
+
+    fun difference(other: Fifteen): Int {
+        for (i in other.blocks.indices) {
+            if (other.blocks[i] == 0) return this.blocks[i]
+        }
+        return -1
+    }
+
+    override fun equals(other: Any?): Boolean = other is Fifteen && this.matrix == other.matrix
+    override fun hashCode(): Int = matrix.hashCode()
+
+}
