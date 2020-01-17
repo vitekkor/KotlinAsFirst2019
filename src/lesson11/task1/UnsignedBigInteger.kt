@@ -174,11 +174,8 @@ class UnsignedBigInteger(number: MutableList<Int>) : Comparable<UnsignedBigInteg
      * Если число не влезает в диапазон Int, бросить ArithmeticException
      */
     fun toInt(): Int {
-        try {
-            return this.toString().toInt()
-        } catch (e: NumberFormatException) {
-            throw ArithmeticException()
-        }
+        val res = this.toString().toIntOrNull()
+        if (res != null) return res else throw ArithmeticException()
     }
 
 }
