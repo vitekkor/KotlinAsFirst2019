@@ -118,13 +118,16 @@ class TrainTimeTable(private val baseStationName: String) {
      * @return true, если удаление успешно
      */
     fun removeStop(train: String, stopName: String): Boolean {
-        val train1 = listOfTrains[train]
-        val currStop = train1!!.stops.find { it.name == stopName }
-        if (train1.stops.first().name == stopName || train1.stops.last().name == stopName || currStop == null) return false
-        val copy = train1.stops.toMutableList()
-        copy.remove(currStop)
-        listOfTrains.values.map { if (it == train1) Train(train, copy) }
-        return true
+        val stop = listOfTrains.getValue(train).specificStation(stopName)
+        return if (stop.time != Time(-1, -1)
+            && listOfTrains.getValue(train).stops[0].name == stopName
+            && listOfTrains.getValue(train).stops.last().name == stopName
+        ) {
+            val newStops = listOfTrains.getValue(train).stops.toMutableList()
+            newStops.remove(stop)
+            listOfTrains[train] = Train(train, newStops)
+            true
+        } else false
     }
 
     /**
