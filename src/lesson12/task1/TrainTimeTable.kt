@@ -74,22 +74,37 @@ class TrainTimeTable(private val baseStationName: String) {
      * @return true, если поезду была добавлена новая остановка, false, если было изменено время остановки на старой
      */
     fun addStop(train: String, stop: Stop): Boolean {
-        val train1 = listOfTrains[train]
-        val stop1 = train1!!.stops.find {it.name == stop.name}
-        val baseTime = train1.stops.find { it.name == baseStationName }!!.time
-        require(train1.stops.all { stop.time != it.time }
-                && if (stop.name != baseStationName) stop.time in baseTime..train1.stops.last().time else
-            stop.time < train1.stops[1].time)
-        if (stop1 == null) {
-            val copy = listOfTrains[train]!!.stops.toMutableList()
-            copy.add(stop)
-            listOfTrains[train] = Train(train, copy.sortedBy { it.time })
-            return true
+        val newStops = listOfTrains.getValue(train).stops.toMutableList()
+        when (stop.name) {
+            baseStationName -> {
+                listOfTrains.getValue(train).stops.toMutableList()[0] = stop
+                newStops.sortBy { it.time }
+                return false
+            }
+            listOfTrains.getValue(train).stops.last().name -> {
+                newStops.dropLast(1)
+                newStops.add(stop)
+                newStops.sortBy { it.time }
+                listOfTrains[train] = Train(train, newStops)
+                return false
+            }
         }
-        val copy = listOfTrains[train]!!.stops.toMutableList()
-        copy.map { if (it.name == baseStationName) stop }
-        listOfTrains[train] = Train(train, copy.sortedBy { it.time })
-        return false
+        require(stop.time in listOfTrains.getValue(train).stops[0].time..listOfTrains.getValue(train).stops.last().time)
+        val specialStop = listOfTrains.getValue(train).specificStation(stop.name)
+        if (specialStop.time != Time(-1, -1)) {
+            newStops.remove(specialStop)
+            newStops.add(stop)
+            newStops.sortBy { it.time }
+            listOfTrains[train] = Train(train, newStops)
+            return false
+        }
+        for ((name, time) in listOfTrains.getValue(train).stops) {
+            if (time == stop.time) if (stop.name != name) throw IllegalArgumentException() else return false
+        }
+        newStops.add(stop)
+        newStops.sortBy { it.time }
+        listOfTrains[train] = Train(train, newStops)
+        return true
     }
 
     /**
@@ -162,6 +177,8 @@ data class Stop(val name: String, val time: Time)
  */
 data class Train(val name: String, val stops: List<Stop>) {
     constructor(name: String, vararg stops: Stop) : this(name, stops.asList())
+
+    fun specificStation(name: String): Stop = stops.find { it.name == name } ?: Stop("", Time(-1, -1))
 }
 
 
