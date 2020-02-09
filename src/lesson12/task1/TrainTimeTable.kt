@@ -137,7 +137,7 @@ class TrainTimeTable(private val baseStationName: String) {
         val res = listOfTrains.values.toMutableList()
         val low = 0
         val high = listOfTrains.size - 1
-        quickSort(res, low, high)
+        quickSort(res, low, high, baseStationName)
         return res
     }
 
@@ -147,9 +147,18 @@ class TrainTimeTable(private val baseStationName: String) {
      * Список должен быть упорядочен по времени прибытия на станцию destinationName
      */
     fun trains(currentTime: Time, destinationName: String): List<Train> {
-
-        TODO()
+        val result = mutableListOf<Train>()
+        for ((_, train) in listOfTrains) {
+            val condition1 = train.stops.elementAt(0).time >= currentTime
+            val condition2 = train.specificStation(destinationName).time != Time(-1, -1)
+            if (condition1 && condition2) result.add(train)
+        }
+        quickSort(result, 0, result.size - 1, destinationName)
+        return result
     }
+
+    //fun getTrain(trainName: String): Train = listOfTrains.getValue(trainName)
+
 
     /**
      * Сравнение на равенство.
@@ -185,20 +194,20 @@ data class Train(val name: String, val stops: List<Stop>) {
 }
 
 
-private fun quickSort(array: MutableList<Train>, low: Int, high: Int) {
+private fun quickSort(array: MutableList<Train>, low: Int, high: Int, stop: String) {
     if (array.isEmpty()) return  //завершить выполнение если длина массива равна 0
     if (low >= high) return  //завершить выполнение если уже нечего делить
     // выбрать опорный элемент
     val middle = low + (high - low) / 2
-    val opora = array[middle].stops[0].time
+    val opora = array[middle].specificStation(stop).time
     // разделить на подмассивы, который больше и меньше опорного элемента
     var i = low
     var j = high
     while (i <= j) {
-        while (array[i].stops[0].time < opora) {
+        while (array[i].specificStation(stop).time < opora) {
             i++
         }
-        while (array[j].stops[0].time > opora) {
+        while (array[j].specificStation(stop).time > opora) {
             j--
         }
         if (i <= j) { //меняем местами
@@ -210,6 +219,6 @@ private fun quickSort(array: MutableList<Train>, low: Int, high: Int) {
         }
     }
     // вызов рекурсии для сортировки левой и правой части
-    if (low < j) quickSort(array, low, j)
-    if (high > i) quickSort(array, i, high)
+    if (low < j) quickSort(array, low, j, stop)
+    if (high > i) quickSort(array, i, high, stop)
 }
