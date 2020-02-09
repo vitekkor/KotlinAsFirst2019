@@ -157,7 +157,7 @@ class TrainTimeTable(private val baseStationName: String) {
         return result
     }
 
-    //fun getTrain(trainName: String): Train = listOfTrains.getValue(trainName)
+    fun getTrain(trainName: String): Train = listOfTrains.getValue(trainName)
 
 
     /**
