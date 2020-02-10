@@ -127,13 +127,8 @@ class TrainTimeTable(val baseStationName: String) {
     /**
      * Вернуть список всех поездов, упорядоченный по времени отправления с baseStationName
      */
-    fun trains(): List<Train> {
-        val res = listOfTrains.values.toMutableList()
-        val low = 0
-        val high = listOfTrains.size - 1
-        quickSort(res, low, high, baseStationName)
-        return res
-    }
+    fun trains(): List<Train> =
+        listOfTrains.values.toMutableList().sortedBy { it.specificStation(baseStationName)!!.time }
 
     /**
      * Вернуть список всех поездов, отправляющихся не ранее currentTime
@@ -147,8 +142,7 @@ class TrainTimeTable(val baseStationName: String) {
             val condition2 = train.specificStation(destinationName) != null
             if (condition1 && condition2) result.add(train)
         }
-        quickSort(result, 0, result.size - 1, destinationName)
-        return result
+        return result.sortedBy { it.specificStation(destinationName)!!.time }
     }
 
     fun getTrain(trainName: String): Train = listOfTrains.getValue(trainName)
@@ -195,33 +189,4 @@ data class Train(val name: String, val stops: List<Stop>) {
     constructor(name: String, vararg stops: Stop) : this(name, stops.asList())
 
     fun specificStation(name: String): Stop? = stops.find { it.name == name }
-}
-
-private fun quickSort(array: MutableList<Train>, low: Int, high: Int, stop: String) {
-    if (array.isEmpty()) return  //завершить выполнение если длина массива равна 0
-    if (low >= high) return  //завершить выполнение если уже нечего делить
-    // выбрать опорный элемент
-    val middle = low + (high - low) / 2
-    val opora = array[middle].specificStation(stop)!!.time
-    // разделить на подмассивы, который больше и меньше опорного элемента
-    var i = low
-    var j = high
-    while (i <= j) {
-        while (array[i].specificStation(stop)!!.time < opora) {
-            i++
-        }
-        while (array[j].specificStation(stop)!!.time > opora) {
-            j--
-        }
-        if (i <= j) { //меняем местами
-            val temp = array[i]
-            array[i] = array[j]
-            array[j] = temp
-            i++
-            j--
-        }
-    }
-    // вызов рекурсии для сортировки левой и правой части
-    if (low < j) quickSort(array, low, j, stop)
-    if (high > i) quickSort(array, i, high, stop)
 }
