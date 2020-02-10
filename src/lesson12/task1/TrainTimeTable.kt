@@ -3,7 +3,6 @@
 package lesson12.task1
 
 
-
 /**
  * Класс "расписание поездов".
  *
@@ -30,9 +29,8 @@ class TrainTimeTable(val baseStationName: String) {
      * @return true, если поезд успешно добавлен, false, если такой поезд уже есть
      */
     fun addTrain(train: String, depart: Time, destination: Stop): Boolean {
-        val realTrain = Train(train, Stop(baseStationName, depart), destination)
         return if (listOfTrains[train] == null) {
-            listOfTrains[train] = realTrain
+            listOfTrains[train] = Train(train, Stop(baseStationName, depart), destination)
             true
         } else false
     }
@@ -46,13 +44,10 @@ class TrainTimeTable(val baseStationName: String) {
      * @param train название поезда
      * @return true, если поезд успешно удалён, false, если такой поезд не существует
      */
-    fun removeTrain(train: String): Boolean {
-        val realTrain = listOfTrains[train]
-        return if (realTrain != null) {
-            listOfTrains.remove(train)
-            true
-        } else false
-    }
+    fun removeTrain(train: String): Boolean = if (listOfTrains[train] != null) {
+        listOfTrains.remove(train)
+        true
+    } else false
 
     /**
      * Добавить/изменить начальную, промежуточную или конечную остановку поезду.
@@ -90,7 +85,7 @@ class TrainTimeTable(val baseStationName: String) {
         }
         require(stop.time in listOfTrains.getValue(train).stops[0].time..listOfTrains.getValue(train).stops.last().time)
         val specialStop = listOfTrains.getValue(train).specificStation(stop.name)
-        if (specialStop.time != Time(-1, -1)) {
+        if (specialStop != null) {
             newStops.remove(specialStop)
             newStops.add(stop)
             newStops.sortBy { it.time }
@@ -118,7 +113,7 @@ class TrainTimeTable(val baseStationName: String) {
      */
     fun removeStop(train: String, stopName: String): Boolean {
         val stop = listOfTrains.getValue(train).specificStation(stopName)
-        return if (stop.time != Time(-1, -1)
+        return if (stop != null
             && listOfTrains.getValue(train).stops[0].name == stopName
             && listOfTrains.getValue(train).stops.last().name == stopName
         ) {
@@ -149,7 +144,7 @@ class TrainTimeTable(val baseStationName: String) {
         val result = mutableListOf<Train>()
         for ((_, train) in listOfTrains) {
             val condition1 = train.stops.elementAt(0).time >= currentTime
-            val condition2 = train.specificStation(destinationName).time != Time(-1, -1)
+            val condition2 = train.specificStation(destinationName) != null
             if (condition1 && condition2) result.add(train)
         }
         quickSort(result, 0, result.size - 1, destinationName)
@@ -199,7 +194,7 @@ data class Stop(val name: String, val time: Time) {
 data class Train(val name: String, val stops: List<Stop>) {
     constructor(name: String, vararg stops: Stop) : this(name, stops.asList())
 
-    fun specificStation(name: String): Stop = stops.find { it.name == name } ?: Stop("", Time(-1, -1))
+    fun specificStation(name: String): Stop? = stops.find { it.name == name }
 }
 
 private fun quickSort(array: MutableList<Train>, low: Int, high: Int, stop: String) {
@@ -207,15 +202,15 @@ private fun quickSort(array: MutableList<Train>, low: Int, high: Int, stop: Stri
     if (low >= high) return  //завершить выполнение если уже нечего делить
     // выбрать опорный элемент
     val middle = low + (high - low) / 2
-    val opora = array[middle].specificStation(stop).time
+    val opora = array[middle].specificStation(stop)!!.time
     // разделить на подмассивы, который больше и меньше опорного элемента
     var i = low
     var j = high
     while (i <= j) {
-        while (array[i].specificStation(stop).time < opora) {
+        while (array[i].specificStation(stop)!!.time < opora) {
             i++
         }
-        while (array[j].specificStation(stop).time > opora) {
+        while (array[j].specificStation(stop)!!.time > opora) {
             j--
         }
         if (i <= j) { //меняем местами
