@@ -23,7 +23,8 @@ class UnsignedBigInteger(number: MutableList<Int>) : Comparable<UnsignedBigInteg
     /**
      * Конструктор из строки
      */
-    constructor(s: String) : this(s.split("").dropWhile { it == "" }.dropLastWhile { it == "" }.map { it.toInt() }.toMutableList())
+    constructor(s: String) : this(s.map { it - '0' }.toMutableList())
+    //this(s.split("").dropWhile { it == "" }.dropLastWhile { it == "" }.map { it.toInt() }.toMutableList())
 
     /**
      * Конструктор из целого
