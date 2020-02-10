@@ -2,7 +2,6 @@
 
 package lesson12.task1
 
-import java.util.*
 
 
 /**
@@ -18,7 +17,7 @@ import java.util.*
  *
  * В конструктор передаётся название станции отправления для данного расписания.
  */
-class TrainTimeTable(private val baseStationName: String) {
+class TrainTimeTable(val baseStationName: String) {
     private val listOfTrains = mutableMapOf<String, Train>()
     /**
      * Добавить новый поезд.
@@ -38,6 +37,7 @@ class TrainTimeTable(private val baseStationName: String) {
         } else false
     }
 
+
     /**
      * Удалить существующий поезд.
      *
@@ -46,7 +46,6 @@ class TrainTimeTable(private val baseStationName: String) {
      * @param train название поезда
      * @return true, если поезд успешно удалён, false, если такой поезд не существует
      */
-
     fun removeTrain(train: String): Boolean {
         val realTrain = listOfTrains[train]
         return if (realTrain != null) {
@@ -159,13 +158,20 @@ class TrainTimeTable(private val baseStationName: String) {
 
     fun getTrain(trainName: String): Train = listOfTrains.getValue(trainName)
 
-
     /**
      * Сравнение на равенство.
      * Расписания считаются одинаковыми, если содержат одинаковый набор поездов,
      * и поезда с тем же именем останавливаются на одинаковых станциях в одинаковое время.
      */
-    override fun equals(other: Any?): Boolean = TODO()
+    override fun equals(other: Any?): Boolean = other is TrainTimeTable && hashCode() == other.hashCode()
+
+    override fun hashCode(): Int {
+        var result = 1
+        for ((name, train) in listOfTrains) {
+            result += name.hashCode() + train.stops.sumBy { it.hashCode() }
+        }
+        return result
+    }
 }
 
 /**
@@ -175,13 +181,16 @@ data class Time(val hour: Int, val minute: Int) : Comparable<Time> {
     /**
      * Сравнение времён на больше/меньше (согласно контракту compareTo)
      */
-    override fun compareTo(other: Time): Int = this.hour * 60 + this.minute - (other.hour * 60 + other.minute)
+    override fun compareTo(other: Time): Int = (hour - other.hour) * 60 + minute - other.minute
 }
 
 /**
  * Остановка (название, время прибытия)
  */
-data class Stop(val name: String, val time: Time)
+data class Stop(val name: String, val time: Time) {
+    override fun equals(other: Any?): Boolean = other is Stop && hashCode() == other.hashCode()
+    override fun hashCode(): Int = name.hashCode() + time.minute + time.hour * 60
+}
 
 /**
  * Поезд (имя, список остановок, упорядоченный по времени).
@@ -192,7 +201,6 @@ data class Train(val name: String, val stops: List<Stop>) {
 
     fun specificStation(name: String): Stop = stops.find { it.name == name } ?: Stop("", Time(-1, -1))
 }
-
 
 private fun quickSort(array: MutableList<Train>, low: Int, high: Int, stop: String) {
     if (array.isEmpty()) return  //завершить выполнение если длина массива равна 0
