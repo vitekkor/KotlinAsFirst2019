@@ -44,10 +44,7 @@ class TrainTimeTable(val baseStationName: String) {
      * @param train название поезда
      * @return true, если поезд успешно удалён, false, если такой поезд не существует
      */
-    fun removeTrain(train: String): Boolean = if (listOfTrains[train] != null) {
-        listOfTrains.remove(train)
-        true
-    } else false
+    fun removeTrain(train: String): Boolean = listOfTrains.remove(train) != null
 
     /**
      * Добавить/изменить начальную, промежуточную или конечную остановку поезду.
@@ -93,7 +90,9 @@ class TrainTimeTable(val baseStationName: String) {
             return false
         }
         for ((name, time) in listOfTrains.getValue(train).stops) {
-            if (time == stop.time) if (stop.name != name) throw IllegalArgumentException() else return false
+            if (time == stop.time) {
+                if (stop.name != name) throw IllegalArgumentException() else return false
+            }
         }
         newStops.add(stop)
         newStops.sortBy { it.time }
