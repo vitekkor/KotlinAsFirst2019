@@ -60,6 +60,10 @@ class TrainTimeTableTest {
         }
         assertFalse(ttt.addStop("N1", Stop("Купчино", Time(6, 44))))
         assertFalse(ttt.addStop("N1", Stop("Пушкин", Time(7, 0))))
+        assertEquals(
+            listOf(Stop("СПб", Time(6, 31)), Stop("Купчино", Time(6, 44)), Stop("Пушкин", Time(7, 0))),
+            ttt.getTrain("N1").stops
+        )
         assertThrows(IllegalArgumentException::class.java) {
             ttt.addStop("N1", Stop("Пушкин", Time(6, 40)))
         }
@@ -70,16 +74,50 @@ class TrainTimeTableTest {
         ttt2.addTrain("N2", Time(0, 20), Stop("Санкт-Петербург", Time(8, 59)))
         assertTrue(ttt2.addStop("N1", Stop("Мичуринск", Time(8, 59))))
         assertFalse(ttt2.addStop("N1", Stop("Мичуринск", Time(8, 59))))
+        assertEquals(
+            listOf(Stop("Москва", Time(7, 0)), Stop("Мичуринск", Time(8, 59)), Stop("Воронеж", Time(14, 22))),
+            ttt2.getTrain("N1").stops
+        )
         assertThrows(IllegalArgumentException::class.java) { ttt2.addStop("N1", Stop("Бологое", Time(6, 59))) }
         assertThrows(IllegalArgumentException::class.java) { ttt2.addStop("N1", Stop("Мичуринск", Time(14, 59))) }
         assertThrows(IllegalArgumentException::class.java) { ttt2.addStop("N1", Stop("Тула", Time(7, 0))) }
         assertThrows(IllegalArgumentException::class.java) { ttt2.addStop("N1", Stop("Рязань", Time(14, 22))) }
         assertTrue(ttt2.addStop("N1", Stop("Рязань", Time(12, 22))))
         assertTrue(ttt2.addStop("N1", Stop("Тула", Time(10, 22))))
+        assertEquals(
+            listOf(
+                Stop("Москва", Time(7, 0)),
+                Stop("Мичуринск", Time(8, 59)),
+                Stop("Тула", Time(10, 22)),
+                Stop("Рязань", Time(12, 22)),
+                Stop("Воронеж", Time(14, 22))
+            ),
+            ttt2.getTrain("N1").stops
+        )
         assertFalse(ttt2.addStop("N1", Stop("Рязань", Time(10, 21))))
+        assertEquals(
+            listOf(
+                Stop("Москва", Time(7, 0)),
+                Stop("Мичуринск", Time(8, 59)),
+                Stop("Рязань", Time(10, 21)),
+                Stop("Тула", Time(10, 22)),
+                Stop("Воронеж", Time(14, 22))
+            ),
+            ttt2.getTrain("N1").stops
+        )
         assertThrows(IllegalArgumentException::class.java) { ttt2.addStop("N1", Stop("Воронеж", Time(10, 21))) }
         assertFalse(ttt2.addStop("N1", Stop("Тула", Time(10, 20))))
         assertThrows(IllegalArgumentException::class.java) { ttt2.addStop("N2", Stop("Санкт-Петербург", Time(0, 19))) }
+        assertEquals(
+            listOf(
+                Stop("Москва", Time(7, 0)),
+                Stop("Мичуринск", Time(8, 59)),
+                Stop("Тула", Time(10, 20)),
+                Stop("Рязань", Time(10, 21)),
+                Stop("Воронеж", Time(14, 22))
+            ),
+            ttt2.getTrain("N1").stops
+        )
     }
 
     @Test
@@ -92,7 +130,23 @@ class TrainTimeTableTest {
         assertFalse(ttt.removeStop("N1", "Неверная"))
         assertFalse(ttt.removeStop("N1", "СПб"))
         assertFalse(ttt.removeStop("N1", "Пушкин"))
-        assertFalse(ttt.removeStop("N1", "Купчино"))
+        assertTrue(ttt.removeStop("N1", "Купчино"))
+        val ttt2 = TrainTimeTable("Москва")
+        ttt2.addTrain("N1", Time(7, 0), Stop("Воронеж", Time(14, 22)))
+        assertTrue(ttt2.addStop("N1", Stop("Мичуринск", Time(8, 59))))
+        assertTrue(ttt2.addStop("N1", Stop("Рязань", Time(12, 22))))
+        assertTrue(ttt2.addStop("N1", Stop("Тула", Time(10, 22))))
+        assertTrue(ttt2.addStop("N1", Stop("Тул", Time(10, 23))))
+        assertTrue(ttt2.addStop("N1", Stop("Ту", Time(10, 24))))
+        assertTrue(ttt2.addStop("N1", Stop("Т", Time(10, 25))))
+        for ((name) in ttt2.getTrain("N1").stops) {
+            if (name in listOf("Москва", "Воронеж")) assertFalse(ttt2.removeStop("N1", name)) else
+                assertTrue(ttt2.removeStop("N1", name))
+        }
+        assertEquals(
+            listOf(Stop("Москва", Time(7, 0)), Stop("Воронеж", Time(14, 22))),
+            ttt2.getTrain("N1").stops
+        )
     }
 
     @Test

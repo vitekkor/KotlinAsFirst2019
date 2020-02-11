@@ -116,8 +116,8 @@ class TrainTimeTable(val baseStationName: String) {
     fun removeStop(train: String, stopName: String): Boolean {
         val stop = listOfTrains.getValue(train).specificStation(stopName)
         return if (stop != null
-            && listOfTrains.getValue(train).stops[0].name == stopName
-            && listOfTrains.getValue(train).stops.last().name == stopName
+            && listOfTrains.getValue(train).stops[0].name != stopName
+            && listOfTrains.getValue(train).stops.last().name != stopName
         ) {
             val newStops = listOfTrains.getValue(train).stops.toMutableList()
             newStops.remove(stop)
