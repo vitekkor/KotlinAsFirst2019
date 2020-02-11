@@ -14,10 +14,14 @@ class TrainTimeTableTest {
         assertTrue(ttt.addTrain("N1", Time(6, 35), Stop("Пушкин", Time(7, 4))))
         assertTrue(ttt.addTrain("N2", Time(6, 18), Stop("Пушкин", Time(6, 45))))
         assertFalse(ttt.addTrain("N1", Time(6, 25), Stop("Пушкин", Time(6, 49))))
+        assertFalse(ttt.addTrain("N1", Time(6, 35), Stop("Пушкин", Time(6, 4))))
+        assertFalse(ttt.addTrain("N1", Time(6, 35), Stop("Купчино", Time(7, 4))))
+        assertTrue(ttt.addTrain("N3", Time(12, 18), Stop("Царское Село", Time(6, 45))))
         assertEquals(
             listOf(
                 Train("N2", Stop("СПб", Time(6, 18)), Stop("Пушкин", Time(6, 45))),
-                Train("N1", Stop("СПб", Time(6, 35)), Stop("Пушкин", Time(7, 4)))
+                Train("N1", Stop("СПб", Time(6, 35)), Stop("Пушкин", Time(7, 4))),
+                Train("N3", Stop("СПб", Time(12, 18)), Stop("Царское Село", Time(6, 45)))
             ), ttt.trains()
         )
     }
@@ -31,6 +35,9 @@ class TrainTimeTableTest {
         assertFalse(ttt.removeTrain("N3"))
         assertTrue(ttt.removeTrain("N1"))
         assertEquals(1, ttt.trains().size)
+        assertTrue(ttt.removeTrain("N2"))
+        assertFalse(ttt.removeTrain("N2"))
+        assertEquals(0, ttt.trains().size)
     }
 
     @Test
@@ -41,19 +48,38 @@ class TrainTimeTableTest {
         assertTrue(ttt.addTrain("N2", Time(6, 18), Stop("Пушкин", Time(6, 45))))
         assertFalse(ttt.addStop("N1", Stop("СПб", Time(6, 31))))
         assertTrue(ttt.addStop("N1", Stop("Купчино", Time(6, 46))))
+        assertEquals(
+            listOf(Stop("СПб", Time(6, 31)), Stop("Купчино", Time(6, 46)), Stop("Пушкин", Time(7, 4))),
+            ttt.getTrain("N1").stops
+        )
         assertThrows(IllegalArgumentException::class.java) {
             ttt.addStop("N1", Stop("Неверная", Time(7, 11)))
         }
-        assertFalse {
+        assertThrows(IllegalArgumentException::class.java) {
             ttt.addStop("N1", Stop("СПб", Time(6, 50)))
         }
         assertFalse(ttt.addStop("N1", Stop("Купчино", Time(6, 44))))
         assertFalse(ttt.addStop("N1", Stop("Пушкин", Time(7, 0))))
-        assertFalse {
+        assertThrows(IllegalArgumentException::class.java) {
             ttt.addStop("N1", Stop("Пушкин", Time(6, 40)))
         }
         ttt.addStop("N1", Stop("Пушкин", Time(16, 10)))
         assertEquals(Time(16, 10), ttt.getTrain("N1").stops.last().time)
+        val ttt2 = TrainTimeTable("Москва")
+        ttt2.addTrain("N1", Time(7, 0), Stop("Воронеж", Time(14, 22)))
+        ttt2.addTrain("N2", Time(0, 20), Stop("Санкт-Петербург", Time(8, 59)))
+        assertTrue(ttt2.addStop("N1", Stop("Мичуринск", Time(8, 59))))
+        assertFalse(ttt2.addStop("N1", Stop("Мичуринск", Time(8, 59))))
+        assertThrows(IllegalArgumentException::class.java) { ttt2.addStop("N1", Stop("Бологое", Time(6, 59))) }
+        assertThrows(IllegalArgumentException::class.java) { ttt2.addStop("N1", Stop("Мичуринск", Time(14, 59))) }
+        assertThrows(IllegalArgumentException::class.java) { ttt2.addStop("N1", Stop("Тула", Time(7, 0))) }
+        assertThrows(IllegalArgumentException::class.java) { ttt2.addStop("N1", Stop("Рязань", Time(14, 22))) }
+        assertTrue(ttt2.addStop("N1", Stop("Рязань", Time(12, 22))))
+        assertTrue(ttt2.addStop("N1", Stop("Тула", Time(10, 22))))
+        assertFalse(ttt2.addStop("N1", Stop("Рязань", Time(10, 21))))
+        assertThrows(IllegalArgumentException::class.java) { ttt2.addStop("N1", Stop("Воронеж", Time(10, 21))) }
+        assertFalse(ttt2.addStop("N1", Stop("Тула", Time(10, 20))))
+        assertThrows(IllegalArgumentException::class.java) { ttt2.addStop("N2", Stop("Санкт-Петербург", Time(0, 19))) }
     }
 
     @Test

@@ -68,12 +68,15 @@ class TrainTimeTable(val baseStationName: String) {
         val newStops = listOfTrains.getValue(train).stops.toMutableList()
         when (stop.name) {
             baseStationName -> {
-                listOfTrains.getValue(train).stops.toMutableList()[0] = stop
+                if (newStops[1].time <= stop.time) throw IllegalArgumentException()
+                newStops[0] = stop
                 newStops.sortBy { it.time }
+                listOfTrains[train] = Train(train, newStops)
                 return false
             }
             listOfTrains.getValue(train).stops.last().name -> {
-                newStops.dropLast(1)
+                newStops.removeAt(newStops.lastIndex)
+                if (newStops.last().time >= stop.time) throw IllegalArgumentException()
                 newStops.add(stop)
                 newStops.sortBy { it.time }
                 listOfTrains[train] = Train(train, newStops)
