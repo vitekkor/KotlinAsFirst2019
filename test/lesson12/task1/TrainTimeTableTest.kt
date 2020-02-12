@@ -165,6 +165,108 @@ class TrainTimeTableTest {
                 Train("N1", Stop("СПб", Time(6, 35)), Stop("Купчино", Time(6, 52)), Stop("Пушкин", Time(7, 6)))
             ), ttt.trains(Time(6, 30), "Купчино")
         )
+        val ttt3 = TrainTimeTable("Москва")
+        ttt3.addTrain("N1", Time(7, 0), Stop("Воронеж", Time(14, 22)))
+        assertTrue(ttt3.addStop("N1", Stop("Мичуринск", Time(8, 59))))
+        assertTrue(ttt3.addStop("N1", Stop("Рязань", Time(12, 22))))
+        assertTrue(ttt3.addStop("N1", Stop("Тула", Time(10, 22))))
+        assertTrue(ttt3.addStop("N1", Stop("Тул", Time(10, 23))))
+        assertTrue(ttt3.addStop("N1", Stop("Ту", Time(10, 24))))
+        assertTrue(ttt3.addStop("N1", Stop("Т", Time(10, 25))))
+        ttt3.addTrain("N2", Time(7, 0), Stop("Воронеж", Time(14, 22)))
+        assertTrue(ttt3.addStop("N2", Stop("Мичуринск", Time(8, 59))))
+        assertTrue(ttt3.addStop("N2", Stop("Рязань", Time(12, 22))))
+        assertTrue(ttt3.addStop("N2", Stop("Тула", Time(10, 22))))
+        assertTrue(ttt3.addStop("N2", Stop("Тул", Time(10, 23))))
+        assertTrue(ttt3.addStop("N2", Stop("Ту", Time(10, 24))))
+        assertTrue(ttt3.addStop("N2", Stop("Т", Time(10, 25))))
+        ttt3.addTrain("N3", Time(7, 0), Stop("Воронеж", Time(14, 22)))
+        assertTrue(ttt3.addStop("N3", Stop("Мичуринск", Time(8, 59))))
+        assertTrue(ttt3.addStop("N3", Stop("Рязань", Time(12, 22))))
+        assertTrue(ttt3.addStop("N3", Stop("Тула", Time(10, 22))))
+        assertTrue(ttt3.addStop("N3", Stop("Тул", Time(10, 23))))
+        assertTrue(ttt3.addStop("N3", Stop("Ту", Time(10, 24))))
+        assertTrue(ttt3.addStop("N3", Stop("Т", Time(10, 25))))
+        assertEquals(
+            listOf<Train>(), ttt3.trains(Time(6, 30), "Купчино")
+        )
+        assertEquals(
+            listOf(
+                Train(
+                    "N1",
+                    Stop("Москва", Time(7, 0)),
+                    Stop("Мичуринск", Time(8, 59)),
+                    Stop("Тула", Time(10, 22)),
+                    Stop("Тул", Time(10, 23)),
+                    Stop("Ту", Time(10, 24)),
+                    Stop("Т", Time(10, 25)),
+                    Stop("Рязань", Time(12, 22)),
+                    Stop("Воронеж", Time(14, 22))
+                ),
+                Train(
+                    "N2",
+                    Stop("Москва", Time(7, 0)),
+                    Stop("Мичуринск", Time(8, 59)),
+                    Stop("Тула", Time(10, 22)),
+                    Stop("Тул", Time(10, 23)),
+                    Stop("Ту", Time(10, 24)),
+                    Stop("Т", Time(10, 25)),
+                    Stop("Рязань", Time(12, 22)),
+                    Stop("Воронеж", Time(14, 22))
+                ),
+                Train(
+                    "N3",
+                    Stop("Москва", Time(7, 0)),
+                    Stop("Мичуринск", Time(8, 59)),
+                    Stop("Тула", Time(10, 22)),
+                    Stop("Тул", Time(10, 23)),
+                    Stop("Ту", Time(10, 24)),
+                    Stop("Т", Time(10, 25)),
+                    Stop("Рязань", Time(12, 22)),
+                    Stop("Воронеж", Time(14, 22))
+                )
+            ),
+            ttt3.trains(Time(6, 30), "Воронеж")
+        )
+        assertFalse(ttt3.addStop("N3", Stop("Воронеж", Time(12, 59))))
+        val list = listOf(
+            Train(
+                "N3",
+                Stop("Москва", Time(7, 0)),
+                Stop("Мичуринск", Time(8, 59)),
+                Stop("Тула", Time(10, 22)),
+                Stop("Тул", Time(10, 23)),
+                Stop("Ту", Time(10, 24)),
+                Stop("Т", Time(10, 25)),
+                Stop("Рязань", Time(12, 22)),
+                Stop("Воронеж", Time(12, 59))
+            ),
+            Train(
+                "N1",
+                Stop("Москва", Time(7, 0)),
+                Stop("Мичуринск", Time(8, 59)),
+                Stop("Тула", Time(10, 22)),
+                Stop("Тул", Time(10, 23)),
+                Stop("Ту", Time(10, 24)),
+                Stop("Т", Time(10, 25)),
+                Stop("Рязань", Time(12, 22)),
+                Stop("Воронеж", Time(14, 22))
+            ),
+            Train(
+                "N2",
+                Stop("Москва", Time(7, 0)),
+                Stop("Мичуринск", Time(8, 59)),
+                Stop("Тула", Time(10, 22)),
+                Stop("Тул", Time(10, 23)),
+                Stop("Ту", Time(10, 24)),
+                Stop("Т", Time(10, 25)),
+                Stop("Рязань", Time(12, 22)),
+                Stop("Воронеж", Time(14, 22))
+            )
+        )
+        assertEquals(list, ttt3.trains(Time(6, 30), "Воронеж"))
+        assertFalse(ttt3.removeStop("N3", "Воронеж"))
+        assertEquals(list, ttt3.trains(Time(6, 30), "Воронеж"))
     }
 
     @Test
@@ -206,5 +308,10 @@ class TrainTimeTableTest {
         assertTrue(ttt3 != ttt4)
         assertTrue(ttt1 != ttt4)
         assertTrue(ttt1 != ttt3)
+        assertTrue(ttt4.addTrain("N2", Time(15, 0), Stop("СПб", Time(20, 0))))
+        assertTrue(ttt3 != ttt4)
+        assertTrue(ttt4.addStop("N1", Stop("Т", Time(10, 25))))
+        assertTrue(ttt4.removeTrain("N2"))
+        assertTrue(ttt3 == ttt4)
     }
 }
