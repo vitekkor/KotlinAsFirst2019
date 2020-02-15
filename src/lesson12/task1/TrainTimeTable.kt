@@ -154,7 +154,7 @@ class TrainTimeTable(val baseStationName: String) {
      * Расписания считаются одинаковыми, если содержат одинаковый набор поездов,
      * и поезда с тем же именем останавливаются на одинаковых станциях в одинаковое время.
      */
-    override fun equals(other: Any?): Boolean = other is TrainTimeTable && hashCode() == other.hashCode()
+    override fun equals(other: Any?): Boolean = other is TrainTimeTable && this.trains() == other.trains()
 
     override fun hashCode(): Int {
         var result = 1
