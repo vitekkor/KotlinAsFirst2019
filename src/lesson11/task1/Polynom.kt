@@ -156,7 +156,8 @@ class Polynom(vararg coefficients: Double) {
     /**
      * Сравнение на равенство
      */
-    override fun equals(other: Any?): Boolean = other is Polynom && this.hashCode() == other.hashCode()
+    override fun equals(other: Any?): Boolean =
+        other is Polynom && this.coefficients.dropWhile { it == 0.0 } == other.coefficients.dropWhile { it == 0.0 }
 
     /**
      * Получение хеш-кода

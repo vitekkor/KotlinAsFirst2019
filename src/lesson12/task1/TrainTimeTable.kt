@@ -178,10 +178,7 @@ data class Time(val hour: Int, val minute: Int) : Comparable<Time> {
 /**
  * Остановка (название, время прибытия)
  */
-data class Stop(val name: String, val time: Time) {
-    override fun equals(other: Any?): Boolean = other is Stop && hashCode() == other.hashCode()
-    override fun hashCode(): Int = name.hashCode() + time.minute + time.hour * 60
-}
+data class Stop(val name: String, val time: Time)
 
 /**
  * Поезд (имя, список остановок, упорядоченный по времени).

@@ -137,7 +137,7 @@ class UnsignedBigInteger(number: MutableList<Int>) : Comparable<UnsignedBigInteg
     /**
      * Сравнение на равенство (по контракту Any.equals)
      */
-    override fun equals(other: Any?): Boolean = other is UnsignedBigInteger && this.hashCode() == other.hashCode()
+    override fun equals(other: Any?): Boolean = other is UnsignedBigInteger && this.list == other.list
 
     override fun hashCode(): Int = list.hashCode()
 
